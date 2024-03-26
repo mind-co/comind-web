@@ -1,3 +1,4 @@
+"use client";
 import type { Config } from "tailwindcss";
 const { nextui } = require("@nextui-org/react");
 

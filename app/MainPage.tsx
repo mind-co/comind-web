@@ -1,66 +1,39 @@
 "use client";
-import React, { useState } from "react";
-import { Input } from "@nextui-org/react";
+import React, { use, useState } from "react";
+import Link from "next/link";
+import MDEditor from "@uiw/react-md-editor";
+import rehypeSanitize from "rehype-sanitize";
 
-export const MainPage: React.FC = () => {
-  const [token, setToken] = useState<string | null>(null);
-
-  const handleLogin = async (username: string, password: string) => {
-    try {
-      const response = await fetch("https://nimbus.pfiffer.org/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ username, password }),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        const jwtToken = data.token;
-        setToken(jwtToken);
-      } else {
-        // Handle login error
-        console.error("Login failed");
-      }
-    } catch (error) {
-      // Handle network error
-      console.error("Network error:", error);
-    }
-  };
-
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-
-  const handleUsernameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setUsername(event.target.value);
-  };
-
-  const handlePasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setPassword(event.target.value);
-  };
-
-  const handleLoginClick = () => {
-    handleLogin(username, password);
-  };
+const MainPage = () => {
+  const [editorValue, setEditorValue] = useState("");
 
   return (
-    <div style={{ maxWidth: "600px", margin: "0 auto" }}>
-      <h1>Login</h1>
-      <Input
-        label="Username"
-        color="primary"
-        value={username}
-        onChange={handleUsernameChange}
-      />
-      <Input
-        label="Password"
-        type="password"
-        value={password}
-        onChange={handlePasswordChange}
-      />
-      <button onClick={handleLoginClick}>Login</button>
-      {token && <p>Token: {token}</p>}
+    <div className="p-2 flex flex-col items-center justify-start h-screen pb-8">
+      <div>
+        <h1>hey, welcome to comind</h1>
+        <div className="flex flex-wrap space-x-4 pb-4">
+          <Link href="/thoughts">thoughts</Link>
+          <Link href="/stream">streams</Link>
+          <Link href="/settings">settings</Link>
+        </div>
+      </div>
+      <div className="sm:w-full md:max-w-sm ">
+        <MDEditor
+          preview="edit"
+          style={{}}
+          hideToolbar={true}
+          minHeight={50}
+          height="100%"
+          value={editorValue}
+          onChange={(value) => setEditorValue(value || "")}
+          previewOptions={{
+            rehypePlugins: [[rehypeSanitize]],
+          }}
+          commands={[]}
+        />
+      </div>
     </div>
   );
 };
+
+export default MainPage;

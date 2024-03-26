@@ -6,6 +6,9 @@
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
   --background-end-rgb: 255, 255, 255;
+  --primary-rgb: 207, 94, 74;
+  --secondary-rgb: 0, 137, 200;
+  --tertiary-rgb: 0, 152, 119;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -30,4 +33,47 @@ body {
   .text-balance {
     text-wrap: balance;
   }
+}
+
+/* Links */
+a {
+  color: rgb(var(--foreground-rgb));
+  text-decoration: underline;
+  transition: color 0.2s;
+}
+
+a:hover {
+  color: rgb(var(--primary-rgb));
+}
+
+/* Change the white to any color */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+/* Editor styles
+wmde-markdown-var
+w-md-editor-content
+*/
+.wmde-markdown-var {
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(
+      to bottom,
+      transparent,
+      rgb(var(--background-end-rgb))
+    )
+    rgb(var(--background-start-rgb));
+}
+
+.w-md-editor-content {
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(
+      to bottom,
+      transparent,
+      rgb(var(--background-end-rgb))
+    )
+    rgb(var(--background-start-rgb));
 }
