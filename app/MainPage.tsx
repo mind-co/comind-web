@@ -1,20 +1,18 @@
 "use client";
 import React, { useState } from "react";
 import { Input } from "@nextui-org/react";
-import { NextUIProvider } from "@nextui-org/react";
 
-const MainPage: React.FC = () => {
+export const MainPage: React.FC = () => {
   const [token, setToken] = useState<string | null>(null);
 
   const handleLogin = async (username: string, password: string) => {
     try {
-      const response = await fetch("https://nimbus.pfiffer.org/api/login", {
+      const response = await fetch("https://nimbus.pfiffer.org/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ username, password }),
-        mode: "no-cors",
       });
 
       if (response.ok) {
@@ -23,11 +21,7 @@ const MainPage: React.FC = () => {
         setToken(jwtToken);
       } else {
         // Handle login error
-        console.error("Login error:", response);
-
-        // Show the error message
-        const errorMessage = await response.text();
-        console.error("Login error:", errorMessage);
+        console.error("Login failed");
       }
     } catch (error) {
       // Handle network error
@@ -51,26 +45,22 @@ const MainPage: React.FC = () => {
   };
 
   return (
-    <NextUIProvider>
-      <main className="dark text-foreground bg-background">
-        <div className="flex flex-col items-center justify-center h-screen max-w-[600px] mx-auto">
-          <Input
-            label="Username"
-            value={username}
-            onChange={handleUsernameChange}
-          />
-          <Input
-            label="Password"
-            type="password"
-            value={password}
-            onChange={handlePasswordChange}
-          />
-          <button onClick={handleLoginClick}>Login</button>
-          {token && <p>Token: {token}</p>}
-        </div>
-      </main>
-    </NextUIProvider>
+    <div style={{ maxWidth: "600px", margin: "0 auto" }}>
+      <h1>Login</h1>
+      <Input
+        label="Username"
+        color="primary"
+        value={username}
+        onChange={handleUsernameChange}
+      />
+      <Input
+        label="Password"
+        type="password"
+        value={password}
+        onChange={handlePasswordChange}
+      />
+      <button onClick={handleLoginClick}>Login</button>
+      {token && <p>Token: {token}</p>}
+    </div>
   );
 };
-
-export default MainPage;
