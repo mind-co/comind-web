@@ -14,7 +14,6 @@ const MainPage: React.FC = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ username, password }),
-        mode: "no-cors", // TODO #1 fix fucking cors shit
       });
 
       if (response.ok) {
