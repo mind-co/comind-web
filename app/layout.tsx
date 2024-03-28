@@ -1,10 +1,19 @@
 "use client";
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { IBM_Plex_Sans, Inter, Roboto_Mono } from "next/font/google";
 import "./globals.css";
+import "./markdown.css";
 import Providers from "@/lib/providers";
 
-const inter = Inter({ subsets: ["latin"] });
+// const inter = Inter({ subsets: ["latin"] });
+// const roboto_mono = Roboto_Mono({
+//   subsets: ["latin"],
+//   display: "swap",
+// });
+const plex_sans = IBM_Plex_Sans({
+  weight: ["400"],
+  subsets: ["latin"],
+});
 
 export default function RootLayout({
   children,
@@ -13,7 +22,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body className={plex_sans.className + " dark"}>
         <Providers>{children}</Providers>
       </body>
     </html>

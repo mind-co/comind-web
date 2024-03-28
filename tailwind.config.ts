@@ -1,6 +1,7 @@
 "use client";
 import type { Config } from "tailwindcss";
 const { nextui } = require("@nextui-org/react");
+const colors = require("tailwindcss/colors");
 
 const config: Config = {
   content: [
@@ -10,7 +11,11 @@ const config: Config = {
     "./node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        ...colors,
+      },
+    },
   },
   darkMode: "class",
   plugins: [nextui()],

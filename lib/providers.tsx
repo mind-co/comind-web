@@ -1,6 +1,9 @@
 import React from "react";
 import { NextUIProvider } from "@nextui-org/react";
 import { AuthProvider } from "@/lib/authprovider";
+import { ThemeProvider } from "next-themes";
+import { ThoughtProvider } from "./mainwebsocket";
+import { useRouter } from "next/navigation";
 
 // Props for the Providers component
 interface ProvidersProps {
@@ -9,10 +12,16 @@ interface ProvidersProps {
 
 // Create a provider that wraps the NextUIProvider and AuthProvider
 const Providers: React.FC<ProvidersProps> = ({ children }) => {
+  const router = useRouter();
+
   return (
-    <NextUIProvider>
-      <AuthProvider>{children}</AuthProvider>
-    </NextUIProvider>
+    <ThemeProvider>
+      <NextUIProvider navigate={router.push}>
+        <AuthProvider>
+          <ThoughtProvider>{children}</ThoughtProvider>
+        </AuthProvider>
+      </NextUIProvider>
+    </ThemeProvider>
   );
 };
 
