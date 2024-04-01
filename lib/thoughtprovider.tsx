@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { Thought } from "@/lib/types/thoughts";
+import { Thought, newThought, testThought } from "@/lib/types/thoughts";
 import { Ping } from "@/lib/types/ping";
 import { AuthContext } from "./authprovider";
 
@@ -11,17 +11,23 @@ interface ThoughtContextValue {
   thoughts: Thought[];
   pings: Ping[];
   comindThoughts: Thought[];
+  addThought: (thought: Thought) => void;
 }
 
-const ThoughtContext = createContext<ThoughtContextValue | undefined>(
-  undefined
+const ThoughtContext = createContext<ThoughtContextValue>(
+  {} as ThoughtContextValue
 );
 
 const ThoughtProvider: React.FC<ThoughtProviderProps> = ({ children }) => {
   const { token } = useContext(AuthContext);
-  const [thoughts, setThoughts] = useState<Thought[]>([]);
+  const [thoughts, setThoughts] = useState<Thought[]>([testThought]);
   const [pings, setPings] = useState<Ping[]>([]);
   const [comindThoughts, setComindThoughts] = useState<Thought[]>([]);
+
+  // Add a thought to the ThoughtProvider
+  const addThought = (thought: Thought) => {
+    setThoughts((prevThoughts) => [...prevThoughts, thought]);
+  };
 
   useEffect(() => {
     const websocket = new WebSocket("ws://localhost:8081/ws");
@@ -29,11 +35,11 @@ const ThoughtProvider: React.FC<ThoughtProviderProps> = ({ children }) => {
     // On open methods to say hi to the server
     websocket.onopen = () => {
       if (token) {
-        websocket.send(
-          JSON.stringify({
-            message: "hi",
-          })
-        );
+        // Send the authentication message with the JWT token
+        websocket.send(JSON.stringify({ token }));
+      } else {
+        console.log("No token available for authentication");
+        websocket.close();
       }
     };
 
@@ -90,12 +96,13 @@ const ThoughtProvider: React.FC<ThoughtProviderProps> = ({ children }) => {
     // return () => {
     //   websocket.close();
     // };
-  }, []);
+  }, [token]);
 
   const value: ThoughtContextValue = {
     thoughts,
     pings,
     comindThoughts,
+    addThought,
   };
 
   return (

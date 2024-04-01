@@ -1,4 +1,5 @@
 import { Button, ButtonGroup, CardFooter, Kbd } from "@nextui-org/react";
+import Link from "next/link";
 import React from "react";
 
 type ActionBarProps = {
@@ -7,18 +8,16 @@ type ActionBarProps = {
 
 const ActionBar: React.FC<ActionBarProps> = ({ onThink }) => {
   return (
-    <CardFooter className="text-xs">
-      <ButtonGroup>
-        <Button size="sm" variant="ghost">
-          edit
-          <Kbd>e</Kbd>
-        </Button>
-        <Button size="sm" variant="ghost">
-          think
-          <Kbd>t</Kbd>
-        </Button>
-      </ButtonGroup>
-    </CardFooter>
+    <div className="flex-row flex justify-end items-end pt-2 align-center ">
+      {/* 
+          javascript:; goes nowhere, mostly want link styling 
+          https://stackoverflow.com/questions/1830927/how-do-i-make-a-link-that-goes-nowhere
+          does not add to browser history
+      */}
+      <Link href="javascript:;" onClick={onThink}>
+        think
+      </Link>
+    </div>
   );
 };
 

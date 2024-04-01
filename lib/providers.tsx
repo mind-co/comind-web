@@ -2,7 +2,7 @@ import React from "react";
 import { NextUIProvider } from "@nextui-org/react";
 import { AuthProvider } from "@/lib/authprovider";
 import { ThemeProvider } from "next-themes";
-import { ThoughtProvider } from "./mainwebsocket";
+import { ThoughtProvider } from "./thoughtprovider";
 import { useRouter } from "next/navigation";
 
 // Props for the Providers component

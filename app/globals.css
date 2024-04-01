@@ -9,6 +9,7 @@
   --primary-rgb: 207, 94, 74;
   --secondary-rgb: 0, 137, 200;
   --tertiary-rgb: 0, 152, 119;
+  --md-editor-font-family: "Inter", sans-serif;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -53,15 +54,19 @@ input:-webkit-autofill:active {
 wmde-markdown-var
 w-md-editor-content
 */
-.wmde-markdown-var {
-  /* color: transparent; */
-  /* background: transparent; */
-  border: 1px solid rgb(var(--surface-rgb));
-}
 
 .w-md-editor-content {
-  color: rgb(var(--foreground-rgb));
-  background: rgb(var(--background-rgb));
+  background: transparent;
+}
+
+.w-md-editor {
+  @apply !bg-transparent;
+  box-shadow: inherit !important;
+  padding-bottom: 0 !important;
+}
+
+.w-md-editor-bar {
+  @apply !bottom-0 !right-2;
 }
 
 /* Action bar */

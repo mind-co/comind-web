@@ -1,6 +1,18 @@
 "use client";
 import type { Metadata } from "next";
-import { IBM_Plex_Sans, Inter, Roboto_Mono } from "next/font/google";
+import {
+  Comfortaa,
+  IBM_Plex_Sans,
+  Inter,
+  Josefin_Sans,
+  Lexend_Deca,
+  Montserrat,
+  Open_Sans,
+  Outfit,
+  Raleway,
+  Roboto,
+  Roboto_Mono,
+} from "next/font/google";
 import "./globals.css";
 import "./markdown.css";
 import Providers from "@/lib/providers";
@@ -10,7 +22,9 @@ import Providers from "@/lib/providers";
 //   subsets: ["latin"],
 //   display: "swap",
 // });
-const plex_sans = IBM_Plex_Sans({
+const core_font = Lexend_Deca({
+  // const core_font = Outfit({
+  // const core_font = Josefin_Sans({
   weight: ["400"],
   subsets: ["latin"],
 });
@@ -21,8 +35,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={plex_sans.className + " dark"}>
+    <html lang="en" suppressHydrationWarning>
+      <body className={core_font.className + " dark"}>
         <Providers>{children}</Providers>
       </body>
     </html>

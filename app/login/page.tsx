@@ -6,7 +6,7 @@ import { AuthContext, AuthProvider } from "@/lib/authprovider";
 import { env } from "process";
 
 export const LoginPage: React.FC = () => {
-  const { token, login, _setToken } = useContext(AuthContext);
+  const { token, login } = useContext(AuthContext);
 
   const [username, setUsername] = useState("");
   const [userId, setUserId] = useState("");
@@ -40,21 +40,26 @@ export const LoginPage: React.FC = () => {
   return (
     <main className="text-foreground bg-background">
       <div className="flex flex-col items-center justify-center h-screen max-w-[400px] mx-auto space-y-9">
-        <h1>hey, welcome to comind</h1>
-
+        <div className="w-full">hey, welcome to comind</div>
         <Input
           type="username"
           label="Username"
+          variant="bordered"
+          labelPlacement="outside"
           value={username}
           onChange={handleUsernameChange}
         />
         <Input
           label="Password"
           type="password"
+          labelPlacement="outside"
+          variant="bordered"
           value={password}
           onChange={handlePasswordChange}
         />
-        <Button onClick={handleLoginClick}>Login</Button>
+        <Button onClick={handleLoginClick} variant="ghost">
+          Login
+        </Button>
         {token && <p>Token: {token}</p>}
       </div>
     </main>

@@ -16,6 +16,7 @@ import {
 } from "@nextui-org/react";
 import { convertToRelativeTimestamp } from "./utils";
 import { AuthContext } from "./authprovider";
+import ComindUsername from "./comindusername";
 
 type ThoughtDisplayProps = {
   thought: Thought;
@@ -41,40 +42,16 @@ const ThoughtDisplay: React.FC<ThoughtDisplayProps> = ({ thought }) => {
   };
 
   return (
-    <Card className="w-full">
-      <CardHeader className="text-xs">
-        {thought.username + ", " + prettyTimestamp}
-      </CardHeader>
-      <Divider />
-      <CardBody>
+    <div className="thought">
+      <ComindUsername username={thought.username} />
+
+      <div
+        className="border-2 rounded-lg p-2  
+      border-gray-100 dark:border-gray-900"
+      >
         <Markdown remarkPlugins={[remarkGfm]}>{thought.body}</Markdown>
-      </CardBody>
-      <Divider />
-      <CardFooter className="text-xs">
-        <ButtonGroup>
-          <Button size="sm" onClick={handleMore}>
-            more
-            <Kbd>m</Kbd>
-          </Button>
-          {actionBarIsExpanded && (
-            <>
-              <Button size="sm">
-                edit
-                <Kbd>e</Kbd>
-              </Button>
-              <Button size="sm" isDisabled={!isUserThought}>
-                delete
-                <Kbd>d</Kbd>
-              </Button>
-              <Button size="sm" color="primary">
-                think
-                <Kbd>t</Kbd>
-              </Button>
-            </>
-          )}
-        </ButtonGroup>
-      </CardFooter>
-    </Card>
+      </div>
+    </div>
   );
 };
 

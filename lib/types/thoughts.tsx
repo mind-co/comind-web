@@ -1,4 +1,5 @@
 import { v4 as uuidv4 } from "uuid";
+import { AuthContext } from "../authprovider";
 
 interface Thought {
   title: string;
@@ -15,15 +16,10 @@ interface Thought {
   color: string;
 }
 
-// A method that instiaties a new thought object from the auth provider.
-// The auth provider contains user_id, color,
-//
-// id is UUID4, dates are ISO8601 strings for now, revision is 0,
-// public is false, synthetic is false, origin is "web"
-// color is the user's color
-function newThought(title: string, body: string, auth: any): Thought {
+// TODO #2 add strict typing for auth
+function newThought(body: string, auth: any, title?: string): Thought {
   return {
-    title,
+    title: title || "",
     body,
     user_id: auth.userId,
     username: auth.username,
@@ -38,7 +34,23 @@ function newThought(title: string, body: string, auth: any): Thought {
   };
 }
 
-// A basic thought object that can be used for testing
+function coThought(body: string, title?: string): Thought {
+  return {
+    title: title || "",
+    body,
+    user_id: "ceaa2177-9c94-4b58-aa97-b01b7ad11374",
+    username: "{co}",
+    date_created: new Date().toISOString(),
+    date_updated: new Date().toISOString(),
+    revision: 0,
+    id: uuidv4(),
+    public: false,
+    synthetic: false,
+    origin: "web",
+    color: "",
+  };
+}
+
 const testThought: Thought = {
   title: "Test Thought",
   body: "# A test thought\n\nThis is a test thought. It has _markdown_ in it.\n\n- A list\n- Of items\n- In a list. \n\nHere's somehing **bold**.",
@@ -55,4 +67,4 @@ const testThought: Thought = {
 };
 
 export type { Thought };
-export { testThought, newThought };
+export { testThought, newThought, coThought };
