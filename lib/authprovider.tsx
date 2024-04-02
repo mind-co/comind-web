@@ -8,6 +8,8 @@ const AuthContext = createContext<{
   password: string;
   userId: string;
   color: string;
+  isLoading: boolean;
+  isAuthenticated: boolean;
   thoughtMode: "public" | "private" | "collective";
 
   // Context methods
@@ -26,6 +28,8 @@ const AuthContext = createContext<{
   userId: "",
   color: "",
   thoughtMode: "public",
+  isLoading: true,
+  isAuthenticated: false,
 });
 
 interface AuthProviderProps {
@@ -72,6 +76,8 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [password, setPassword] = useState("");
   const [userId, setUserId] = useState("");
   const [color, setColor] = useState("black");
+  const [isLoading, setIsLoading] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   // Check if we already have a cookie, in which case we can log in
   const cookieToken = loadTokenFromCookie();
@@ -82,6 +88,8 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setUsername(payload.username);
     setUserId(payload.user_id);
     setColor(payload.color);
+    setIsAuthenticated(true);
+    setIsLoading(false);
   }
 
   // Create a setter for the token state, which also updates
@@ -93,6 +101,8 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setUsername(payload.username);
     setUserId(payload.user_id);
     setColor(payload.color);
+    setIsAuthenticated(true);
+    setIsLoading(false);
 
     // Store the token in a cookie
     storeTokenInCookie(token);
@@ -156,6 +166,8 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         toPublicMode: () => {},
         toPrivateMode: () => {},
         toCollectiveMode: () => {},
+        isLoading,
+        isAuthenticated,
       }}
     >
       {children}

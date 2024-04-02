@@ -49,12 +49,9 @@ const MainPage = () => {
   };
 
   return (
-    <div
-      className="max-w-xl p-2 flex flex-col h-screen mx-auto"
-      suppressHydrationWarning
-    >
-      <div className="" suppressHydrationWarning>
-        <span className="instruction">
+    <div className="max-w-xl p-2 flex flex-col h-screen mx-auto">
+      <div className="">
+        <span className="">
           hey, welcome to{" "}
           <span className="">
             <span className="">co</span>
@@ -74,13 +71,11 @@ const MainPage = () => {
           </Link>
         </div>
       </div>
-
       <div className="space-y-2">
         {thoughts.map((thought) => (
           <ThoughtDisplay key={thought.id} thought={thought} />
         ))}
       </div>
-
       <div
         className="
         w-full
@@ -119,9 +114,7 @@ const MainPage = () => {
         {/* </div> */}
         <ActionBar onThink={onThink} />
       </div>
-
       {/* <ThoughtDisplay thought={thoughts[0]} /> */}
-
       {/* <ThoughtDisplay thought={testThought} /> */}
     </div>
   );

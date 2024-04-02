@@ -86,5 +86,5 @@ w-md-editor-content
 }
 
 .instruction {
-  @apply text-5xl pt-24 font-bold;
+  /* @apply text-5xl pt-24 font-bold; */
 }

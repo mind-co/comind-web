@@ -15,10 +15,10 @@ export const LoginPage: React.FC = () => {
 
   // If we're already logged in, then
   // redirect to the home page.
-  // if (token) {
-  //   // @ts-ignore
-  //   redirect("/");
-  // }
+  if (token) {
+    // @ts-ignore
+    redirect("/");
+  }
 
   // Check if we're in debug mode. If so, fill in the username and
   // password fields with some default values and log in automatically.
@@ -47,11 +47,14 @@ export const LoginPage: React.FC = () => {
 
   return (
     <main className="">
-      <div className="flex flex-col items-center justify-center h-screen max-w-[400px] mx-auto space-y-9">
+      <div
+        suppressHydrationWarning
+        className="flex flex-col items-center justify-center h-screen max-w-[400px] mx-auto space-y-9"
+      >
         <div className="instruction">
           wanna log in to <Comind />?
         </div>
-        <Input
+        {/* <Input
           label="Username"
           variant="bordered"
           labelPlacement="outside"
@@ -64,13 +67,13 @@ export const LoginPage: React.FC = () => {
           variant="bordered"
           value={password}
           onChange={handlePasswordChange}
-        />
+        /> */}
         <ButtonGroup>
           <Button onClick={handleLoginClick} variant="ghost">
-            Sign up
+            Login
           </Button>
           <Button onClick={handleLoginClick} variant="ghost">
-            Login
+            Sign up
           </Button>
         </ButtonGroup>
       </div>

@@ -15,5 +15,5 @@ export default function App() {
   }
 
   // If we are logged in, show the main page
-  // return <MainPage />;
+  return <MainPage />;
 }

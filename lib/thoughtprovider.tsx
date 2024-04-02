@@ -27,6 +27,7 @@ const ThoughtProvider: React.FC<ThoughtProviderProps> = ({ children }) => {
     useState<string>("disconnected");
 
   // Create a new WebSocket connection
+  // TODO #3 handle websocket connection failures
   const websocket = new WebSocket("ws://localhost:8081/ws");
 
   // Add a thought to the ThoughtProvider
