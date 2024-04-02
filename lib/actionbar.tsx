@@ -13,10 +13,14 @@ const ActionBar: React.FC<ActionBarProps> = ({ onThink }) => {
           javascript:; goes nowhere, mostly want link styling 
           https://stackoverflow.com/questions/1830927/how-do-i-make-a-link-that-goes-nowhere
           does not add to browser history
+        <Link href="javascript:;" onClick={onThink}>
+          think
+        </Link>
       */}
-      <Link href="javascript:;" onClick={onThink}>
+
+      <Button onClick={onThink} size="sm">
         think
-      </Link>
+      </Button>
     </div>
   );
 };

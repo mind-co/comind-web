@@ -42,13 +42,10 @@ const ThoughtDisplay: React.FC<ThoughtDisplayProps> = ({ thought }) => {
   };
 
   return (
-    <div className="thought">
-      <ComindUsername username={thought.username} />
+    <div className="thought p-2">
+      {/* <ComindUsername username={thought.username} /> should enable only on hover */}
 
-      <div
-        className="border-2 rounded-lg p-2  
-      border-gray-100 dark:border-gray-900"
-      >
+      <div className="">
         <Markdown remarkPlugins={[remarkGfm]}>{thought.body}</Markdown>
       </div>
     </div>

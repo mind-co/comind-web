@@ -20,18 +20,22 @@ const ThoughtContext = createContext<ThoughtContextValue>(
 
 const ThoughtProvider: React.FC<ThoughtProviderProps> = ({ children }) => {
   const { token } = useContext(AuthContext);
-  const [thoughts, setThoughts] = useState<Thought[]>([testThought]);
+  const [thoughts, setThoughts] = useState<Thought[]>([]);
   const [pings, setPings] = useState<Ping[]>([]);
   const [comindThoughts, setComindThoughts] = useState<Thought[]>([]);
+  const [connectionStatus, setConnectionStatus] =
+    useState<string>("disconnected");
+
+  // Create a new WebSocket connection
+  const websocket = new WebSocket("ws://localhost:8081/ws");
 
   // Add a thought to the ThoughtProvider
   const addThought = (thought: Thought) => {
+    websocket.send(JSON.stringify({ thought }));
     setThoughts((prevThoughts) => [...prevThoughts, thought]);
   };
 
   useEffect(() => {
-    const websocket = new WebSocket("ws://localhost:8081/ws");
-
     // On open methods to say hi to the server
     websocket.onopen = () => {
       if (token) {
@@ -56,6 +60,7 @@ const ThoughtProvider: React.FC<ThoughtProviderProps> = ({ children }) => {
     // On message methods to handle incoming messages
     websocket.onmessage = (event) => {
       const message = JSON.parse(event.data);
+      console.log("Received message:", message);
 
       console.log("Received message:", message);
 

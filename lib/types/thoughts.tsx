@@ -39,7 +39,7 @@ function coThought(body: string, title?: string): Thought {
     title: title || "",
     body,
     user_id: "ceaa2177-9c94-4b58-aa97-b01b7ad11374",
-    username: "{co}",
+    username: "co",
     date_created: new Date().toISOString(),
     date_updated: new Date().toISOString(),
     revision: 0,

@@ -54,7 +54,14 @@ const MainPage = () => {
       suppressHydrationWarning
     >
       <div className="" suppressHydrationWarning>
-        <span className="text-7xl">hey, welcome to comind</span>
+        <span className="instruction">
+          hey, welcome to{" "}
+          <span className="">
+            <span className="">co</span>
+            <span className="">mi</span>
+            <span className="">nd</span>.
+          </span>
+        </span>
         <div className="flex flex-row justify-end space-x-4 pb-4">
           <Link className="" href="/thoughts/">
             thoughts
@@ -68,20 +75,24 @@ const MainPage = () => {
         </div>
       </div>
 
-      <ThoughtDisplay thought={coThought("what are you thinking about?")} />
+      <div className="space-y-2">
+        {thoughts.map((thought) => (
+          <ThoughtDisplay key={thought.id} thought={thought} />
+        ))}
+      </div>
 
       <div
         className="
         w-full
       "
       >
-        <ComindUsername username="me" />
-
-        <Textarea
-          value={editorValue}
-          onValueChange={setEditorValue}
-          minRows={1}
-        />
+        <div className="py-2">
+          <Textarea
+            value={editorValue}
+            onValueChange={setEditorValue}
+            minRows={1}
+          />
+        </div>
 
         {/* <div
           className="
@@ -107,12 +118,6 @@ const MainPage = () => {
           /> */}
         {/* </div> */}
         <ActionBar onThink={onThink} />
-      </div>
-
-      <div className="space-y-2">
-        {thoughts.map((thought) => (
-          <ThoughtDisplay key={thought.id} thought={thought} />
-        ))}
       </div>
 
       {/* <ThoughtDisplay thought={thoughts[0]} /> */}

@@ -4,7 +4,7 @@
 
 :root {
   --foreground-rgb: 0, 0, 0;
-  --background-rgb: 255, 255, 255;
+  --background-rgb: 17, 17, 17;
   --surface-rgb: 255, 255, 255;
   --primary-rgb: 207, 94, 74;
   --secondary-rgb: 0, 137, 200;
@@ -15,14 +15,14 @@
 @media (prefers-color-scheme: dark) {
   :root {
     --foreground-rgb: 255, 255, 255;
-    --surface-rgb: 0, 0, 0;
-    --background-rgb: 0, 0, 0;
+    --surface-rgb: 36, 36, 36;
+    --background-rgb: 17, 17, 17;
   }
 }
 
 body {
   color: rgb(var(--foreground-rgb));
-  background: rgb(var(--background-rgb));
+  background: rgb(17, 17, 17);
 }
 
 @layer utilities {
@@ -75,4 +75,16 @@ w-md-editor-content
   justify-content: space-between;
   align-items: center;
   margin-top: 1rem;
+}
+
+.thought {
+  @apply transition-all border-1 border-transparent rounded-lg;
+}
+
+.thought:hover {
+  @apply border-1 border-solid border-gray-600 bg-[rgb(--surface-rgb)] shadow-md;
+}
+
+.instruction {
+  @apply text-5xl pt-24 font-bold;
 }

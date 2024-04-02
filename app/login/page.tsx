@@ -1,16 +1,24 @@
 "use client";
 import React, { useContext, useState } from "react";
-import { Button, Input } from "@nextui-org/react";
+import { Button, ButtonGroup, Input } from "@nextui-org/react";
 import { NextUIProvider } from "@nextui-org/react";
 import { AuthContext, AuthProvider } from "@/lib/authprovider";
 import { env } from "process";
+import { redirect } from "next/navigation";
+import Comind from "@/lib/comind";
 
 export const LoginPage: React.FC = () => {
   const { token, login } = useContext(AuthContext);
 
   const [username, setUsername] = useState("");
-  const [userId, setUserId] = useState("");
   const [password, setPassword] = useState("");
+
+  // If we're already logged in, then
+  // redirect to the home page.
+  // if (token) {
+  //   // @ts-ignore
+  //   redirect("/");
+  // }
 
   // Check if we're in debug mode. If so, fill in the username and
   // password fields with some default values and log in automatically.
@@ -38,15 +46,15 @@ export const LoginPage: React.FC = () => {
   };
 
   return (
-    <main className="text-foreground bg-background">
+    <main className="">
       <div className="flex flex-col items-center justify-center h-screen max-w-[400px] mx-auto space-y-9">
-        <div className="w-full">hey, welcome to comind</div>
+        <div className="instruction">
+          wanna log in to <Comind />?
+        </div>
         <Input
-          type="username"
           label="Username"
           variant="bordered"
           labelPlacement="outside"
-          value={username}
           onChange={handleUsernameChange}
         />
         <Input
@@ -57,10 +65,14 @@ export const LoginPage: React.FC = () => {
           value={password}
           onChange={handlePasswordChange}
         />
-        <Button onClick={handleLoginClick} variant="ghost">
-          Login
-        </Button>
-        {token && <p>Token: {token}</p>}
+        <ButtonGroup>
+          <Button onClick={handleLoginClick} variant="ghost">
+            Sign up
+          </Button>
+          <Button onClick={handleLoginClick} variant="ghost">
+            Login
+          </Button>
+        </ButtonGroup>
       </div>
     </main>
   );
