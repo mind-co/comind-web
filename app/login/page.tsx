@@ -7,7 +7,7 @@ import { env } from "process";
 import { redirect } from "next/navigation";
 import Comind from "@/lib/comind";
 
-export const LoginPage: React.FC = () => {
+const LoginPage: React.FC = () => {
   const { token, login } = useContext(AuthContext);
 
   const [username, setUsername] = useState("");

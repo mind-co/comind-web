@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { Thought, newThought, testThought } from "@/lib/types/thoughts";
 import { Ping } from "@/lib/types/ping";
 import { AuthContext } from "./authprovider";
@@ -28,7 +34,7 @@ const ThoughtProvider: React.FC<ThoughtProviderProps> = ({ children }) => {
 
   // Create a new WebSocket connection
   // TODO #3 handle websocket connection failures
-  const websocket = new WebSocket("ws://localhost:8081/ws");
+  const websocket = useMemo(() => new WebSocket("ws://localhost:8081/ws"), []);
 
   // Add a thought to the ThoughtProvider
   const addThought = (thought: Thought) => {
@@ -102,7 +108,7 @@ const ThoughtProvider: React.FC<ThoughtProviderProps> = ({ children }) => {
     // return () => {
     //   websocket.close();
     // };
-  }, [token]);
+  }, [token, websocket]);
 
   const value: ThoughtContextValue = {
     thoughts,

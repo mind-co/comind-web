@@ -51,7 +51,7 @@ const MainPage = () => {
   return (
     <div className="max-w-xl p-2 flex flex-col h-screen mx-auto">
       <div className="">
-        <span className="">
+        <span className="instruction">
           hey, welcome to{" "}
           <span className="">
             <span className="">co</span>
@@ -71,23 +71,25 @@ const MainPage = () => {
           </Link>
         </div>
       </div>
+
       <div className="space-y-2">
         {thoughts.map((thought) => (
           <ThoughtDisplay key={thought.id} thought={thought} />
         ))}
       </div>
+
       <div
         className="
         w-full
       "
       >
-        <div className="py-2">
+        {/* <div className="py-2 fixed bottom-0 max-w-xl w-full">
           <Textarea
             value={editorValue}
             onValueChange={setEditorValue}
             minRows={1}
           />
-        </div>
+        </div> */}
 
         {/* <div
           className="
@@ -114,7 +116,9 @@ const MainPage = () => {
         {/* </div> */}
         <ActionBar onThink={onThink} />
       </div>
+
       {/* <ThoughtDisplay thought={thoughts[0]} /> */}
+
       {/* <ThoughtDisplay thought={testThought} /> */}
     </div>
   );

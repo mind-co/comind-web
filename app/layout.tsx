@@ -37,7 +37,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={core_font.className + " dark"}>
+      <body className={core_font.className}>
         <Providers>{children}</Providers>
       </body>
     </html>

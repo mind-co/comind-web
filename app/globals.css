@@ -20,11 +20,6 @@
   }
 }
 
-body {
-  color: rgb(var(--foreground-rgb));
-  background: rgb(17, 17, 17);
-}
-
 @layer utilities {
   .text-balance {
     text-wrap: balance;
@@ -86,5 +81,5 @@ w-md-editor-content
 }
 
 .instruction {
-  /* @apply text-5xl pt-24 font-bold; */
+  @apply text-5xl pt-24 font-bold;
 }

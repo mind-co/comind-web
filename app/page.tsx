@@ -1,6 +1,5 @@
 "use client";
 import { useContext } from "react";
-import { LoginPage } from "./login/page";
 import { AuthContext } from "@/lib/authprovider";
 import MainPage from "./MainPage";
 import { redirect } from "next/navigation";

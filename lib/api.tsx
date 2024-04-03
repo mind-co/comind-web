@@ -23,3 +23,5 @@ async function sendThoughtToDatabase(
 }
 
 export { sendThoughtToDatabase };
+
+// Function to request melds from the server
