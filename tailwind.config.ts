@@ -11,7 +11,9 @@ const config: Config = {
   ],
   theme: {
     extend: {
-      colors: {},
+      colors: {
+        background: "rgb(var(--background-rgb))",
+      },
     },
   },
   darkMode: "class",

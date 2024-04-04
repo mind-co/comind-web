@@ -9,6 +9,7 @@ import { sendThoughtToDatabase } from "@/lib/api";
 import ThoughtDisplay from "@/lib/thought_display";
 import { newThought, coThought } from "@/lib/types/thoughts";
 import {
+  Button,
   Card,
   CardBody,
   CardHeader,
@@ -72,7 +73,7 @@ const MainPage = () => {
         </div>
       </div>
 
-      <div className="space-y-2">
+      <div className="">
         {thoughts.map((thought) => (
           <ThoughtDisplay key={thought.id} thought={thought} />
         ))}
@@ -83,13 +84,21 @@ const MainPage = () => {
         w-full
       "
       >
-        {/* <div className="py-2 fixed bottom-0 max-w-xl w-full">
+        <div className="py-2 fixed bottom-0 max-w-xl w-full">
           <Textarea
             value={editorValue}
             onValueChange={setEditorValue}
             minRows={1}
           />
-        </div> */}
+          <Button
+            onClick={onThink}
+            onPress={onThink}
+            size="sm"
+            className="absolute bottom-3 right-1"
+          >
+            think
+          </Button>
+        </div>
 
         {/* <div
           className="
@@ -114,7 +123,6 @@ const MainPage = () => {
             commands={[]}
           /> */}
         {/* </div> */}
-        <ActionBar onThink={onThink} />
       </div>
 
       {/* <ThoughtDisplay thought={thoughts[0]} /> */}

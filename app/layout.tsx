@@ -26,7 +26,7 @@ import Providers from "@/lib/providers";
 const core_font = Lexend_Deca({
   // const core_font = Outfit({
   // const core_font = Lato({
-  weight: ["400", "700", "900"],
+  weight: ["300", "400", "700", "900"],
   subsets: ["latin"],
 });
 
