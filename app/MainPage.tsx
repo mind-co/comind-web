@@ -50,14 +50,14 @@ const MainPage = () => {
   };
 
   return (
-    <div className="max-w-xl p-2 flex flex-col h-screen mx-auto">
+    <div className={"max-w-xl p-2 flex flex-col h-screen mx-auto "}>
       <div className="">
         <span className="instruction">
           hey, welcome to{" "}
           <span className="">
             <span className="">co</span>
             <span className="">mi</span>
-            <span className="">nd</span>.
+            <span className="">nd</span>
           </span>
         </span>
         <div className="flex flex-row justify-end space-x-4 pb-4">
@@ -100,11 +100,6 @@ const MainPage = () => {
           </Button>
         </div>
 
-        {/* <div
-          className="
-          w-full border-2 rounded-lg border-gray-300 dark:border-gray-700
-        "
-        > */}
         {/* <MDEditor
             preview="edit"
             defaultTabEnable={false}
@@ -122,7 +117,6 @@ const MainPage = () => {
             }}
             commands={[]}
           /> */}
-        {/* </div> */}
       </div>
 
       {/* <ThoughtDisplay thought={thoughts[0]} /> */}

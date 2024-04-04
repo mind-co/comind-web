@@ -34,6 +34,11 @@ const ThoughtDisplay: React.FC<ThoughtDisplayProps> = ({ thought }) => {
   const prettyTimestamp = convertToRelativeTimestamp(thought.date_created);
   const isUserThought = thought.user_id == userId;
 
+  // On press function
+  const onPress = () => {
+    console.log("pressed");
+  };
+
   // Action row toggles
 
   // Handle the more button click
@@ -43,7 +48,7 @@ const ThoughtDisplay: React.FC<ThoughtDisplayProps> = ({ thought }) => {
 
   return (
     <>
-      <Card className="thought">
+      <Card className="thought" onPress={onPress} onClick={onPress}>
         {/* <ComindUsername username={thought.username} /> should enable only on hover */}
 
         <div className="">
