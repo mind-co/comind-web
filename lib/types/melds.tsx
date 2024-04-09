@@ -36,7 +36,6 @@ function meldToJson(meld: Meld): any {
     color: meld.color,
   };
 }
-v;
 
 // Test meld
 const testMeld: Meld = {

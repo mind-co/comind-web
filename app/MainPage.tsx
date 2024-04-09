@@ -1,20 +1,14 @@
 "use client";
 import React, { use, useContext, useState } from "react";
 import Link from "next/link";
-import MDEditor from "@uiw/react-md-editor";
 import rehypeSanitize from "rehype-sanitize";
 import ActionBar from "@/lib/actionbar";
 import { AuthContext } from "@/lib/authprovider";
 import { sendThoughtToDatabase } from "@/lib/api";
 import ThoughtDisplay from "@/lib/thought_display";
-import { newThought, coThought } from "@/lib/types/thoughts";
+import { Thought } from "@/lib/types/thoughts";
 import {
   Button,
-  Card,
-  CardBody,
-  CardHeader,
-  Divider,
-  Input,
   Textarea,
 } from "@nextui-org/react";
 import ComindUsername from "@/lib/comindusername";
@@ -36,13 +30,13 @@ const MainPage = () => {
       }
 
       // Add the thought to the provider
-      let thought = newThought(trimmedEditorValue, auth);
+      let thought = Thought.newThought(trimmedEditorValue, auth);
       addThought(thought);
 
       await sendThoughtToDatabase(auth.token ?? "", trimmedEditorValue);
       console.log("Thought sent to the database");
 
-      // Clear the editor value
+      // Clear the editor value 
       setEditorValue("");
     } catch (error) {
       console.error("Error sending thought to the database:", error);
@@ -50,7 +44,7 @@ const MainPage = () => {
   };
 
   return (
-    <div className={"max-w-xl p-2 flex flex-col h-screen mx-auto "}>
+    <div className={"comind-center-column"}>
       <div className="">
         <span className="instruction">
           hey, welcome to{" "}

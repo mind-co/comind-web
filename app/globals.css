@@ -88,3 +88,10 @@ body {
 .instruction {
   @apply text-5xl pt-24;
 }
+
+/*
+Comind classes
+*/
+.comind-center-column {
+  @apply max-w-xl p-2 flex flex-col h-screen mx-auto;
+}

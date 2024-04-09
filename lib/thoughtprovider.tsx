@@ -5,7 +5,7 @@ import React, {
   useMemo,
   useState,
 } from "react";
-import { Thought, newThought, testThought } from "@/lib/types/thoughts";
+import { Thought } from "@/lib/types/thoughts";
 import { Ping } from "@/lib/types/ping";
 import { AuthContext } from "./authprovider";
 
@@ -33,6 +33,7 @@ const ThoughtProvider: React.FC<ThoughtProviderProps> = ({ children }) => {
     useState<string>("disconnected");
 
   // Create a new WebSocket connection
+  // TODO #4 more sensibile websocket connection handling
   // TODO #3 handle websocket connection failures
   const websocket = useMemo(() => new WebSocket("ws://localhost:8081/ws"), []);
 
@@ -67,10 +68,6 @@ const ThoughtProvider: React.FC<ThoughtProviderProps> = ({ children }) => {
     // On message methods to handle incoming messages
     websocket.onmessage = (event) => {
       const message = JSON.parse(event.data);
-      console.log("Received message:", message);
-
-      console.log("Received message:", message);
-
       if (message.thoughts) {
         setThoughts((prevThoughts) => {
           const newThoughts = message.thoughts.filter((thought: Thought) => {

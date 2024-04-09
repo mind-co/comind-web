@@ -10,9 +10,9 @@ export default function App() {
   const { username, isLoading } = useContext(AuthContext);
 
   // Wait on loading
-  if (isLoading) {
-    return <Loading />;
-  }
+  // if (isLoading) {
+  //   return <Loading />;
+  // }
 
   // If we aren't logged in, redirect to the login page
   if (!username) {

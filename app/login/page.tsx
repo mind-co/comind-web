@@ -6,6 +6,7 @@ import { AuthContext, AuthProvider } from "@/lib/authprovider";
 import { env } from "process";
 import { redirect } from "next/navigation";
 import Comind from "@/lib/comind";
+import { TextField } from "@mui/material";
 
 const LoginPage: React.FC = () => {
   const { token, login } = useContext(AuthContext);
@@ -54,7 +55,7 @@ const LoginPage: React.FC = () => {
         <div className="instruction">
           wanna log in to <Comind />?
         </div>
-        {/* <Input
+        <Input
           label="Username"
           variant="bordered"
           labelPlacement="outside"
@@ -67,7 +68,7 @@ const LoginPage: React.FC = () => {
           variant="bordered"
           value={password}
           onChange={handlePasswordChange}
-        /> */}
+        />
         <ButtonGroup>
           <Button onClick={handleLoginClick} variant="ghost">
             Login
