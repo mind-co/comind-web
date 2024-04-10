@@ -545,7 +545,7 @@ async function getUserThoughts(context: any): Promise<Thought[]> {
     return data;
   } catch (error) {
     console.error("Error fetching user thoughts. Detailed error:", error);
-    throw new Error(`An error occurred while fetching user thoughts: ${error.message}`);
+    throw new Error(`An error occurred while fetching user thoughts: ${error}`);
   }
 }
 export { getUserThoughts };

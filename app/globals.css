@@ -4,8 +4,8 @@
 
 :root {
   --foreground-rgb: 0, 0, 0;
-  --background-rgb: 17, 17, 17;
-  --surface-rgb: 255, 255, 255;
+  --background-rgb: 255,255,255;
+  --surface-rgb: 200, 200, 200;
   --primary-rgb: 207, 94, 74;
   --secondary-rgb: 0, 137, 200;
   --tertiary-rgb: 0, 152, 119;
@@ -26,15 +26,23 @@
   }
 }
 
+@layer base {
+  html,body {
+      @apply bg-background font-thin ;
+  }
+}
+
 /* Links */
 a {
   color: rgb(var(--foreground-rgb));
   text-decoration: underline;
-  transition: color 0.2s;
+  text-decoration-thickness: 2px;
+  text-decoration-color: rgba(var(--foreground-rgb), 0.8);
+  text-underline-offset: 3px;
 }
 
 a:hover {
-  color: rgb(var(--primary-rgb));
+  text-decoration-color: rgb(var(--primary-rgb));
 }
 
 /* Change the white to any color */
@@ -49,10 +57,6 @@ input:-webkit-autofill:active {
 wmde-markdown-var
 w-md-editor-content
 */
-
-body {
-  @apply bg-background font-thin text-base;
-}
 
 .w-md-editor-content {
   background: transparent;
@@ -78,7 +82,7 @@ body {
 
 .thought {
   @apply transition-all border-1 border-transparent rounded-lg 
-    p-1 shadow-none bg-transparent;
+    p-1 shadow-none w-full;
 }
 
 .thought:hover {
@@ -86,12 +90,34 @@ body {
 }
 
 .instruction {
-  @apply text-5xl pt-24;
+  @apply text-5xl;
 }
 
 /*
 Comind classes
 */
 .comind-center-column {
-  @apply max-w-xl p-2 flex flex-col h-screen mx-auto;
+  @apply max-w-xl p-2 flex flex-col mx-auto min-h-screen;
+}
+
+.comind-logo {
+  @apply underline;
+}
+
+.comind-logo-co,
+.comind-logo-mi,
+.comind-logo-nd {
+  @apply font-bold;
+}
+
+.comind-logo-co {
+  @apply decoration-slate-300;
+}
+
+.comind-logo-mi {
+  @apply decoration-slate-300;
+}
+
+.comind-logo-nd {
+  @apply decoration-slate-300;
 }

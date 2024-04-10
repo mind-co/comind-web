@@ -13,6 +13,7 @@ import {
 } from "@nextui-org/react";
 import ComindUsername from "@/lib/comindusername";
 import { ThoughtContext } from "@/lib/thoughtprovider";
+import Nav from "./nav";
 
 const MainPage = () => {
   const auth = useContext(AuthContext);
@@ -46,25 +47,15 @@ const MainPage = () => {
   return (
     <div className={"comind-center-column"}>
       <div className="">
+        <Nav />
         <span className="instruction">
           hey, welcome to{" "}
-          <span className="">
-            <span className="">co</span>
-            <span className="">mi</span>
-            <span className="">nd</span>
+          <span>
+            <span>co</span>
+            <span>mi</span>
+            <span>nd</span>
           </span>
         </span>
-        <div className="flex flex-row justify-end space-x-4 pb-4">
-          <Link className="" href="/thoughts/">
-            thoughts
-          </Link>
-          <Link className="" href="/melds/">
-            melds
-          </Link>
-          <Link className="" href="/settings/">
-            settings
-          </Link>
-        </div>
       </div>
 
       <div className="">

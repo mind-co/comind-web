@@ -4,6 +4,7 @@ import React, {
   useEffect,
   useMemo,
   useState,
+  useRef,
 } from "react";
 import { Thought } from "@/lib/types/thoughts";
 import { Ping } from "@/lib/types/ping";
@@ -29,83 +30,79 @@ const ThoughtProvider: React.FC<ThoughtProviderProps> = ({ children }) => {
   const [thoughts, setThoughts] = useState<Thought[]>([]);
   const [pings, setPings] = useState<Ping[]>([]);
   const [comindThoughts, setComindThoughts] = useState<Thought[]>([]);
-  const [connectionStatus, setConnectionStatus] =
-    useState<string>("disconnected");
+  const websocketRef = useRef<WebSocket | null>(null);
 
-  // Create a new WebSocket connection
-  // TODO #4 more sensibile websocket connection handling
-  // TODO #3 handle websocket connection failures
-  const websocket = useMemo(() => new WebSocket("ws://localhost:8081/ws"), []);
+  // Initialize WebSocket connection only if token is available
+  useEffect(() => {
+    if (token && !websocketRef.current) {
+      websocketRef.current = new WebSocket("ws://localhost:8081/ws");
+
+      websocketRef.current.onopen = () => {
+        console.log("WebSocket connection established");
+        if (token) {
+          websocketRef.current?.send(JSON.stringify({ token }));
+        }
+      };
+
+      websocketRef.current.onclose = () => {
+        console.log("WebSocket connection closed");
+      };
+
+      websocketRef.current.onerror = (error) => {
+        console.error("WebSocket error:", error);
+      };
+
+      websocketRef.current.onmessage = (event) => {
+        const message = JSON.parse(event.data);
+        if (message.thoughts) {
+          setThoughts((prevThoughts) => {
+            const newThoughts = message.thoughts.filter((thought: Thought) => {
+              return !prevThoughts.some(
+                (prevThought) => prevThought.id === thought.id
+              );
+            });
+            return [...prevThoughts, ...newThoughts];
+          });
+        }
+
+        if (message.pings) {
+          setPings((prevPings) => {
+            const newPings = message.pings.filter((ping: Ping) => {
+              return !prevPings.some((prevPing) => prevPing.id === ping.id);
+            });
+            return [...prevPings, ...newPings];
+          });
+        }
+
+        if (message["comind-thoughts"]) {
+          setComindThoughts((prevComindThoughts) => {
+            const newComindThoughts = message["comind-thoughts"].filter(
+              (thought: Thought) => {
+                return !prevComindThoughts.some(
+                  (prevThought) => prevThought.id === thought.id
+                );
+              }
+            );
+            return [...prevComindThoughts, ...newComindThoughts];
+          });
+        }
+      };
+
+      return () => {
+        websocketRef.current?.close();
+      };
+    }
+  }, [token]);
 
   // Add a thought to the ThoughtProvider
   const addThought = (thought: Thought) => {
-    websocket.send(JSON.stringify({ thought }));
+    if (websocketRef.current?.readyState === WebSocket.OPEN) {
+      websocketRef.current.send(JSON.stringify({ thought }));
+    } else {
+      console.log("WebSocket is not open. Thought not sent.");
+    }
     setThoughts((prevThoughts) => [...prevThoughts, thought]);
   };
-
-  useEffect(() => {
-    // On open methods to say hi to the server
-    websocket.onopen = () => {
-      if (token) {
-        // Send the authentication message with the JWT token
-        websocket.send(JSON.stringify({ token }));
-      } else {
-        console.log("No token available for authentication");
-        websocket.close();
-      }
-    };
-
-    // On close methods to handle the connection closing
-    websocket.onclose = () => {
-      console.log("Connection closed");
-    };
-
-    // On error methods to handle errors
-    websocket.onerror = (error) => {
-      console.error("WebSocket error:", error);
-    };
-
-    // On message methods to handle incoming messages
-    websocket.onmessage = (event) => {
-      const message = JSON.parse(event.data);
-      if (message.thoughts) {
-        setThoughts((prevThoughts) => {
-          const newThoughts = message.thoughts.filter((thought: Thought) => {
-            return !prevThoughts.some(
-              (prevThought) => prevThought.id === thought.id
-            );
-          });
-          return [...prevThoughts, ...newThoughts];
-        });
-      }
-
-      if (message.pings) {
-        setPings((prevPings) => {
-          const newPings = message.pings.filter((ping: Ping) => {
-            return !prevPings.some((prevPing) => prevPing.id === ping.id);
-          });
-          return [...prevPings, ...newPings];
-        });
-      }
-
-      if (message["comind-thoughts"]) {
-        setComindThoughts((prevComindThoughts) => {
-          const newComindThoughts = message["comind-thoughts"].filter(
-            (thought: Thought) => {
-              return !prevComindThoughts.some(
-                (prevThought) => prevThought.id === thought.id
-              );
-            }
-          );
-          return [...prevComindThoughts, ...newComindThoughts];
-        });
-      }
-    };
-
-    // return () => {
-    //   websocket.close();
-    // };
-  }, [token, websocket]);
 
   const value: ThoughtContextValue = {
     thoughts,
@@ -120,3 +117,4 @@ const ThoughtProvider: React.FC<ThoughtProviderProps> = ({ children }) => {
 };
 
 export { ThoughtProvider, ThoughtContext };
+

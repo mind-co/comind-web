@@ -13,6 +13,7 @@ const config: Config = {
     extend: {
       colors: {
         background: "rgb(var(--background-rgb))",
+        surface: "rgb(var(--surface-rgb))",
       },
     },
   },

@@ -13,62 +13,190 @@ import {
   Divider,
   Kbd,
   Skeleton,
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalContent,
+  ModalFooter,
+  useDisclosure,
+  Input,
+  Textarea,
 } from "@nextui-org/react";
 import { convertToRelativeTimestamp } from "./utils";
 import { AuthContext } from "./authprovider";
 import ComindUsername from "./comindusername";
+import { saveQuickThought } from "@/lib/api";
+import ActionBar from "./actionbar";
 
 type ThoughtDisplayProps = {
   thought: Thought;
 };
 
 const ThoughtDisplay: React.FC<ThoughtDisplayProps> = ({ thought }) => {
+  // Modal stuff
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [size, setSize] = React.useState("md");
+  const auth = useContext(AuthContext);
+
   // Load context
   const { userId } = useContext(AuthContext);
 
   // State variables
-  const [actionBarIsExpanded, setActionBarExpanded] = useState(true);
-  const [isLoaded, setIsLoaded] = useState(false);
+  const [contextMenuVisible, setContextMenuVisible] = useState(false);
+  const [hovered, setHovered] = useState(true);
+  const [editorValue, setEditorValue] = useState("");
 
   // Date created converted to a pretty date time
   const prettyTimestamp = convertToRelativeTimestamp(thought.date_created);
   const isUserThought = thought.user_id == userId;
 
-  // On press function
-  const onPress = () => {
-    console.log("pressed");
+  // Toggle context menu
+  const openContextMenu = () => {
+    setContextMenuVisible(!contextMenuVisible);
   };
 
-  // Action row toggles
-
-  // Handle the more button click
-  const handleMore = () => {
-    setActionBarExpanded(!actionBarIsExpanded);
+  const openModal = () => {
+    onOpen();
   };
 
+  const onMouseEnter = () => {
+    setHovered(true);
+  };
+
+  const onMouseLeave = () => {
+    setHovered(false);
+  };
+
+  /**
+   * Asynchronously saves a new thought based on the current editor value.
+   *
+   * This function first checks if the editorValue state variable, which represents
+   * the content of the thought to be saved, is not empty. If it is empty, an error
+   * message is logged, and the function returns early without attempting to save the thought.
+   *
+   * If the editorValue is not empty, the function attempts to save the thought by calling
+   * the saveQuickThought function imported from "@/lib/api". This API call requires several
+   * parameters:
+   * - context: An object containing the authProvider with the user's token. This is used for
+   *   authentication purposes.
+   * - body: The content of the thought to be saved, represented by editorValue.
+   * - isPublic: A boolean flag indicating whether the thought should be public. It is set to true.
+   * - parentThoughtId: The ID of the parent thought, if any. In this case, it uses the ID of the
+   *   thought being displayed.
+   *
+   * If the saveQuickThought function successfully saves the thought, a success message is logged
+   * to the console along with the newly saved thought object. If the function throws an error,
+   * an error message is logged to the console.
+   */
+  const think = async () => {
+    // Check if the editor value is empty
+    if (editorValue.trim().length === 0) {
+      console.error("Editor value is empty.");
+      return;
+    }
+
+    try {
+      // Attempt to save the new thought
+      const newThought = await saveQuickThought(
+        auth,
+        editorValue,
+        true,
+        thought.id
+      );
+      // Log success message
+      console.log("Thought saved successfully:", newThought);
+    } catch (error) {
+      // Log error message if saving fails
+      console.error("Failed to save thought:", error);
+    }
+  };
   return (
     <>
-      <Card className="thought" onPress={onPress} onClick={onPress}>
-        {/* <ComindUsername username={thought.username} /> should enable only on hover */}
-
-        <div className="">
-          <Markdown remarkPlugins={[remarkGfm]}>{thought.body}</Markdown>
+      {contextMenuVisible ? (
+        <div className="w-full px-4 flex flex-row space-x-2">
+          <ComindUsername username={thought.username} />
+          <div className="text-xs">{prettyTimestamp}</div>
         </div>
+      ) : (
+        <></>
+      )}
+      <Card
+        className={`thought ${
+          contextMenuVisible ? "!bg-purple-500" : "bg-transparent"
+        }
+
+
+        `}
+        onMouseLeave={onMouseLeave}
+        onMouseEnter={onMouseEnter}
+        onPress={openContextMenu}
+        isPressable={true}
+      >
+        <CardBody>
+          <Markdown remarkPlugins={[remarkGfm]}>{thought.body}</Markdown>
+        </CardBody>
       </Card>
+
+      {contextMenuVisible ? (
+        <>
+          <div className="py-4 w-full">
+            <Textarea
+              className="w-full"
+              autoFocus={true}
+              variant="bordered"
+              value={editorValue}
+              onValueChange={setEditorValue}
+              minRows={1}
+            />
+          </div>
+          <div className="flex flex-row justify-end w-full">
+            <ButtonGroup>
+              <Button
+                onClick={openModal}
+                variant="ghost"
+                className=" font-mono"
+              >
+                examine
+              </Button>
+              <Button onClick={think} variant="ghost" className="font-mono">
+                think
+              </Button>
+            </ButtonGroup>
+          </div>
+
+          <Modal isOpen={isOpen} onClose={onClose} size="xl">
+            <ModalContent>
+              {(onClose) => (
+                <>
+                  <ModalHeader className="flex flex-col gap-1">
+                    {thought.title + " "}
+                    <ComindUsername username={thought.username} />
+                  </ModalHeader>
+                  <ModalBody>
+                    <CardBody>
+                      <Markdown remarkPlugins={[remarkGfm]}>
+                        {thought.body}
+                      </Markdown>
+                    </CardBody>
+                  </ModalBody>
+                  <ModalFooter>
+                    <Button color="danger" variant="light" onPress={onClose}>
+                      Close
+                    </Button>
+                    <Button color="primary" onPress={onClose}>
+                      Action
+                    </Button>
+                  </ModalFooter>
+                </>
+              )}
+            </ModalContent>
+          </Modal>
+        </>
+      ) : (
+        <></>
+      )}
     </>
   );
-
-  // return (
-  //   <>
-  //     <div className="thought p-1">
-  //       {/* <ComindUsername username={thought.username} /> should enable only on hover */}
-
-  //       <div className="">
-  //         <Markdown remarkPlugins={[remarkGfm]}>{thought.body}</Markdown>
-  //       </div>
-  //     </div>
-  //   </>
-  // );
 };
 
 export default ThoughtDisplay;
