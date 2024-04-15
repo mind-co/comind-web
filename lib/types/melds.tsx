@@ -1,4 +1,4 @@
-interface Meld {
+class Meld {
   title: string;
   description: string;
   user_id: string;
@@ -7,38 +7,38 @@ interface Meld {
   date_created: string;
   date_updated: string;
   color: string;
-}
 
-// Convert json message to Meld
-function jsonToMeld(json: any): Meld {
-  return {
-    title: json.title,
-    description: json.description,
-    user_id: json.user_id,
-    group_id: json.group_id,
-    meld_id: json.meld_id,
-    date_created: json.date_created,
-    date_updated: json.date_updated,
-    color: json.color,
-  };
-}
+  constructor(json: any) {
+    this.title = json.title;
+    this.description = json.description;
+    this.user_id = json.user_id;
+    this.group_id = json.group_id;
+    this.meld_id = json.meld_id;
+    this.date_created = json.date_created;
+    this.date_updated = json.date_updated;
+    this.color = json.color;
+  }
 
-// Meld to json
-function meldToJson(meld: Meld): any {
-  return {
-    title: meld.title,
-    description: meld.description,
-    user_id: meld.user_id,
-    group_id: meld.group_id,
-    meld_id: meld.meld_id,
-    date_created: meld.date_created,
-    date_updated: meld.date_updated,
-    color: meld.color,
-  };
+  static jsonToMeld(json: any): Meld {
+    return new Meld(json);
+  }
+
+  meldToJson(): any {
+    return {
+      title: this.title,
+      description: this.description,
+      user_id: this.user_id,
+      group_id: this.group_id,
+      meld_id: this.meld_id,
+      date_created: this.date_created,
+      date_updated: this.date_updated,
+      color: this.color,
+    };
+  }
 }
 
 // Test meld
-const testMeld: Meld = {
+const testMeldJson = {
   title: "Test Meld",
   description: "This is a test meld.",
   user_id: "1",
@@ -48,3 +48,7 @@ const testMeld: Meld = {
   date_updated: "2021-10-06T00:00:00Z",
   color: "#000000",
 };
+
+const testMeld = Meld.jsonToMeld(testMeldJson);
+
+export { Meld, testMeld };

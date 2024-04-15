@@ -8,25 +8,18 @@ import {
   ButtonGroup,
   Card,
   CardBody,
-  CardFooter,
-  CardHeader,
-  Divider,
-  Kbd,
-  Skeleton,
   Modal,
   ModalHeader,
   ModalBody,
   ModalContent,
   ModalFooter,
   useDisclosure,
-  Input,
   Textarea,
 } from "@nextui-org/react";
-import { convertToRelativeTimestamp } from "./utils";
-import { AuthContext } from "./authprovider";
-import ComindUsername from "./comindusername";
+import { convertToRelativeTimestamp } from "@/lib/utils";
+import { AuthContext } from "@/lib/authprovider";
+import ComindUsername from "@/lib/comindusername";
 import { saveQuickThought } from "@/lib/api";
-import ActionBar from "./actionbar";
 
 type ThoughtDisplayProps = {
   thought: Thought;
@@ -35,20 +28,19 @@ type ThoughtDisplayProps = {
 const ThoughtDisplay: React.FC<ThoughtDisplayProps> = ({ thought }) => {
   // Modal stuff
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [size, setSize] = React.useState("md");
   const auth = useContext(AuthContext);
 
   // Load context
-  const { userId } = useContext(AuthContext);
+  // const { userId } = useContext(AuthContext);
 
   // State variables
   const [contextMenuVisible, setContextMenuVisible] = useState(false);
-  const [hovered, setHovered] = useState(true);
+  // const [hovered, setHovered] = useState(true);
   const [editorValue, setEditorValue] = useState("");
 
   // Date created converted to a pretty date time
   const prettyTimestamp = convertToRelativeTimestamp(thought.date_created);
-  const isUserThought = thought.user_id == userId;
+  // const isUserThought = thought.user_id == userId;
 
   // Toggle context menu
   const openContextMenu = () => {
@@ -59,13 +51,13 @@ const ThoughtDisplay: React.FC<ThoughtDisplayProps> = ({ thought }) => {
     onOpen();
   };
 
-  const onMouseEnter = () => {
-    setHovered(true);
-  };
+  // const onMouseEnter = () => {
+  //   setHovered(true);
+  // };
 
-  const onMouseLeave = () => {
-    setHovered(false);
-  };
+  // const onMouseLeave = () => {
+  //   setHovered(false);
+  // };
 
   /**
    * Asynchronously saves a new thought based on the current editor value.
@@ -127,8 +119,8 @@ const ThoughtDisplay: React.FC<ThoughtDisplayProps> = ({ thought }) => {
 
 
         `}
-        onMouseLeave={onMouseLeave}
-        onMouseEnter={onMouseEnter}
+        // onMouseLeave={onMouseLeave}
+        // onMouseEnter={onMouseEnter}
         onPress={openContextMenu}
         isPressable={true}
       >
@@ -143,7 +135,7 @@ const ThoughtDisplay: React.FC<ThoughtDisplayProps> = ({ thought }) => {
             <Textarea
               className="w-full"
               autoFocus={true}
-              variant="bordered"
+              variant="flat"
               value={editorValue}
               onValueChange={setEditorValue}
               minRows={1}
@@ -199,4 +191,23 @@ const ThoughtDisplay: React.FC<ThoughtDisplayProps> = ({ thought }) => {
   );
 };
 
-export default ThoughtDisplay;
+interface ThoughtListProps {
+  thoughts: Thought[];
+}
+
+const ThoughtList: React.FC<ThoughtListProps> = ({ thoughts }) => {
+  if (thoughts.length === 0) {
+    return <div>but we don't have any yet</div>;
+  }
+
+  return (
+    <div className="thought-list">
+      {thoughts.map((thought, index) => (
+        <ThoughtDisplay key={index} thought={thought} />
+      ))}
+    </div>
+  );
+};
+
+export default ThoughtList;
+export { ThoughtDisplay };

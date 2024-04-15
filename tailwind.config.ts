@@ -14,6 +14,10 @@ const config: Config = {
       colors: {
         background: "rgb(var(--background-rgb))",
         surface: "rgb(var(--surface-rgb))",
+        primary: "rgb(var(--primary-rgb))",
+        secondary: "rgb(var(--secondary-rgb))",
+        tertiary: "rgb(var(--tertiary-rgb))",
+        text: "rgb(var(--text-rgb))",
       },
     },
   },

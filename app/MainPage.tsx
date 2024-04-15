@@ -1,19 +1,12 @@
 "use client";
-import React, { use, useContext, useState } from "react";
-import Link from "next/link";
-import rehypeSanitize from "rehype-sanitize";
-import ActionBar from "@/lib/actionbar";
+import React, { useContext, useState } from "react";
 import { AuthContext } from "@/lib/authprovider";
 import { sendThoughtToDatabase } from "@/lib/api";
-import ThoughtDisplay from "@/lib/thought_display";
 import { Thought } from "@/lib/types/thoughts";
-import {
-  Button,
-  Textarea,
-} from "@nextui-org/react";
-import ComindUsername from "@/lib/comindusername";
+import { Button, Textarea } from "@nextui-org/react";
 import { ThoughtContext } from "@/lib/thoughtprovider";
 import Nav from "./nav";
+import ThoughtList from "@/lib/display/thought_display";
 
 const MainPage = () => {
   const auth = useContext(AuthContext);
@@ -37,7 +30,7 @@ const MainPage = () => {
       await sendThoughtToDatabase(auth.token ?? "", trimmedEditorValue);
       console.log("Thought sent to the database");
 
-      // Clear the editor value 
+      // Clear the editor value
       setEditorValue("");
     } catch (error) {
       console.error("Error sending thought to the database:", error);
@@ -59,9 +52,7 @@ const MainPage = () => {
       </div>
 
       <div className="">
-        {thoughts.map((thought) => (
-          <ThoughtDisplay key={thought.id} thought={thought} />
-        ))}
+        <ThoughtList thoughts={thoughts} />
       </div>
 
       <div

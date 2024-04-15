@@ -4,7 +4,7 @@
 
 :root {
   --foreground-rgb: 0, 0, 0;
-  --background-rgb: 255,255,255;
+  --background-rgb: 255, 255, 255;
   --surface-rgb: 200, 200, 200;
   --primary-rgb: 207, 94, 74;
   --secondary-rgb: 0, 137, 200;
@@ -27,8 +27,9 @@
 }
 
 @layer base {
-  html,body {
-      @apply bg-background font-thin ;
+  html,
+  body {
+    @apply bg-background font-thin;
   }
 }
 
@@ -81,16 +82,16 @@ w-md-editor-content
 }
 
 .thought {
-  @apply transition-all border-1 border-transparent rounded-lg 
-    p-1 shadow-none w-full;
+  @apply transition-all border-1 border-secondary rounded-lg 
+    p-1 shadow-none w-full my-2;
 }
 
 .thought:hover {
-  @apply border-1 border-solid border-gray-600 bg-[rgb(--surface-rgb)] shadow-md;
+  @apply border-1 border-solid border-gray-600 bg-[rgb(--surface-rgb)] shadow-lg;
 }
 
 .instruction {
-  @apply text-5xl;
+  @apply text-5xl py-2;
 }
 
 /*
@@ -111,13 +112,13 @@ Comind classes
 }
 
 .comind-logo-co {
-  @apply decoration-slate-300;
+  @apply !decoration-primary;
 }
 
 .comind-logo-mi {
-  @apply decoration-slate-300;
+  @apply !decoration-secondary;
 }
 
 .comind-logo-nd {
-  @apply decoration-slate-300;
+  @apply !decoration-tertiary;
 }
