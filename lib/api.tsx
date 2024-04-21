@@ -8,7 +8,7 @@ async function sendThoughtToDatabase(
     body,
   };
   try {
-    await fetch("https://nimbus.pfiffer.org/api/thoughts", {
+    const req = await fetch("https://nimbus.pfiffer.org/api/thoughts", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -17,6 +17,10 @@ async function sendThoughtToDatabase(
       body: JSON.stringify(requestBody),
     });
     console.log("Thought sent successfully!");
+
+    // Unpack the response
+    const response = await req.json();
+    console.log("Response:", response);
   } catch (error) {
     console.error("Failed to send thought:", error);
   }

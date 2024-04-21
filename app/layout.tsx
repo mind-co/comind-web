@@ -15,6 +15,7 @@ import {
   Roboto_Mono,
 } from "next/font/google";
 import "./globals.css";
+import "./tiptap.css";
 import "./markdown.css";
 import Providers from "@/lib/providers";
 

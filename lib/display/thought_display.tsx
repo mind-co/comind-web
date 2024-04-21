@@ -112,7 +112,7 @@ const ThoughtDisplay: React.FC<ThoughtDisplayProps> = ({ thought }) => {
       ) : (
         <></>
       )}
-      <Card
+      <div
         className={`thought ${
           contextMenuVisible ? "!bg-purple-500" : "bg-transparent"
         }
@@ -121,13 +121,11 @@ const ThoughtDisplay: React.FC<ThoughtDisplayProps> = ({ thought }) => {
         `}
         // onMouseLeave={onMouseLeave}
         // onMouseEnter={onMouseEnter}
-        onPress={openContextMenu}
-        isPressable={true}
+        onClick={openContextMenu}
+        // isPressable={true}
       >
-        <CardBody>
-          <Markdown remarkPlugins={[remarkGfm]}>{thought.body}</Markdown>
-        </CardBody>
-      </Card>
+        <Markdown remarkPlugins={[remarkGfm]}>{thought.body}</Markdown>
+      </div>
 
       {contextMenuVisible ? (
         <>
@@ -197,7 +195,8 @@ interface ThoughtListProps {
 
 const ThoughtList: React.FC<ThoughtListProps> = ({ thoughts }) => {
   if (thoughts.length === 0) {
-    return <div>but we don't have any yet</div>;
+    return <></>;
+    // return <div className="w-full text-center">. . .</div>;
   }
 
   return (

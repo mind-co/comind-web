@@ -35,11 +35,12 @@ const ThoughtProvider: React.FC<ThoughtProviderProps> = ({ children }) => {
   // Initialize WebSocket connection only if token is available
   useEffect(() => {
     if (token && !websocketRef.current) {
-      websocketRef.current = new WebSocket("ws://localhost:8081/ws");
+      websocketRef.current = new WebSocket("ws://localhost:2333/");
 
       websocketRef.current.onopen = () => {
         console.log("WebSocket connection established");
         if (token) {
+          console.log("Sending token to server");
           websocketRef.current?.send(JSON.stringify({ token }));
         }
       };
@@ -54,6 +55,11 @@ const ThoughtProvider: React.FC<ThoughtProviderProps> = ({ children }) => {
 
       websocketRef.current.onmessage = (event) => {
         const message = JSON.parse(event.data);
+        console.log("Received message:", message);
+        if (message.auth) {
+          console.log("Received auth message:", message.message);
+        }
+
         if (message.thoughts) {
           setThoughts((prevThoughts) => {
             const newThoughts = message.thoughts.filter((thought: Thought) => {
@@ -117,4 +123,3 @@ const ThoughtProvider: React.FC<ThoughtProviderProps> = ({ children }) => {
 };
 
 export { ThoughtProvider, ThoughtContext };
-
