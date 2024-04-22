@@ -19,13 +19,13 @@ import htmlToMarkdown from "@wcj/html-to-markdown";
 
 const MainPage = () => {
   const auth = useContext(AuthContext);
-  const { addThought, thoughts } = useContext(ThoughtContext);
+  const { addThoughtToProvider, thoughts } = useContext(ThoughtContext);
   const [editorValue, setEditorValue] = useState("");
   const { editor } = useCurrentEditor();
 
   // On think method, we should send the current thought to the server.
   const onThink = async () => {
-    console.log(editorValue);
+    console.log("Sending thought:", editorValue);
     try {
       // Call the API function to send the thought to the database, only if
       // the editor value is not empty.
@@ -34,16 +34,17 @@ const MainPage = () => {
         return;
       }
 
-      // Add the thought to the provider
+      // Add the thought to the provider. This relays to the websocket server,
+      // which will also handle uploading to the database.
       let thought = Thought.newThought(trimmedEditorValue, auth);
-      addThought(thought);
+      addThoughtToProvider(thought);
 
-      await sendThoughtToDatabase(auth.token ?? "", trimmedEditorValue);
-      console.log("Thought sent to the database");
+      // await sendThoughtToDatabase(auth.token ?? "", trimmedEditorValue);
+      // console.log("Thought sent to the database");
 
-      // Clear the editor value
-      setEditorValue("");
-      editor?.commands.clearContent();
+      // // Clear the editor value
+      // setEditorValue("");
+      // editor?.commands.clearContent();
     } catch (error) {
       console.error("Error sending thought to the database:", error);
     }

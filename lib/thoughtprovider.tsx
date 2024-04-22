@@ -15,10 +15,11 @@ interface ThoughtProviderProps {
 }
 
 interface ThoughtContextValue {
+  connected: boolean;
   thoughts: Thought[];
   pings: Ping[];
   comindThoughts: Thought[];
-  addThought: (thought: Thought) => void;
+  addThoughtToProvider: (thought: Thought) => void;
 }
 
 const ThoughtContext = createContext<ThoughtContextValue>(
@@ -27,6 +28,7 @@ const ThoughtContext = createContext<ThoughtContextValue>(
 
 const ThoughtProvider: React.FC<ThoughtProviderProps> = ({ children }) => {
   const { token } = useContext(AuthContext);
+  const [connected, setConnected] = useState(false);
   const [thoughts, setThoughts] = useState<Thought[]>([]);
   const [pings, setPings] = useState<Ping[]>([]);
   const [comindThoughts, setComindThoughts] = useState<Thought[]>([]);
@@ -43,6 +45,7 @@ const ThoughtProvider: React.FC<ThoughtProviderProps> = ({ children }) => {
           console.log("Sending token to server");
           websocketRef.current?.send(JSON.stringify({ token }));
         }
+        setConnected(true);
       };
 
       websocketRef.current.onclose = () => {
@@ -60,6 +63,7 @@ const ThoughtProvider: React.FC<ThoughtProviderProps> = ({ children }) => {
           console.log("Received auth message:", message.message);
         }
 
+        // When we receive new thoughts.
         if (message.thoughts) {
           setThoughts((prevThoughts) => {
             const newThoughts = message.thoughts.filter((thought: Thought) => {
@@ -71,6 +75,7 @@ const ThoughtProvider: React.FC<ThoughtProviderProps> = ({ children }) => {
           });
         }
 
+        // Handles notifications.
         if (message.pings) {
           setPings((prevPings) => {
             const newPings = message.pings.filter((ping: Ping) => {
@@ -80,6 +85,8 @@ const ThoughtProvider: React.FC<ThoughtProviderProps> = ({ children }) => {
           });
         }
 
+        // May or may not be in use. I think I wanted to reserver comind-thoughts for
+        // system messages.
         if (message["comind-thoughts"]) {
           setComindThoughts((prevComindThoughts) => {
             const newComindThoughts = message["comind-thoughts"].filter(
@@ -101,7 +108,7 @@ const ThoughtProvider: React.FC<ThoughtProviderProps> = ({ children }) => {
   }, [token]);
 
   // Add a thought to the ThoughtProvider
-  const addThought = (thought: Thought) => {
+  const addThoughtToProvider = (thought: Thought) => {
     if (websocketRef.current?.readyState === WebSocket.OPEN) {
       websocketRef.current.send(JSON.stringify({ thought }));
     } else {
@@ -111,10 +118,11 @@ const ThoughtProvider: React.FC<ThoughtProviderProps> = ({ children }) => {
   };
 
   const value: ThoughtContextValue = {
+    connected,
     thoughts,
     pings,
     comindThoughts,
-    addThought,
+    addThoughtToProvider,
   };
 
   return (
