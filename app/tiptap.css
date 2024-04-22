@@ -56,9 +56,9 @@
 }
 
 .ProseMirror {
-  @apply thought;
+  @apply thought border-2;
 }
 
 .ProseMirror-focused {
-  @apply outline-1 outline-foreground/60;
+  @apply outline-1;
 }

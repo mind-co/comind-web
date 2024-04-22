@@ -89,7 +89,7 @@ const MeldDisplayPage: React.FC<MeldDisplayPageProps> = () => {
     return (
       <div className="comind-center-column">
         <Nav />
-        ayo i'm loading the meld
+        ayo i`&apos;`m loading the meld
       </div>
     );
   }

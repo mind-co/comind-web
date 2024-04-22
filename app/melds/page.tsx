@@ -78,7 +78,7 @@ interface MeldListProps {
 
 const MeldList: React.FC<MeldListProps> = ({ melds }) => {
   if (melds.length === 0) {
-    return <div>but we don't have any yet</div>;
+    return <div>but we don`&apos;`t have any yet</div>;
   }
 
   return (

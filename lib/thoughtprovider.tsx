@@ -1,8 +1,8 @@
+"use client";
 import React, {
   createContext,
   useContext,
   useEffect,
-  useMemo,
   useState,
   useRef,
 } from "react";
@@ -63,6 +63,19 @@ const ThoughtProvider: React.FC<ThoughtProviderProps> = ({ children }) => {
           console.log("Received auth message:", message.message);
         }
 
+        // Check if we got a single thought. add it if we don't
+        // already have a thought with it's id.
+        if (message.thought) {
+          // First check if we already have the thought in prevThoughts
+          const newThought = message.thought;
+          const thoughtExists = thoughts.some(
+            (thought) => thought.id === newThought.id
+          );
+          if (!thoughtExists) {
+            setThoughts((prevThoughts) => [...prevThoughts, newThought]);
+          }
+        }
+
         // When we receive new thoughts.
         if (message.thoughts) {
           setThoughts((prevThoughts) => {
@@ -107,14 +120,19 @@ const ThoughtProvider: React.FC<ThoughtProviderProps> = ({ children }) => {
     }
   }, [token]);
 
-  // Add a thought to the ThoughtProvider
+  // Add a thought to the ThoughtProvider. This function
+  //
+  // 1. Sends a thought to the websocket server, if available.
+  // 2. Adds the thought to the thoughts state.
+  //
+  // TODO #5 handle thought submission failures
   const addThoughtToProvider = (thought: Thought) => {
     if (websocketRef.current?.readyState === WebSocket.OPEN) {
       websocketRef.current.send(JSON.stringify({ thought }));
     } else {
       console.log("WebSocket is not open. Thought not sent.");
     }
-    setThoughts((prevThoughts) => [...prevThoughts, thought]);
+    // setThoughts((prevThoughts) => [...prevThoughts, thought]);
   };
 
   const value: ThoughtContextValue = {

@@ -1,6 +1,9 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+/* @import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities"; */
 
 :root {
   --foreground-rgb: 0, 0, 0;
@@ -27,19 +30,19 @@
 }
 
 @layer base {
-  html,
+  /* html,
   body {
-    @apply bg-background font-thin;
-  }
+    @apply font-thin;
+  } */
 }
 
 @layer components {
   .thought {
-    @apply transition-all p-2 border-2 rounded-xl mb-4;
+    @apply transition-all p-2 border-2 rounded-xl mb-4 border-opacity-35;
   }
 
   .thought:hover {
-    @apply border-2 border-solid border-foreground/60 bg-[rgb(--surface-rgb)] shadow-lg;
+    @apply shadow-lg;
   }
 }
 
@@ -125,7 +128,7 @@ Comind classes
   @apply font-bold;
 }
 
-.comind-logo-co {
+/* .comind-logo-co {
   @apply !decoration-primary;
 }
 
@@ -135,4 +138,4 @@ Comind classes
 
 .comind-logo-nd {
   @apply !decoration-tertiary;
-}
+} */

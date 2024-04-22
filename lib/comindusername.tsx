@@ -4,9 +4,9 @@ import React from "react";
 const ComindUsername: React.FC<{ username: string }> = ({ username }) => {
   // return <Link href="https://comind.me/users/" + {username}>{username + ": "}</Link>;
   return (
-    <div className="pb-2">
+    <span className="!text-xs">
       <Link href={`https://comind.me/users/${username}`}>{username}</Link>{" "}
-    </div>
+    </span>
   );
 };
 

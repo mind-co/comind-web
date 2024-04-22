@@ -1,25 +1,12 @@
 "use client";
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import { Thought } from "@/lib/types/thoughts";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import {
-  Button,
-  ButtonGroup,
-  Card,
-  CardBody,
-  Modal,
-  ModalHeader,
-  ModalBody,
-  ModalContent,
-  ModalFooter,
-  useDisclosure,
-  Textarea,
-} from "@nextui-org/react";
-import { convertToRelativeTimestamp } from "@/lib/utils";
-import { AuthContext } from "@/lib/authprovider";
-import ComindUsername from "@/lib/comindusername";
-import { saveQuickThought } from "@/lib/api";
+// import { convertToRelativeTimestamp } from "@/lib/utils";
+// import { AuthContext } from "@/lib/authprovider";
+import Link from "next/link";
+import ComindUsername from "../comindusername";
 
 type ThoughtDisplayProps = {
   thought: Thought;
@@ -27,8 +14,7 @@ type ThoughtDisplayProps = {
 
 const ThoughtDisplay: React.FC<ThoughtDisplayProps> = ({ thought }) => {
   // Modal stuff
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const auth = useContext(AuthContext);
+  // const auth = useContext(AuthContext);
 
   // Load context
   // const { userId } = useContext(AuthContext);
@@ -36,19 +22,15 @@ const ThoughtDisplay: React.FC<ThoughtDisplayProps> = ({ thought }) => {
   // State variables
   const [contextMenuVisible, setContextMenuVisible] = useState(false);
   // const [hovered, setHovered] = useState(true);
-  const [editorValue, setEditorValue] = useState("");
+  // const [editorValue, setEditorValue] = useState("");
 
   // Date created converted to a pretty date time
-  const prettyTimestamp = convertToRelativeTimestamp(thought.date_created);
+  // const prettyTimestamp = convertToRelativeTimestamp(thought.date_created);
   // const isUserThought = thought.user_id == userId;
 
   // Toggle context menu
   const openContextMenu = () => {
     setContextMenuVisible(!contextMenuVisible);
-  };
-
-  const openModal = () => {
-    onOpen();
   };
 
   // const onMouseEnter = () => {
@@ -80,54 +62,54 @@ const ThoughtDisplay: React.FC<ThoughtDisplayProps> = ({ thought }) => {
    * to the console along with the newly saved thought object. If the function throws an error,
    * an error message is logged to the console.
    */
-  const think = async () => {
-    // Check if the editor value is empty
-    if (editorValue.trim().length === 0) {
-      console.error("Editor value is empty.");
-      return;
-    }
+  // const think = async () => {
+  //   // Check if the editor value is empty
+  //   if (editorValue.trim().length === 0) {
+  //     console.error("Editor value is empty.");
+  //     return;
+  //   }
 
-    try {
-      // Attempt to save the new thought
-      const newThought = await saveQuickThought(
-        auth,
-        editorValue,
-        true,
-        thought.id
-      );
-      // Log success message
-      console.log("Thought saved successfully:", newThought);
-    } catch (error) {
-      // Log error message if saving fails
-      console.error("Failed to save thought:", error);
-    }
-  };
+  //   try {
+  //     // Attempt to save the new thought
+  //     const newThought = await saveQuickThought(
+  //       auth,
+  //       editorValue,
+  //       true,
+  //       thought.id
+  //     );
+  //     // Log success message
+  //     console.log("Thought saved successfully:", newThought);
+  //   } catch (error) {
+  //     // Log error message if saving fails
+  //     console.error("Failed to save thought:", error);
+  //   }
+  // };
   return (
-    <>
-      {contextMenuVisible ? (
-        <div className="w-full px-4 flex flex-row space-x-2">
-          <ComindUsername username={thought.username} />
-          <div className="text-xs">{prettyTimestamp}</div>
-        </div>
-      ) : (
-        <></>
-      )}
-      <div
-        className={`thought ${
-          contextMenuVisible ? "!bg-purple-500" : "bg-transparent"
-        }
+    <div className="w-full relative">
+      {/* Username and relative date */}
+      {/* <div className="w-full px-4 flex flex-row space-x-2 text-xs">
+        <ComindUsername username={thought.username} />
+        <div className="text-xs">{prettyTimestamp}</div>
+      </div> */}
+      <div className="w-full bg-red-500">abc</div>
 
+      <div className="absolute top-0 left-0">
+        <ComindUsername username={thought.username} />
+        {/* <Link
+          href={`https://comind.me/users/${thought.username}`}
+          className="!text-lg opacity-50 hover:opacity-100"
+        >
+          {thought.username}
+        </Link>{" "} */}
+      </div>
 
-        `}
-        // onMouseLeave={onMouseLeave}
-        // onMouseEnter={onMouseEnter}
-        onClick={openContextMenu}
-        // isPressable={true}
-      >
+      {/* Main text display */}
+      <div className={`thought`} onClick={openContextMenu}>
         <Markdown remarkPlugins={[remarkGfm]}>{thought.body}</Markdown>
       </div>
 
-      {contextMenuVisible ? (
+      {/* Action bar shit + editor */}
+      {/* {contextMenuVisible ? (
         <>
           <div className="py-4 w-full">
             <Textarea
@@ -153,7 +135,6 @@ const ThoughtDisplay: React.FC<ThoughtDisplayProps> = ({ thought }) => {
               </Button>
             </ButtonGroup>
           </div>
-
           <Modal isOpen={isOpen} onClose={onClose} size="xl">
             <ModalContent>
               {(onClose) => (
@@ -184,8 +165,8 @@ const ThoughtDisplay: React.FC<ThoughtDisplayProps> = ({ thought }) => {
         </>
       ) : (
         <></>
-      )}
-    </>
+      )} */}
+    </div>
   );
 };
 

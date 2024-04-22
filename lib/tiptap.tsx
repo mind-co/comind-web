@@ -1,29 +1,35 @@
 // lib/tiptap.jsx
-import { EditorProvider, FloatingMenu, BubbleMenu } from "@tiptap/react";
+import { Extension, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 
 // define your extension array
-const extensions = [StarterKit];
+const extensions = [
+  StarterKit,
+  Extension.create({
+    addKeyboardShortcuts() {
+      return {
+        "Cmd-Enter"() {
+          document.dispatchEvent(new CustomEvent("submit"));
+          return true;
+        },
+        "Ctrl-Enter"() {
+          document.dispatchEvent(new CustomEvent("submit"));
+          return true;
+        },
+      };
+    },
+  }),
+];
 
-const content = "";
-
-const Tiptap = ({ onUpdate }: { onUpdate?: (text: string) => void }) => {
-  return (
-    <EditorProvider
-      extensions={extensions}
-      content={content}
-      children={undefined}
-      onUpdate={({ editor }) => {
-        console.log(editor.getText());
-        if (onUpdate) {
-          onUpdate(editor.getText());
-        }
-      }}
-    >
-      {/* <FloatingMenu>This is the floating menu</FloatingMenu> */}
-      {/* <BubbleMenu>This is the bubble menu</BubbleMenu> */}
-    </EditorProvider>
-  );
+const ComindEditor = ({ onUpdate }: { onUpdate?: (text: string) => void }) => {
+  return useEditor({
+    extensions: extensions,
+    onUpdate: ({ editor }) => {
+      if (onUpdate) {
+        onUpdate(editor.getText());
+      }
+    },
+  });
 };
 
-export default Tiptap;
+export default ComindEditor;

@@ -1,23 +1,14 @@
-"use client";
-import type { Metadata } from "next";
-import {
-  Comfortaa,
-  IBM_Plex_Sans,
-  Inter,
-  Josefin_Sans,
-  Lato,
-  Lexend_Deca,
-  Montserrat,
-  Open_Sans,
-  Outfit,
-  Raleway,
-  Roboto,
-  Roboto_Mono,
-} from "next/font/google";
 import "./globals.css";
 import "./tiptap.css";
 import "./markdown.css";
+import { Lexend_Deca } from "next/font/google";
 import Providers from "@/lib/providers";
+
+// Metadata
+export const metadata = {
+  title: "Comind",
+  description: "think good thoughts",
+};
 
 // const inter = Inter({ subsets: ["latin"] });
 // const roboto_mono = Roboto_Mono({

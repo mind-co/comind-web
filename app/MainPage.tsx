@@ -1,5 +1,5 @@
 "use client";
-import React, { useContext, useMemo, useState } from "react";
+import React, { useContext, useEffect, useMemo, useState } from "react";
 import { AuthContext } from "@/lib/authprovider";
 import { sendThoughtToDatabase } from "@/lib/api";
 import { Thought } from "@/lib/types/thoughts";
@@ -10,22 +10,25 @@ import ThoughtList from "@/lib/display/thought_display";
 
 import Tiptap from "@/lib/tiptap";
 import Markdown from "react-markdown";
-import { useCurrentEditor } from "@tiptap/react";
+import { EditorContent, useCurrentEditor } from "@tiptap/react";
 import Comind from "@/lib/comind";
 
 import { GoLightBulb } from "react-icons/go";
 
 import htmlToMarkdown from "@wcj/html-to-markdown";
+import ComindEditor from "@/lib/tiptap";
 
 const MainPage = () => {
   const auth = useContext(AuthContext);
   const { addThoughtToProvider, thoughts } = useContext(ThoughtContext);
   const [editorValue, setEditorValue] = useState("");
-  const { editor } = useCurrentEditor();
+  const editor = ComindEditor({ onUpdate: setEditorValue });
 
   // On think method, we should send the current thought to the server.
-  const onThink = async () => {
+  const onThink = async (event: any) => {
+    event.preventDefault();
     console.log("Sending thought:", editorValue);
+
     try {
       // Call the API function to send the thought to the database, only if
       // the editor value is not empty.
@@ -42,26 +45,26 @@ const MainPage = () => {
       // await sendThoughtToDatabase(auth.token ?? "", trimmedEditorValue);
       // console.log("Thought sent to the database");
 
-      // // Clear the editor value
-      // setEditorValue("");
-      // editor?.commands.clearContent();
+      // Clear the editor value
+      setEditorValue("");
+      editor?.commands.clearContent();
     } catch (error) {
       console.error("Error sending thought to the database:", error);
     }
   };
 
+  // Add a submit event listener to the document.
+  useEffect(() => {
+    document.addEventListener("submit", onThink);
+    return () => {
+      document.removeEventListener("submit", onThink);
+    };
+  }, [editorValue]);
+
   return (
     <div className={"comind-center-column"}>
       <div className="pb-4">
         <Nav />
-        {/* <span className="instruction">
-          hey, welcome to{" "}
-          <span>
-            <span>co</span>
-            <span>mi</span>
-            <span>nd</span>
-          </span>
-        </span> */}
       </div>
 
       <div className="thought">
@@ -79,13 +82,15 @@ const MainPage = () => {
       >
         {/* https://www.npmjs.com/package/react-simplemde-editor#demo */}
         <div className="w-full">
-          <Tiptap onUpdate={setEditorValue} />
+          <EditorContent editor={editor} />
         </div>
 
         <div className="">
           <Button
             className="text-3xl rounded-xl"
-            onClick={onThink}
+            onClick={() => {
+              document.dispatchEvent(new CustomEvent("submit"));
+            }}
             isIconOnly={true}
             variant="ghost"
             size="md"
