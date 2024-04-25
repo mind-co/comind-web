@@ -1,5 +1,4 @@
-import { Button, ButtonGroup, CardFooter, Kbd } from "@nextui-org/react";
-import Link from "next/link";
+import { Button } from "@mantine/core";
 import React from "react";
 
 type ActionBarProps = {

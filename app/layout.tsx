@@ -1,6 +1,10 @@
+// import "./tiptap.css";
+// import "./markdown.css";
 import "./globals.css";
-import "./tiptap.css";
-import "./markdown.css";
+import "@mantine/core/styles.css";
+
+import { ColorSchemeScript, MantineProvider } from "@mantine/core";
+
 import { Lexend_Deca } from "next/font/google";
 import Providers from "@/lib/providers";
 
@@ -29,6 +33,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <ColorSchemeScript />
+      </head>
       <body className={core_font.className}>
         <Providers>{children}</Providers>
       </body>

@@ -15,7 +15,7 @@
   --md-editor-font-family: "Inter", sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
+[data-theme="dark"] {
   :root {
     --foreground-rgb: 255, 255, 255;
     --surface-rgb: 36, 36, 36;
@@ -37,13 +37,6 @@
 }
 
 @layer components {
-  .thought {
-    @apply transition-all p-2 border-2 rounded-xl mb-4 border-opacity-35;
-  }
-
-  .thought:hover {
-    @apply shadow-lg;
-  }
 }
 
 /* Links */
@@ -94,48 +87,10 @@ w-md-editor-content
   margin-top: 1rem;
 }
 
-/* .thought-list {
-  @apply bg-red-500;
-} */
-
-/* .thought {
-  @apply transition-all border-1 border-foreground/20 rounded-lg 
-    p-1 shadow-none w-full my-2;
+.thought {
+  @apply transition-all p-2 border-2 rounded-xl mb-4 border-opacity-35;
 }
 
 .thought:hover {
-  @apply border-1 border-solid border-gray-600 bg-[rgb(--surface-rgb)] shadow-lg;
-} */
-
-.instruction {
-  @apply text-5xl py-2;
+  @apply shadow-lg;
 }
-
-/*
-Comind classes
-*/
-.comind-center-column {
-  @apply max-w-xl p-2 flex flex-col mx-auto min-h-screen;
-}
-
-.comind-logo {
-  @apply underline;
-}
-
-.comind-logo-co,
-.comind-logo-mi,
-.comind-logo-nd {
-  @apply font-bold;
-}
-
-/* .comind-logo-co {
-  @apply !decoration-primary;
-}
-
-.comind-logo-mi {
-  @apply !decoration-secondary;
-}
-
-.comind-logo-nd {
-  @apply !decoration-tertiary;
-} */

@@ -5,7 +5,8 @@ import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 // import { convertToRelativeTimestamp } from "@/lib/utils";
 // import { AuthContext } from "@/lib/authprovider";
-import Link from "next/link";
+// import Link from "next/link";
+
 import ComindUsername from "../comindusername";
 
 type ThoughtDisplayProps = {

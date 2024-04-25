@@ -1,4 +1,4 @@
-'use client'
+"use client";
 import React, { useContext } from "react";
 import Link from "next/link";
 import Comind from "@/lib/comind";
@@ -11,6 +11,7 @@ const Nav = () => {
     <div className="flex flex-row justify-between space-x-4 pb-4">
       <Comind />
       <div className="nav-links space-x-2">
+        {auth ? <>auth.username</> : <></>}
         <Link href="/thoughts/">thoughts</Link>
         <Link href="/melds/">melds</Link>
         <Link href="/settings/">settings</Link>

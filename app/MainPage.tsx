@@ -1,28 +1,40 @@
 "use client";
-import React, { useContext, useEffect, useMemo, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { AuthContext } from "@/lib/authprovider";
-import { sendThoughtToDatabase } from "@/lib/api";
+// import { sendThoughtToDatabase } from "@/lib/api";
 import { Thought } from "@/lib/types/thoughts";
-import { Button } from "@nextui-org/react";
 import { ThoughtContext } from "@/lib/thoughtprovider";
 import Nav from "./nav";
 import ThoughtList from "@/lib/display/thought_display";
 
-import Tiptap from "@/lib/tiptap";
-import Markdown from "react-markdown";
-import { EditorContent, useCurrentEditor } from "@tiptap/react";
+import { EditorContent } from "@tiptap/react";
 import Comind from "@/lib/comind";
 
-import { GoLightBulb } from "react-icons/go";
-
-import htmlToMarkdown from "@wcj/html-to-markdown";
 import ComindEditor from "@/lib/tiptap";
+import { AppShell, Burger, Button, Center, Container } from "@mantine/core";
+import { useDisclosure } from "@mantine/hooks";
+import Link from "next/link";
+
+import { useTheme } from "next-themes";
+
+const ThemeChanger = () => {
+  const { theme, setTheme } = useTheme();
+
+  return (
+    <div>
+      The current theme is: {theme}
+      <button onClick={() => setTheme("light")}>Light Mode</button>
+      <button onClick={() => setTheme("dark")}>Dark Mode</button>
+    </div>
+  );
+};
 
 const MainPage = () => {
   const auth = useContext(AuthContext);
   const { addThoughtToProvider, thoughts } = useContext(ThoughtContext);
   const [editorValue, setEditorValue] = useState("");
   const editor = ComindEditor({ onUpdate: setEditorValue });
+  const [opened, { toggle }] = useDisclosure();
 
   // On think method, we should send the current thought to the server.
   const onThink = async (event: any) => {
@@ -62,50 +74,44 @@ const MainPage = () => {
   }, [editorValue]);
 
   return (
-    <div className={"comind-center-column"}>
-      <div className="pb-4">
-        <Nav />
-      </div>
+    <AppShell
+      padding="md"
+      header={{ height: 30 }}
+      // navbar={{
+      //   width: 200,
+      //   breakpoint: "sm",
+      //   collapsed: { mobile: !opened },
+      // }}
+    >
+      <AppShell.Header>
+        <Container size="sm">
+          {/* <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" /> */}
+          welcome to <Comind /> | your <Link href="/thoughts">thoughts</Link> |
+          view <Link href="/melds">melds</Link>
+        </Container>
+        {/* <Nav /> */}
+      </AppShell.Header>
 
-      <div className="thought">
-        welcome to <Comind />, what are you thinking about?
-      </div>
+      {/* <AppShell.Navbar>nav</AppShell.Navbar> */}
 
-      <ThoughtList thoughts={thoughts} />
-
-      <div
-        className="
-        w-full relative flex flex-row align-middle justify-around
-        items-center
-        space-x-1
-      "
-      >
-        {/* https://www.npmjs.com/package/react-simplemde-editor#demo */}
-        <div className="w-full">
-          <EditorContent editor={editor} />
-        </div>
-
-        <div className="">
-          <Button
-            className="text-3xl rounded-xl"
-            onClick={() => {
-              document.dispatchEvent(new CustomEvent("submit"));
-            }}
-            isIconOnly={true}
-            variant="ghost"
-            size="md"
-          >
-            <div className="">
-              <GoLightBulb />
-            </div>
-          </Button>
-        </div>
-      </div>
-
-      {/* <ThoughtDisplay thought={thoughts[0]} /> */}
-
-      {/* <ThoughtDisplay thought={testThought} /> */}
-    </div>
+      <AppShell.Main>
+        <Container bg="green" size="sm">
+          Hello
+          {/* <EditorContent editor={editor} /> */}
+          {/* <Button
+              className="text-3xl rounded-xl"
+              onClick={() => {
+                document.dispatchEvent(new CustomEvent("submit"));
+              }}
+              variant="ghost"
+              size="md"
+            >
+              submit
+            </Button> */}
+        </Container>
+        <ThoughtList thoughts={thoughts} />
+      </AppShell.Main>
+    </AppShell>
   );
 };
 
