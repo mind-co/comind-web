@@ -95,10 +95,8 @@ const MainPage = () => {
       {/* <AppShell.Navbar>nav</AppShell.Navbar> */}
 
       <AppShell.Main>
-        <Container bg="green" size="sm">
-          Hello
-          {/* <EditorContent editor={editor} /> */}
-          {/* <Button
+        {/* <EditorContent editor={editor} /> */}
+        {/* <Button
               className="text-3xl rounded-xl"
               onClick={() => {
                 document.dispatchEvent(new CustomEvent("submit"));
@@ -108,7 +106,6 @@ const MainPage = () => {
             >
               submit
             </Button> */}
-        </Container>
         <ThoughtList thoughts={thoughts} />
       </AppShell.Main>
     </AppShell>

@@ -3,11 +3,36 @@ import React, { useState } from "react";
 import { Thought } from "@/lib/types/thoughts";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import {
+  IconBubble,
+  IconBulb,
+  IconGitBranch,
+  IconIdBadge,
+  IconMaximize,
+  IconTrash,
+} from "@tabler/icons-react";
 // import { convertToRelativeTimestamp } from "@/lib/utils";
 // import { AuthContext } from "@/lib/authprovider";
 // import Link from "next/link";
 
 import ComindUsername from "../comindusername";
+import {
+  ActionIcon,
+  Badge,
+  Card,
+  Center,
+  Container,
+  Group,
+  Paper,
+  Space,
+  Timeline,
+  TimelineItem,
+  Text,
+  Tooltip,
+  useMantineTheme,
+  Transition,
+} from "@mantine/core";
+import { convertToRelativeTimestamp } from "../utils";
 
 type ThoughtDisplayProps = {
   thought: Thought;
@@ -20,13 +45,15 @@ const ThoughtDisplay: React.FC<ThoughtDisplayProps> = ({ thought }) => {
   // Load context
   // const { userId } = useContext(AuthContext);
 
+  const theme = useMantineTheme();
+
   // State variables
   const [contextMenuVisible, setContextMenuVisible] = useState(false);
   // const [hovered, setHovered] = useState(true);
   // const [editorValue, setEditorValue] = useState("");
 
   // Date created converted to a pretty date time
-  // const prettyTimestamp = convertToRelativeTimestamp(thought.date_created);
+  const prettyTimestamp = convertToRelativeTimestamp(thought.date_created);
   // const isUserThought = thought.user_id == userId;
 
   // Toggle context menu
@@ -86,88 +113,57 @@ const ThoughtDisplay: React.FC<ThoughtDisplayProps> = ({ thought }) => {
   //   }
   // };
   return (
-    <div className="w-full relative">
-      {/* Username and relative date */}
-      {/* <div className="w-full px-4 flex flex-row space-x-2 text-xs">
-        <ComindUsername username={thought.username} />
-        <div className="text-xs">{prettyTimestamp}</div>
-      </div> */}
-      <div className="w-full bg-red-500">abc</div>
-
-      <div className="absolute top-0 left-0">
-        <ComindUsername username={thought.username} />
-        {/* <Link
-          href={`https://comind.me/users/${thought.username}`}
-          className="!text-lg opacity-50 hover:opacity-100"
-        >
-          {thought.username}
-        </Link>{" "} */}
-      </div>
-
-      {/* Main text display */}
-      <div className={`thought`} onClick={openContextMenu}>
+    <TimelineItem title={thought.title}>
+      {/* Content */}
+      <Card radius="md" withBorder variant="">
         <Markdown remarkPlugins={[remarkGfm]}>{thought.body}</Markdown>
-      </div>
 
-      {/* Action bar shit + editor */}
-      {/* {contextMenuVisible ? (
-        <>
-          <div className="py-4 w-full">
-            <Textarea
-              className="w-full"
-              autoFocus={true}
-              variant="flat"
-              value={editorValue}
-              onValueChange={setEditorValue}
-              minRows={1}
-            />
-          </div>
-          <div className="flex flex-row justify-end w-full">
-            <ButtonGroup>
-              <Button
-                onClick={openModal}
-                variant="ghost"
-                className=" font-mono"
-              >
-                examine
-              </Button>
-              <Button onClick={think} variant="ghost" className="font-mono">
-                think
-              </Button>
-            </ButtonGroup>
-          </div>
-          <Modal isOpen={isOpen} onClose={onClose} size="xl">
-            <ModalContent>
-              {(onClose) => (
-                <>
-                  <ModalHeader className="flex flex-col gap-1">
-                    {thought.title + " "}
-                    <ComindUsername username={thought.username} />
-                  </ModalHeader>
-                  <ModalBody>
-                    <CardBody>
-                      <Markdown remarkPlugins={[remarkGfm]}>
-                        {thought.body}
-                      </Markdown>
-                    </CardBody>
-                  </ModalBody>
-                  <ModalFooter>
-                    <Button color="danger" variant="light" onPress={onClose}>
-                      Close
-                    </Button>
-                    <Button color="primary" onPress={onClose}>
-                      Action
-                    </Button>
-                  </ModalFooter>
-                </>
-              )}
-            </ModalContent>
-          </Modal>
-        </>
-      ) : (
-        <></>
-      )} */}
-    </div>
+        <Card.Section inheritPadding>
+          <Group>
+            <Tooltip label="Think">
+              <ActionIcon variant="subtle" size="md">
+                <IconBubble />
+              </ActionIcon>
+            </Tooltip>
+
+            <Tooltip label="Remove">
+              <ActionIcon variant="subtle" size="md">
+                <IconTrash />
+              </ActionIcon>
+            </Tooltip>
+          </Group>
+          <Space h="xs" />
+        </Card.Section>
+      </Card>
+      {/* Time info */}
+      <Group>
+        <Badge variant="transparent">{thought.username}</Badge>
+        <Text size="xs">{prettyTimestamp}</Text>
+      </Group>
+    </TimelineItem>
+
+    // Card variant
+    // <>
+    //   <Card shadow="md" padding="xs">
+    //     <Group>
+    //       <Badge variant="dot">{thought.username}</Badge>
+    //     </Group>
+
+    //     <Markdown remarkPlugins={[remarkGfm]}>{thought.body}</Markdown>
+    //     {/* <div className="w-full px-4 flex flex-row space-x-2 text-xs">
+    //     <div className="text-xs">{prettyTimestamp}</div>
+    //   </div> */}
+    //     <Group>
+    //       {/* Maximize button */}
+    //       <Tooltip label="Maximize">
+    //         <ActionIcon variant="subtle" size="xs">
+    //           <IconMaximize />
+    //         </ActionIcon>
+    //       </Tooltip>
+    //     </Group>
+    //   </Card>
+    //   <Space h="xs" />
+    // </>
   );
 };
 
@@ -182,11 +178,18 @@ const ThoughtList: React.FC<ThoughtListProps> = ({ thoughts }) => {
   }
 
   return (
-    <div className="thought-list">
-      {thoughts.map((thought, index) => (
-        <ThoughtDisplay key={index} thought={thought} />
-      ))}
-    </div>
+    <Container color="red">
+      <Timeline active={1} lineWidth={2}>
+        {thoughts.map((thought, index) => (
+          <ThoughtDisplay key={index} thought={thought} />
+        ))}
+      </Timeline>
+    </Container>
+    // <div className="thought-list">
+    //   {thoughts.map((thought, index) => (
+    //     <ThoughtDisplay key={index} thought={thought} />
+    //   ))}
+    // </div>
   );
 };
 

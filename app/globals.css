@@ -1,55 +1,32 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-/* @import "tailwindcss/base";
-@import "tailwindcss/components";
-@import "tailwindcss/utilities"; */
-
 :root {
-  --foreground-rgb: 0, 0, 0;
-  --background-rgb: 255, 255, 255;
-  --surface-rgb: 200, 200, 200;
-  --primary-rgb: 207, 94, 74;
-  --secondary-rgb: 0, 137, 200;
-  --tertiary-rgb: 0, 152, 119;
-  --md-editor-font-family: "Inter", sans-serif;
+  --comind-background-rgb: 255, 255, 255;
+  --comind-surface-rgb: 200, 200, 200;
+  --comind-primary-rgb: 207, 94, 74;
+  --comind-secondary-rgb: 0, 137, 200;
+  --comind-tertiary-rgb: 0, 152, 119;
+  --comind-md-editor-font-family: "Inter", sans-serif;
 }
 
-[data-theme="dark"] {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --surface-rgb: 36, 36, 36;
-    --background-rgb: 17, 17, 17;
-  }
+body {
+  font-weight: 300;
 }
 
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
-}
 
-@layer base {
-  /* html,
-  body {
-    @apply font-thin;
-  } */
-}
-
-@layer components {
+[data-mantine-color-scheme="dark"] {
+  --comind-surface-rgb: 36, 36, 36;
+  --comind-background-rgb: 17, 17, 17;
 }
 
 /* Links */
 a {
-  color: rgb(var(--foreground-rgb));
+  color: rgb(var(--comind-foreground-rgb));
   text-decoration: underline;
   /* text-decoration-thickness: 1px; */
-  text-decoration-color: rgba(var(--foreground-rgb), 0.8);
   text-underline-offset: 2px;
 }
 
 a:hover {
-  text-decoration-color: rgb(var(--primary-rgb));
+  text-decoration-color: rgb(var(--comind-primary-rgb));
 }
 
 /* Change the white to any color */
@@ -65,7 +42,7 @@ wmde-markdown-var
 w-md-editor-content
 */
 
-.w-md-editor-content {
+/* .w-md-editor-content {
   background: transparent;
 }
 
@@ -77,7 +54,7 @@ w-md-editor-content
 
 .w-md-editor-bar {
   @apply !bottom-0 !right-2;
-}
+} */
 
 /* Action bar */
 .action-bar {
@@ -87,10 +64,8 @@ w-md-editor-content
   margin-top: 1rem;
 }
 
-.thought {
-  @apply transition-all p-2 border-2 rounded-xl mb-4 border-opacity-35;
+
+p, h1, h2, h3, h4, h5, h6 {
+  margin-top: 0;
 }
 
-.thought:hover {
-  @apply shadow-lg;
-}

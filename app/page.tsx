@@ -4,6 +4,7 @@ import { AuthContext } from "@/lib/authprovider";
 import MainPage from "./MainPage";
 import { redirect } from "next/navigation";
 import Comind from "@/lib/comind";
+import { Center, Container } from "@mantine/core";
 
 // Main entry point for the application
 export default function App() {
@@ -12,11 +13,11 @@ export default function App() {
   // Wait on loading
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center h-screen">
-        <p>
+      <Container>
+        <Center>
           <Comind /> is thinking.
-        </p>
-      </div>
+        </Center>
+      </Container>
     );
   }
 
