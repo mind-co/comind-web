@@ -10,12 +10,22 @@ import ThoughtList from "@/lib/display/thought_display";
 import { EditorContent } from "@tiptap/react";
 import Comind from "@/lib/comind";
 
-import ComindEditor from "@/lib/tiptap";
-import { AppShell, Burger, Button, Center, Container } from "@mantine/core";
+import ThoughtBox from "@/lib/thought_box";
+import {
+  AppShell,
+  Burger,
+  Button,
+  Center,
+  Container,
+  Grid,
+  Stack,
+} from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
+import { RichTextEditor } from "@mantine/tiptap";
 import Link from "next/link";
 
 import { useTheme } from "next-themes";
+import ThoughtBoxEditor from "@/lib/ThoughtBoxEditor";
 
 const ThemeChanger = () => {
   const { theme, setTheme } = useTheme();
@@ -33,7 +43,7 @@ const MainPage = () => {
   const auth = useContext(AuthContext);
   const { addThoughtToProvider, thoughts } = useContext(ThoughtContext);
   const [editorValue, setEditorValue] = useState("");
-  const editor = ComindEditor({ onUpdate: setEditorValue });
+  const editor = ThoughtBoxEditor({ onUpdate: setEditorValue });
   const [opened, { toggle }] = useDisclosure();
 
   // On think method, we should send the current thought to the server.
@@ -59,7 +69,7 @@ const MainPage = () => {
 
       // Clear the editor value
       setEditorValue("");
-      editor?.commands.clearContent();
+      editor.commands.clearContent();
     } catch (error) {
       console.error("Error sending thought to the database:", error);
     }
@@ -86,8 +96,8 @@ const MainPage = () => {
       <AppShell.Header>
         <Container size="sm">
           {/* <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" /> */}
-          welcome to <Comind /> | your <Link href="/thoughts">thoughts</Link> |
-          view <Link href="/melds">melds</Link>
+          <Comind /> | <Link href="/thoughts">thoughts</Link> |{" "}
+          <Link href="/melds">melds</Link>
         </Container>
         {/* <Nav /> */}
       </AppShell.Header>
@@ -95,6 +105,22 @@ const MainPage = () => {
       {/* <AppShell.Navbar>nav</AppShell.Navbar> */}
 
       <AppShell.Main>
+        <div
+          style={{
+            position: "fixed",
+            bottom: 0,
+            left: 0,
+            right: 0,
+            zIndex: 10,
+            backgroundColor: "var(--mantine-color-body)",
+            paddingBottom: "32px",
+          }}
+        >
+          <Container>
+            <ThoughtBox editor={editor} />
+          </Container>
+        </div>
+
         {/* <EditorContent editor={editor} /> */}
         {/* <Button
               className="text-3xl rounded-xl"
@@ -106,7 +132,9 @@ const MainPage = () => {
             >
               submit
             </Button> */}
-        <ThoughtList thoughts={thoughts} />
+        <Container>
+          <ThoughtList thoughts={thoughts} />
+        </Container>
       </AppShell.Main>
     </AppShell>
   );

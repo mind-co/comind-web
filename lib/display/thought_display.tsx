@@ -31,6 +31,8 @@ import {
   Tooltip,
   useMantineTheme,
   Transition,
+  TypographyStylesProvider,
+  Divider,
 } from "@mantine/core";
 import { convertToRelativeTimestamp } from "../utils";
 
@@ -112,33 +114,41 @@ const ThoughtDisplay: React.FC<ThoughtDisplayProps> = ({ thought }) => {
   //     console.error("Failed to save thought:", error);
   //   }
   // };
+
+  // Visual configs
+  const buttonSize = "sm";
+  const buttonColor = "light";
+
   return (
-    <TimelineItem title={thought.title}>
+    <TimelineItem title={thought.username}>
       {/* Content */}
-      <Card radius="md" withBorder variant="">
+      {/* <Card radius="md" withBorder variant=""> */}
+      <TypographyStylesProvider>
         <Markdown remarkPlugins={[remarkGfm]}>{thought.body}</Markdown>
+      </TypographyStylesProvider>
 
-        <Card.Section inheritPadding>
-          <Group>
-            <Tooltip label="Think">
-              <ActionIcon variant="subtle" size="md">
-                <IconBubble />
-              </ActionIcon>
-            </Tooltip>
+      {/* <Divider my="md" /> */}
 
-            <Tooltip label="Remove">
-              <ActionIcon variant="subtle" size="md">
-                <IconTrash />
-              </ActionIcon>
-            </Tooltip>
-          </Group>
-          <Space h="xs" />
-        </Card.Section>
-      </Card>
+      {/* <Group>
+        <Tooltip label="Think">
+          <ActionIcon variant="subtle" size={buttonSize} color={buttonColor}>
+            <IconBubble />
+          </ActionIcon>
+        </Tooltip>
+
+        <Tooltip label="Remove">
+          <ActionIcon variant="subtle" size={buttonSize} color={buttonColor}>
+            <IconTrash />
+          </ActionIcon>
+        </Tooltip>
+      </Group>
+      <Space h="xs" /> */}
+
       {/* Time info */}
       <Group>
-        <Badge variant="transparent">{thought.username}</Badge>
-        <Text size="xs">{prettyTimestamp}</Text>
+        <Text size="xs" c="dimmed">
+          {prettyTimestamp}
+        </Text>
       </Group>
     </TimelineItem>
 
@@ -178,13 +188,11 @@ const ThoughtList: React.FC<ThoughtListProps> = ({ thoughts }) => {
   }
 
   return (
-    <Container color="red">
-      <Timeline active={1} lineWidth={2}>
-        {thoughts.map((thought, index) => (
-          <ThoughtDisplay key={index} thought={thought} />
-        ))}
-      </Timeline>
-    </Container>
+    <Timeline active={1} lineWidth={2}>
+      {thoughts.map((thought, index) => (
+        <ThoughtDisplay key={index} thought={thought} />
+      ))}
+    </Timeline>
     // <div className="thought-list">
     //   {thoughts.map((thought, index) => (
     //     <ThoughtDisplay key={index} thought={thought} />
