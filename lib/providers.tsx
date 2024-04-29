@@ -22,11 +22,11 @@ const theme = createTheme({});
 // Create a provider that wraps the NextUIProvider and AuthProvider
 const Providers: React.FC<ProvidersProps> = ({ children }) => {
   // Dark mode/light mode hooks
-  // const preferredColorScheme = useColorScheme("dark");
-  // const [colorScheme, setColorScheme] = useState(preferredColorScheme);
+  const preferredColorScheme = useColorScheme("light");
+  const [colorScheme, setColorScheme] = useState(preferredColorScheme);
 
   return (
-    <MantineProvider theme={theme} forceColorScheme="dark">
+    <MantineProvider theme={theme} forceColorScheme={colorScheme}>
       <AuthProvider>
         <ThoughtProvider>{children}</ThoughtProvider>
       </AuthProvider>

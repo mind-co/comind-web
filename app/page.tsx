@@ -1,10 +1,11 @@
 "use client";
 import { useContext } from "react";
 import { AuthContext } from "@/lib/authprovider";
-import MainPage from "./MainPage";
+import MainPage from "../lib/MeldView";
 import { redirect } from "next/navigation";
 import Comind from "@/lib/comind";
 import { Center, Container } from "@mantine/core";
+import { ThoughtProvider } from "@/lib/thoughtprovider";
 
 // Main entry point for the application
 export default function App() {
@@ -27,5 +28,6 @@ export default function App() {
   }
 
   // If we are logged in, show the main page
+
   return <MainPage />;
 }

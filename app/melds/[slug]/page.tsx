@@ -3,8 +3,6 @@ import { Meld } from "@/lib/types/melds";
 import React, { useContext, useEffect, useState } from "react";
 import { AuthContext } from "@/lib/authprovider";
 import Nav from "../../nav";
-import { Textarea, Button } from "@nextui-org/react";
-import { Lightbulb, Send } from "@mui/icons-material";
 import { Thought } from "@/lib/types/thoughts";
 
 interface MeldDisplayPageProps {
@@ -95,30 +93,7 @@ const MeldDisplayPage: React.FC<MeldDisplayPageProps> = () => {
   }
 
   // Return statement for debugging
-  return (
-    <div className="comind-center-column">
-      {/* The text bar */}
-      <div className="fixed bottom-2 left-1/2 transform -translate-x-1/2 w-full max-w-xl">
-        <div className="flex flex-row justify-start items-center align-middle relative">
-          <Textarea />
-          <div className="absolute right-2 bottom-1 z-10">
-            <Button size="sm" variant="bordered" color="primary" isIconOnly>
-              <Lightbulb />
-              {/* THINK */}
-            </Button>
-          </div>
-        </div>
-      </div>
-
-      {/* Nav */}
-      <Nav />
-
-      {/* Instruction */}
-      <div className="instruction">{meld.title}</div>
-
-      <div></div>
-    </div>
-  );
+  return <MeldView meld={meld} />;
 };
 
 export default MeldDisplayPage;

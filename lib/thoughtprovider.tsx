@@ -30,6 +30,7 @@ const ThoughtProvider: React.FC<ThoughtProviderProps> = ({ children }) => {
   const { token } = useContext(AuthContext);
   const [connected, setConnected] = useState(false);
   const [thoughts, setThoughts] = useState<Thought[]>([]);
+  const [recommended, setRecommended] = useState<Thought[]>([]);
   const [pings, setPings] = useState<Ping[]>([]);
   const [comindThoughts, setComindThoughts] = useState<Thought[]>([]);
   const websocketRef = useRef<WebSocket | null>(null);
@@ -132,7 +133,6 @@ const ThoughtProvider: React.FC<ThoughtProviderProps> = ({ children }) => {
     } else {
       console.log("WebSocket is not open. Thought not sent.");
     }
-    // setThoughts((prevThoughts) => [...prevThoughts, thought]);
   };
 
   const value: ThoughtContextValue = {

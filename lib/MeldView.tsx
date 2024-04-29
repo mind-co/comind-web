@@ -4,7 +4,7 @@ import { AuthContext } from "@/lib/authprovider";
 // import { sendThoughtToDatabase } from "@/lib/api";
 import { Thought } from "@/lib/types/thoughts";
 import { ThoughtContext } from "@/lib/thoughtprovider";
-import Nav from "./nav";
+import Nav from "../app/nav";
 import ThoughtList from "@/lib/display/thought_display";
 
 import { EditorContent } from "@tiptap/react";
@@ -13,11 +13,13 @@ import Comind from "@/lib/comind";
 import ThoughtBox from "@/lib/thought_box";
 import {
   AppShell,
+  AppShellFooter,
   Burger,
   Button,
   Center,
   Container,
   Grid,
+  Space,
   Stack,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
@@ -26,6 +28,7 @@ import Link from "next/link";
 
 import { useTheme } from "next-themes";
 import ThoughtBoxEditor from "@/lib/ThoughtBoxEditor";
+import Shell from "../app/Shell";
 
 const ThemeChanger = () => {
   const { theme, setTheme } = useTheme();
@@ -39,7 +42,7 @@ const ThemeChanger = () => {
   );
 };
 
-const MainPage = () => {
+const MeldView = () => {
   const auth = useContext(AuthContext);
   const { addThoughtToProvider, thoughts } = useContext(ThoughtContext);
   const [editorValue, setEditorValue] = useState("");
@@ -84,45 +87,25 @@ const MainPage = () => {
   }, [editorValue]);
 
   return (
-    <AppShell
-      padding="md"
-      header={{ height: 30 }}
-      // navbar={{
-      //   width: 200,
-      //   breakpoint: "sm",
-      //   collapsed: { mobile: !opened },
-      // }}
-    >
-      <AppShell.Header>
-        <Container size="sm">
-          {/* <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" /> */}
-          <Comind /> | <Link href="/thoughts">thoughts</Link> |{" "}
-          <Link href="/melds">melds</Link>
+    <Shell>
+      <div
+        style={{
+          position: "fixed",
+          bottom: 0,
+          left: 0,
+          right: 0,
+          zIndex: 10,
+          backgroundColor: "var(--mantine-color-body)",
+          paddingBottom: "32px",
+        }}
+      >
+        <Container size={"sm"}>
+          <ThoughtBox editor={editor} />
         </Container>
-        {/* <Nav /> */}
-      </AppShell.Header>
+      </div>
 
-      {/* <AppShell.Navbar>nav</AppShell.Navbar> */}
-
-      <AppShell.Main>
-        <div
-          style={{
-            position: "fixed",
-            bottom: 0,
-            left: 0,
-            right: 0,
-            zIndex: 10,
-            backgroundColor: "var(--mantine-color-body)",
-            paddingBottom: "32px",
-          }}
-        >
-          <Container>
-            <ThoughtBox editor={editor} />
-          </Container>
-        </div>
-
-        {/* <EditorContent editor={editor} /> */}
-        {/* <Button
+      {/* <EditorContent editor={editor} /> */}
+      {/* <Button
               className="text-3xl rounded-xl"
               onClick={() => {
                 document.dispatchEvent(new CustomEvent("submit"));
@@ -132,12 +115,13 @@ const MainPage = () => {
             >
               submit
             </Button> */}
-        <Container>
-          <ThoughtList thoughts={thoughts} />
-        </Container>
-      </AppShell.Main>
-    </AppShell>
+      <Container size="sm">
+        <ThoughtList thoughts={thoughts} />
+      </Container>
+
+      <Space h="lg" />
+    </Shell>
   );
 };
 
-export default MainPage;
+export default MeldView;
