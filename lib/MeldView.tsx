@@ -5,7 +5,7 @@ import { AuthContext } from "@/lib/authprovider";
 import { Thought } from "@/lib/types/thoughts";
 import { ThoughtContext } from "@/lib/thoughtprovider";
 import Nav from "../app/nav";
-import ThoughtList from "@/lib/display/thought_display";
+import ThoughtList, { SuggestionList } from "@/lib/display/thought_display";
 
 import { EditorContent } from "@tiptap/react";
 import Comind from "@/lib/comind";
@@ -122,11 +122,10 @@ const MeldView = () => {
       </Container>
 
       <Container size="sm">
-        <Divider label="Suggestions" />
-        <ThoughtList thoughts={suggestions} />
+        <SuggestionList thoughts={suggestions} />
       </Container>
 
-      <Space h="lg" />
+      <Space h="xl" />
     </Shell>
   );
 };

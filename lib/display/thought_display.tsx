@@ -4,11 +4,15 @@ import { Thought } from "@/lib/types/thoughts";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import {
+  IconArrowBarToUp,
   IconBubble,
   IconBulb,
+  IconChevronCompactDown,
+  IconChevronCompactUp,
   IconGitBranch,
   IconIdBadge,
   IconMaximize,
+  IconPlus,
   IconTrash,
 } from "@tabler/icons-react";
 // import { convertToRelativeTimestamp } from "@/lib/utils";
@@ -33,8 +37,14 @@ import {
   Transition,
   TypographyStylesProvider,
   Divider,
+  ScrollArea,
+  Box,
 } from "@mantine/core";
 import { convertToRelativeTimestamp } from "../utils";
+
+// Visual stuff
+const lineWidth = 2;
+const bulletSize = 18;
 
 type ThoughtDisplayProps = {
   thought: Thought;
@@ -177,6 +187,47 @@ const ThoughtDisplay: React.FC<ThoughtDisplayProps> = ({ thought }) => {
   );
 };
 
+const SuggestionDisplay: React.FC<ThoughtDisplayProps> = ({ thought }) => {
+  // Modal stuff
+  // const auth = useContext(AuthContext);
+
+  // Load context
+  // const { userId } = useContext(AuthContext);
+
+  const theme = useMantineTheme();
+
+  // State variables
+  const [contextMenuVisible, setContextMenuVisible] = useState(false);
+  // const [hovered, setHovered] = useState(true);
+  // const [editorValue, setEditorValue] = useState("");
+
+  // Date created converted to a pretty date time
+  const prettyTimestamp = convertToRelativeTimestamp(thought.date_created);
+  // const isUserThought = thought.user_id == userId;
+
+  // Toggle context menu
+  const openContextMenu = () => {
+    setContextMenuVisible(!contextMenuVisible);
+  };
+
+  const buttonSize = "sm";
+  const buttonColor = "light";
+
+  return (
+    <TimelineItem lineVariant="dotted">
+      <TypographyStylesProvider>
+        <Markdown remarkPlugins={[remarkGfm]}>{thought.body}</Markdown>
+      </TypographyStylesProvider>
+      {/* Time info */}
+      <Group>
+        <Text size="xs" c="dimmed">
+          {prettyTimestamp}
+        </Text>
+      </Group>
+    </TimelineItem>
+  );
+};
+
 interface ThoughtListProps {
   thoughts: Thought[];
 }
@@ -188,18 +239,53 @@ const ThoughtList: React.FC<ThoughtListProps> = ({ thoughts }) => {
   }
 
   return (
-    <Timeline active={1} lineWidth={2}>
+    <Timeline active={2} lineWidth={lineWidth} bulletSize={bulletSize}>
       {thoughts.map((thought, index) => (
         <ThoughtDisplay key={index} thought={thought} />
       ))}
     </Timeline>
-    // <div className="thought-list">
-    //   {thoughts.map((thought, index) => (
-    //     <ThoughtDisplay key={index} thought={thought} />
-    //   ))}
-    // </div>
+  );
+};
+
+const SuggestionList: React.FC<ThoughtListProps> = ({ thoughts }) => {
+  if (thoughts.length === 0) {
+    return <></>;
+  }
+
+  const [open, setOpen] = useState(true);
+
+  return (
+    <div>
+      <Divider
+        label={
+          <>
+            <ActionIcon
+              variant="subtle"
+              size="md"
+              onClick={() => setOpen(!open)}
+            >
+              {open ? <IconChevronCompactUp /> : <IconChevronCompactDown />}
+            </ActionIcon>
+          </>
+        }
+        labelPosition="center"
+        my="sm"
+      />
+      {open && (
+        <>
+          <ScrollArea h={250} type="auto">
+            <Timeline active={1} lineWidth={lineWidth} bulletSize={bulletSize}>
+              {thoughts.map((thought, index) => (
+                <SuggestionDisplay key={index} thought={thought} />
+              ))}
+            </Timeline>
+          </ScrollArea>
+          <Divider label="suggestions" labelPosition="center" my="sm" />
+        </>
+      )}
+    </div>
   );
 };
 
 export default ThoughtList;
-export { ThoughtDisplay };
+export { ThoughtDisplay, SuggestionList, SuggestionDisplay };
