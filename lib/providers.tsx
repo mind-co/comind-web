@@ -22,7 +22,7 @@ const theme = createTheme({});
 // Create a provider that wraps the NextUIProvider and AuthProvider
 const Providers: React.FC<ProvidersProps> = ({ children }) => {
   // Dark mode/light mode hooks
-  const preferredColorScheme = useColorScheme("light");
+  const preferredColorScheme = useColorScheme("dark");
   const [colorScheme, setColorScheme] = useState(preferredColorScheme);
 
   return (

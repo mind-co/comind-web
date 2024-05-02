@@ -4,6 +4,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { AuthContext } from "@/lib/authprovider";
 import Nav from "../../nav";
 import { Thought } from "@/lib/types/thoughts";
+import MeldView from "@/lib/MeldView";
 
 interface MeldDisplayPageProps {
   // Add any additional props here

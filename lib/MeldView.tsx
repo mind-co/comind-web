@@ -18,6 +18,7 @@ import {
   Button,
   Center,
   Container,
+  Divider,
   Grid,
   Space,
   Stack,
@@ -44,7 +45,8 @@ const ThemeChanger = () => {
 
 const MeldView = () => {
   const auth = useContext(AuthContext);
-  const { addThoughtToProvider, thoughts } = useContext(ThoughtContext);
+  const { addThoughtToProvider, thoughts, suggestions } =
+    useContext(ThoughtContext);
   const [editorValue, setEditorValue] = useState("");
   const editor = ThoughtBoxEditor({ onUpdate: setEditorValue });
   const [opened, { toggle }] = useDisclosure();
@@ -117,6 +119,11 @@ const MeldView = () => {
             </Button> */}
       <Container size="sm">
         <ThoughtList thoughts={thoughts} />
+      </Container>
+
+      <Container size="sm">
+        <Divider label="Suggestions" />
+        <ThoughtList thoughts={suggestions} />
       </Container>
 
       <Space h="lg" />

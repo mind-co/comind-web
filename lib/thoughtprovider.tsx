@@ -20,6 +20,7 @@ interface ThoughtContextValue {
   pings: Ping[];
   comindThoughts: Thought[];
   addThoughtToProvider: (thought: Thought) => void;
+  suggestions: Thought[];
 }
 
 const ThoughtContext = createContext<ThoughtContextValue>(
@@ -30,7 +31,7 @@ const ThoughtProvider: React.FC<ThoughtProviderProps> = ({ children }) => {
   const { token } = useContext(AuthContext);
   const [connected, setConnected] = useState(false);
   const [thoughts, setThoughts] = useState<Thought[]>([]);
-  const [recommended, setRecommended] = useState<Thought[]>([]);
+  const [suggestions, setSuggestions] = useState<Thought[]>([]);
   const [pings, setPings] = useState<Ping[]>([]);
   const [comindThoughts, setComindThoughts] = useState<Thought[]>([]);
   const websocketRef = useRef<WebSocket | null>(null);
@@ -89,6 +90,20 @@ const ThoughtProvider: React.FC<ThoughtProviderProps> = ({ children }) => {
           });
         }
 
+        // When we receive suggestions
+        if (message.suggestions) {
+          setSuggestions((preSuggestions) => {
+            const newSuggestions = message.suggestions.filter(
+              (thought: Thought) => {
+                return !preSuggestions.some(
+                  (prevThought) => prevThought.id === thought.id
+                );
+              }
+            );
+            return [...preSuggestions, ...newSuggestions];
+          });
+        }
+
         // Handles notifications.
         if (message.pings) {
           setPings((prevPings) => {
@@ -141,6 +156,7 @@ const ThoughtProvider: React.FC<ThoughtProviderProps> = ({ children }) => {
     pings,
     comindThoughts,
     addThoughtToProvider,
+    suggestions,
   };
 
   return (
