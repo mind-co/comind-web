@@ -5,6 +5,8 @@ import React, { useContext, useEffect, useState } from "react";
 import { AuthContext } from "@/lib/authprovider";
 import Nav from "../nav";
 import ThoughtList from "@/lib/display/thought_display";
+import { AppShell, Container } from "@mantine/core";
+import Shell from "../Shell";
 
 interface ThoughtsPageProps {
   // Add any additional props here
@@ -34,11 +36,11 @@ const ThoughtPage: React.FC<ThoughtsPageProps> = () => {
   };
 
   return (
-    <div className="comind-center-column">
-      <Nav />
-      <div className="instruction">these are your thoughts</div>
-      <ThoughtList thoughts={thoughts} />
-    </div>
+    <Shell>
+      <Container size="sm">
+        <ThoughtList thoughts={thoughts} />
+      </Container>
+    </Shell>
   );
 };
 export default ThoughtPage;

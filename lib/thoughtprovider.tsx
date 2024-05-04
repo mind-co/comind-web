@@ -50,8 +50,13 @@ const ThoughtProvider: React.FC<ThoughtProviderProps> = ({ children }) => {
         setConnected(true);
       };
 
-      websocketRef.current.onclose = () => {
-        console.log("WebSocket connection closed");
+      websocketRef.current.onclose = (event) => {
+        console.log(
+          "WebSocket connection closed. Code:",
+          event.code,
+          "Reason:",
+          event.reason
+        );
       };
 
       websocketRef.current.onerror = (error) => {
@@ -131,10 +136,12 @@ const ThoughtProvider: React.FC<ThoughtProviderProps> = ({ children }) => {
       };
 
       return () => {
-        websocketRef.current?.close();
+        if (websocketRef.current) {
+          websocketRef.current.close(1000, "Closing connection normally");
+        }
       };
     }
-  }, [token]);
+  }, [token]); // need to include thoughts here somehow
 
   // Add a thought to the ThoughtProvider. This function
   //

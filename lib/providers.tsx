@@ -17,7 +17,9 @@ interface ProvidersProps {
 }
 
 // Make the theme
-const theme = createTheme({});
+const theme = createTheme({
+  primaryColor: "yellow",
+});
 
 // Create a provider that wraps the NextUIProvider and AuthProvider
 const Providers: React.FC<ProvidersProps> = ({ children }) => {

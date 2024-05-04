@@ -4,8 +4,28 @@ import { getUserMelds } from "@/lib/api";
 import React, { useContext, useEffect, useState } from "react";
 import { AuthContext } from "@/lib/authprovider";
 import MeldDisplay from "@/lib/display/meld_display";
-import Nav from "../nav";
 import { addMeld } from "@/lib/api";
+import Shell from "../Shell";
+import {
+  ActionIcon,
+  ActionIconGroup,
+  Button,
+  Container,
+  Divider,
+  Space,
+  TextInput,
+  Textarea,
+  Loader,
+  Center,
+  Alert,
+} from "@mantine/core";
+import {
+  IconBulb,
+  IconLoader,
+  IconPlus,
+  IconRefresh,
+} from "@tabler/icons-react";
+import Loading from "@/lib/loading";
 
 interface MeldPageProps {
   // Add any additional props here
@@ -24,15 +44,15 @@ const MeldPage: React.FC<MeldPageProps> = () => {
   const [newMeldTitle, setNewMeldTitle] = useState("");
   const [newMeldDescription, setNewMeldDescription] = useState("");
 
-  const handleAddMeld = async () => {
+  const handleAddMeldClick = async () => {
     if (newMeldTitle.trim() !== "") {
       try {
         const newMeld = {
           title: newMeldTitle,
           description: newMeldDescription,
         };
-        const updatedMelds = await addMeld(auth, newMeld);
-        setMelds(updatedMelds);
+        const newMeldReceipt = await addMeld(auth, newMeld);
+        setMelds([...melds, newMeldReceipt]);
         setNewMeldTitle("");
         setNewMeldDescription("");
       } catch (error) {
@@ -41,34 +61,53 @@ const MeldPage: React.FC<MeldPageProps> = () => {
     }
   };
 
-  useEffect(() => {
-    // Fetch melds from the API and update the state
-    // Ensure this runs only on the client side
-    if (typeof window !== "undefined" && token) {
-      fetchMelds();
-    }
-  }, [token]);
-
   const fetchMelds = async () => {
     const userMelds = await getUserMelds(auth);
     setMelds(userMelds);
   };
 
+  const handleRefreshClick = async () => {
+    fetchMelds();
+  };
+
+  useEffect(() => {
+    // Fetch melds from the API and update the state
+    // Ensure this runs only on the client side
+    if (typeof window !== "undefined" && auth.token) {
+      fetchMelds();
+    }
+  }, [auth]);
+
   return (
-    <div className="comind-center-column">
-      <Nav />
-      <div className="instruction">these are your melds</div>
-      <div className="action-bar-meld">
-        <input
-          type="text"
-          placeholder="new meld title"
+    <Shell>
+      <Container size="sm">
+        <TextInput
+          placeholder="title"
+          label="new meld"
           value={newMeldTitle}
           onChange={(e) => setNewMeldTitle(e.target.value)}
         />
-        <button onClick={handleAddMeld}>add meld</button>
-      </div>
-      <MeldList melds={melds} />
-    </div>
+        <Space h={"xs"} />
+        <Textarea
+          placeholder="description (optional)"
+          value={newMeldDescription}
+          onChange={(e) => setNewMeldDescription(e.target.value)}
+        />
+        <Space h={"xs"} />
+        <ActionIconGroup>
+          <ActionIcon variant="default" onClick={handleAddMeldClick}>
+            <IconPlus />
+          </ActionIcon>
+
+          {/* Refresh button */}
+          <ActionIcon variant="default" onClick={handleRefreshClick}>
+            <IconRefresh />
+          </ActionIcon>
+        </ActionIconGroup>
+        <Divider my="sm" />
+        <MeldList melds={melds} />
+      </Container>
+    </Shell>
   );
 };
 
@@ -78,13 +117,27 @@ interface MeldListProps {
 
 const MeldList: React.FC<MeldListProps> = ({ melds }) => {
   if (melds.length === 0) {
-    return <div>but we don`&apos;`t have any yet</div>;
+    return (
+      <Container>
+        {/* <Space h={"xl"} /> */}
+        <Center>
+          <Alert icon={<IconBulb />}>
+            {/* TODO #7 support notifying that there are no melds after retrieval */}
+            we're loading your melds, give us a sec. you might also not have any
+            melds but that's not in the server right now.
+          </Alert>
+        </Center>
+      </Container>
+    );
   }
 
   return (
     <div className="meld-list">
       {melds.map((meld, index) => (
-        <MeldDisplay key={index} meld={meld} />
+        <div key={index}>
+          <MeldDisplay meld={meld} />
+          <Space h={"xs"} />
+        </div>
       ))}
     </div>
   );

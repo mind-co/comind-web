@@ -81,7 +81,7 @@ const MeldDisplayPage: React.FC<MeldDisplayPageProps> = () => {
     };
 
     startClient();
-  }, []);
+  }, [auth.username]);
 
   // Return early if no meld
   if (!meld) {
@@ -94,7 +94,8 @@ const MeldDisplayPage: React.FC<MeldDisplayPageProps> = () => {
   }
 
   // Return statement for debugging
-  return <MeldView meld={meld} />;
+  // return <MeldView meld={meld} />;
+  return <div>under construction</div>;
 };
 
 export default MeldDisplayPage;

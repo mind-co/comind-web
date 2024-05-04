@@ -651,6 +651,7 @@ async function getUserMelds(context: any): Promise<Meld[]> {
     }
 
     const data = await response.json();
+    console.log("Reveived user melds: ", data);
     return data.melds;
   } catch (error) {
     console.error("Error fetching user melds. Detailed error:", error);
@@ -703,7 +704,7 @@ export { getUserMelds, getMeld };
 // POST /api/melds/
 // Authorization: Bearer {token from AuthContext}
 // Body: { title, description, color, thoughts }
-async function addMeld(context: any, meldData: Partial<Meld>): Promise<Meld[]> {
+async function addMeld(context: any, meldData: Partial<Meld>): Promise<Meld> {
   if (!context.token || !context.username) {
     throw new Error(
       "Missing authentication details: token or username is undefined."

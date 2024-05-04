@@ -43,3 +43,14 @@ p, h1, h2, h3, h4, h5, h6 {
   margin-top: 0;
 }
 
+.comind-primary {
+  color: rgb(var(--comind-primary-rgb));
+}
+
+.comind-secondary {
+  color: rgb(var(--comind-secondary-rgb));
+}
+
+.comind-tertiary {
+  color: rgb(var(--comind-tertiary-rgb));
+}

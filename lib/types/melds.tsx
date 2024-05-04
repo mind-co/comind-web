@@ -1,3 +1,5 @@
+import { Thought } from "./thoughts";
+
 class Meld {
   title: string;
   description: string;
@@ -7,6 +9,9 @@ class Meld {
   date_created: string;
   date_updated: string;
   color: string;
+  thoughts: Thought[];
+  thought_count: number | null;
+  slug: string;
 
   constructor(json: any) {
     this.title = json.title;
@@ -17,6 +22,9 @@ class Meld {
     this.date_created = json.date_created;
     this.date_updated = json.date_updated;
     this.color = json.color;
+    this.thoughts = json.thoughts;
+    this.thought_count = json.thought_count;
+    this.slug = json.slug;
   }
 
   static jsonToMeld(json: any): Meld {
@@ -33,6 +41,9 @@ class Meld {
       date_created: this.date_created,
       date_updated: this.date_updated,
       color: this.color,
+      thoughts: this.thoughts,
+      thought_count: this.thought_count,
+      slug: this.slug,
     };
   }
 }
@@ -47,6 +58,9 @@ const testMeldJson = {
   date_created: "2021-08-06T00:00:00Z",
   date_updated: "2021-10-06T00:00:00Z",
   color: "#000000",
+  thoughts: [],
+  thought_count: null,
+  slug: "test-meld",
 };
 
 const testMeld = Meld.jsonToMeld(testMeldJson);
