@@ -1,12 +1,11 @@
 "use client";
 import React, { useContext, useState } from "react";
-import { Button, ButtonGroup, Input } from "@nextui-org/react";
-import { NextUIProvider } from "@nextui-org/react";
 import { AuthContext, AuthProvider } from "@/lib/authprovider";
 import { env } from "process";
 import { redirect } from "next/navigation";
 import Comind from "@/lib/comind";
-import { TextField } from "@mui/material";
+import { Button, ButtonGroup, Container, Input, Space } from "@mantine/core";
+import Shell from "../Shell";
 
 const LoginPage: React.FC = () => {
   const { token, login } = useContext(AuthContext);
@@ -17,7 +16,6 @@ const LoginPage: React.FC = () => {
   // If we're already logged in, then
   // redirect to the home page.
   if (token) {
-    // @ts-ignore
     redirect("/");
   }
 
@@ -47,38 +45,40 @@ const LoginPage: React.FC = () => {
   };
 
   return (
-    <main className="">
-      <div
-        suppressHydrationWarning
-        className="flex flex-col items-center justify-center h-screen max-w-[400px] mx-auto space-y-9"
-      >
-        <div className="instruction">
-          wanna log in to <Comind />?
-        </div>
-        <Input
-          label="Username"
-          variant="bordered"
-          labelPlacement="outside"
-          onChange={handleUsernameChange}
-        />
-        <Input
-          label="Password"
-          type="password"
-          labelPlacement="outside"
-          variant="bordered"
-          value={password}
-          onChange={handlePasswordChange}
-        />
-        <ButtonGroup>
-          <Button onClick={handleLoginClick} variant="ghost">
-            Login
-          </Button>
-          <Button onClick={handleLoginClick} variant="ghost">
-            Sign up
-          </Button>
-        </ButtonGroup>
-      </div>
-    </main>
+    <Shell>
+      <Container size="sm">
+        <main className="">
+          <div suppressHydrationWarning>
+            <div className="instruction">
+              wanna log in to <Comind />?
+            </div>
+            <Space h="md" />
+            <Input
+              size="lg"
+              onChange={handleUsernameChange}
+              placeholder="username"
+            />
+            <Space h="md" />
+            <Input
+              size="lg"
+              type="password"
+              placeholder="password"
+              value={password}
+              onChange={handlePasswordChange}
+            />
+            <Space h="md" />
+            <ButtonGroup>
+              <Button onClick={handleLoginClick} variant="default">
+                Login
+              </Button>
+              {/* <Button onClick={handleLoginClick} variant="ghost">
+                Sign up
+              </Button> */}
+            </ButtonGroup>
+          </div>
+        </main>
+      </Container>
+    </Shell>
   );
 };
 
