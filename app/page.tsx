@@ -4,7 +4,7 @@ import { AuthContext } from "@/lib/authprovider";
 import MainPage from "../lib/MeldView";
 import { redirect } from "next/navigation";
 import Comind from "@/lib/comind";
-import { Center, Container } from "@mantine/core";
+import { Center, Container, Space, Text, Title } from "@mantine/core";
 import { ThoughtProvider } from "@/lib/thoughtprovider";
 
 // Main entry point for the application
@@ -14,11 +14,23 @@ export default function App() {
   // Wait on loading
   if (isLoading) {
     return (
-      <Container>
-        <Center>
-          <Comind /> is thinking.
-        </Center>
-      </Container>
+      <div
+        style={{
+          width: "100vw",
+          height: "100vh",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <div style={{ fontSize: "10vmin" }}>
+          <Comind /> is thinking
+          {/* <Comind /> */}
+        </div>
+
+        <div style={{ fontSize: "5vmin" }}>we promise</div>
+      </div>
     );
   }
 
