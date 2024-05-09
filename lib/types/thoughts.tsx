@@ -17,6 +17,12 @@ class Thought {
   cosine_similarity: number | null;
   embedding: number[] | null;
 
+  // Suggested thought ID is a string associated with a specific thought --
+  // i.e. we have some thought A and some thought B, and A is suggested
+  // for B. In this case, suggested_thought_id would be the ID of A.
+  // TODO: #9 make the server send thoughts with suggested_thought_id
+  suggested_thought_id: string | null;
+
   constructor(json: any) {
     this.title = json.title || "";
     this.body = json.body || "";
@@ -32,6 +38,7 @@ class Thought {
     this.color = json.color || "";
     this.cosine_similarity = json.cosine_similarity || null;
     this.embedding = json.embedding || null;
+    this.suggested_thought_id = json.suggested_thought_id || null;
   }
 
   static newThought(body: string, auth: any, title?: string): Thought {
@@ -50,6 +57,7 @@ class Thought {
       color: auth.color,
       cosine_similarity: null,
       embedding: null,
+      suggested_thought_id: null,
     });
   }
 
@@ -69,6 +77,7 @@ class Thought {
       color: "",
       cosine_similarity: null,
       embedding: null,
+      suggested_thought_id: null,
     });
   }
 
@@ -88,9 +97,9 @@ class Thought {
       color: "red",
       cosine_similarity: null,
       embedding: null,
+      suggested_thought_id: null,
     });
   }
 }
 
 export { Thought };
-

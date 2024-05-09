@@ -5,6 +5,9 @@ import { AuthContext } from "@/lib/authprovider";
 import Nav from "../../nav";
 import { Thought } from "@/lib/types/thoughts";
 import MeldView from "@/lib/MeldView";
+import Shell from "@/app/Shell";
+import Loading from "@/lib/loading";
+import Comind from "@/lib/comind";
 
 interface MeldDisplayPageProps {
   // Add any additional props here
@@ -86,10 +89,30 @@ const MeldDisplayPage: React.FC<MeldDisplayPageProps> = () => {
   // Return early if no meld
   if (!meld) {
     return (
-      <div className="comind-center-column">
-        <Nav />
-        ayo i`&apos;`m loading the meld
-      </div>
+      <Shell>
+        <div
+          style={{
+            width: "100vw",
+            height: "100vh",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <div style={{ fontSize: "10vmin" }}>
+            melding
+            {/* <Comind /> */}
+          </div>
+
+          <div style={{ fontSize: "5vmin" }}>give us a sec</div>
+        </div>
+      </Shell>
+
+      // <div className="comind-center-column">
+      //   <Nav />
+      //   ayo i&apos;m loading the meld
+      // </div>
     );
   }
 

@@ -76,7 +76,7 @@ const MeldDisplay: React.FC<MeldDisplayProps> = ({ meld }) => {
           <ButtonGroup>
             <Button
               component="a"
-              href={`/meld/${meld.slug}`}
+              href={`/melds/${meld.slug}`}
               size="xs"
               variant="default"
             >
