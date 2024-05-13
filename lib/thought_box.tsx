@@ -60,9 +60,9 @@ const ThoughtBox = ({ editor }: { editor: Editor }) => {
       <div style={{ position: "absolute", bottom: "0", right: "0" }}>
         <ActionIcon
           size="xl"
-          variant="subtle"
-          mr={4}
-          mb={4}
+          variant="default"
+          mr={7}
+          mb={7}
           onClick={() => {
             document.dispatchEvent(new CustomEvent("submit"));
           }}

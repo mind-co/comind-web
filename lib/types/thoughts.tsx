@@ -24,21 +24,21 @@ class Thought {
   suggested_thought_id: string | null;
 
   constructor(json: any) {
-    this.title = json.title || "";
-    this.body = json.body || "";
-    this.user_id = json.user_id || "";
-    this.username = json.username || "";
-    this.date_created = json.date_created || new Date().toISOString();
-    this.date_updated = json.date_updated || new Date().toISOString();
-    this.revision = json.revision || 0;
-    this.id = json.id || uuidv4();
-    this.public = json.public || false;
-    this.synthetic = json.synthetic || false;
-    this.origin = json.origin || "web";
-    this.color = json.color || "";
-    this.cosine_similarity = json.cosine_similarity || null;
-    this.embedding = json.embedding || null;
-    this.suggested_thought_id = json.suggested_thought_id || null;
+    this.title = json?.title || "";
+    this.body = json?.body || "";
+    this.user_id = json?.user_id || "";
+    this.username = json?.username || "";
+    this.date_created = json?.date_created || new Date().toISOString();
+    this.date_updated = json?.date_updated || new Date().toISOString();
+    this.revision = json?.revision || 0;
+    this.id = json?.id || uuidv4();
+    this.public = json?.public || false;
+    this.synthetic = json?.synthetic || false;
+    this.origin = json?.origin || "web";
+    this.color = json?.color || "";
+    this.cosine_similarity = json?.cosine_similarity || null;
+    this.embedding = json?.embedding || null;
+    this.suggested_thought_id = json?.suggested_thought_id || null;
   }
 
   static newThought(body: string, auth: any, title?: string): Thought {

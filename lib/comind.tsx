@@ -3,11 +3,16 @@ import React from "react";
 
 const Comind: React.FC = () => {
   return (
-    <Link href="/" className="comind-logo">
+    <span>
+      {/* <Link href="/" className="comind-logo"> */}
+      {/* comind */}
+      <span className="comind-logo-nd">{"{"}</span>
       <span className="comind-logo-co">co</span>
-      <span className="comind-logo-mi">mi</span>
-      <span className="comind-logo-nd">nd</span>
-    </Link>
+      <span className="comind-logo-mi">mind</span>
+      {/* <span className="comind-logo-nd">nd</span> */}
+      <span className="comind-logo-nd">{"}"}</span>
+      {/* </Link> */}
+    </span>
   );
 };
 

@@ -70,6 +70,7 @@ class Meld {
   }
 
   addSuggestion(newSuggestion: Thought): void {
+    console.log("Adding suggestion", newSuggestion);
     // If there's no suggested_thought_id, throw an error.
     if (!newSuggestion.suggested_thought_id) {
       throw new Error("No suggested_thought_id provided");
@@ -78,8 +79,9 @@ class Meld {
     // Add the suggestion to the suggestions list. If the thought id
     // does not exist in the suggestions list, add it.
     if (!this.suggestions[newSuggestion.suggested_thought_id]) {
-      this.suggestions[newSuggestion.id] = [];
+      this.suggestions[newSuggestion.suggested_thought_id] = [];
     }
+    console.log(this.suggestions);
     this.suggestions[newSuggestion.suggested_thought_id].push(newSuggestion);
   }
 

@@ -48,9 +48,13 @@ const bulletSize = 18;
 
 type ThoughtDisplayProps = {
   thought: Thought;
+  suggestions: Thought[];
 };
 
-const ThoughtDisplay: React.FC<ThoughtDisplayProps> = ({ thought }) => {
+const ThoughtDisplay: React.FC<ThoughtDisplayProps> = ({
+  thought,
+  suggestions,
+}) => {
   // Modal stuff
   // const auth = useContext(AuthContext);
 
@@ -129,13 +133,15 @@ const ThoughtDisplay: React.FC<ThoughtDisplayProps> = ({ thought }) => {
   const buttonSize = "sm";
   const buttonColor = "light";
 
+  //
+
   return (
-    <TimelineItem title={thought.username}>
+    <>
       {/* Content */}
       {/* <Card radius="md" withBorder variant=""> */}
-      <TypographyStylesProvider>
+      {/* <TypographyStylesProvider>
         <Markdown remarkPlugins={[remarkGfm]}>{thought.body}</Markdown>
-      </TypographyStylesProvider>
+      </TypographyStylesProvider> */}
 
       {/* <Divider my="md" /> */}
 
@@ -155,39 +161,43 @@ const ThoughtDisplay: React.FC<ThoughtDisplayProps> = ({ thought }) => {
       <Space h="xs" /> */}
 
       {/* Time info */}
-      <Group>
+      {/* <Group>
         <Text size="xs" c="dimmed">
           {prettyTimestamp}
         </Text>
-      </Group>
-    </TimelineItem>
+      </Group> */}
+      <>
+        <Card shadow="xs" padding="xs" radius="lg" withBorder={true}>
+          <Group>
+            <Badge variant="dot">{thought.username}</Badge>
+          </Group>
+
+          <Markdown remarkPlugins={[remarkGfm]}>{thought.body}</Markdown>
+          {/* <div className="w-full px-4 flex flex-row space-x-2 text-xs">
+        <div className="text-xs">{prettyTimestamp}</div>
+      </div> */}
+          <Group>
+            {/* Maximize button */}
+            <Tooltip label="Maximize">
+              <ActionIcon variant="subtle" size="xs">
+                <IconMaximize />
+              </ActionIcon>
+            </Tooltip>
+          </Group>
+        </Card>
+        <Space h="xs" />
+      </>
+    </>
 
     // Card variant
-    // <>
-    //   <Card shadow="md" padding="xs">
-    //     <Group>
-    //       <Badge variant="dot">{thought.username}</Badge>
-    //     </Group>
-
-    //     <Markdown remarkPlugins={[remarkGfm]}>{thought.body}</Markdown>
-    //     {/* <div className="w-full px-4 flex flex-row space-x-2 text-xs">
-    //     <div className="text-xs">{prettyTimestamp}</div>
-    //   </div> */}
-    //     <Group>
-    //       {/* Maximize button */}
-    //       <Tooltip label="Maximize">
-    //         <ActionIcon variant="subtle" size="xs">
-    //           <IconMaximize />
-    //         </ActionIcon>
-    //       </Tooltip>
-    //     </Group>
-    //   </Card>
-    //   <Space h="xs" />
-    // </>
   );
 };
 
-const SuggestionDisplay: React.FC<ThoughtDisplayProps> = ({ thought }) => {
+type SuggestionDisplayProps = {
+  thought: Thought;
+};
+
+const SuggestionDisplay: React.FC<SuggestionDisplayProps> = ({ thought }) => {
   // Modal stuff
   // const auth = useContext(AuthContext);
 
@@ -214,7 +224,7 @@ const SuggestionDisplay: React.FC<ThoughtDisplayProps> = ({ thought }) => {
   const buttonColor = "light";
 
   return (
-    <TimelineItem lineVariant="dotted">
+    <>
       <TypographyStylesProvider>
         <Markdown remarkPlugins={[remarkGfm]}>{thought.body}</Markdown>
       </TypographyStylesProvider>
@@ -224,68 +234,138 @@ const SuggestionDisplay: React.FC<ThoughtDisplayProps> = ({ thought }) => {
           {prettyTimestamp}
         </Text>
       </Group>
-    </TimelineItem>
+    </>
   );
 };
 
 interface ThoughtListProps {
   thoughts: Thought[];
+  suggestions: { [id: string]: Thought[] };
 }
 
-const ThoughtList: React.FC<ThoughtListProps> = ({ thoughts }) => {
+const ThoughtList: React.FC<ThoughtListProps> = ({ thoughts, suggestions }) => {
   if (thoughts.length === 0) {
     return <></>;
     // return <div className="w-full text-center">. . .</div>;
   }
 
+  const [suggestionsOpen, setSuggestionsOpen] = useState<boolean[]>(
+    new Array(thoughts.length).fill(false) as boolean[]
+  );
+
+  // Toggle suggestions open
+  const toggleSuggestionsOpen = (index: number) => {
+    setSuggestionsOpen((prev) => {
+      const newArray = [...prev];
+      newArray[index] = !newArray[index];
+      return newArray;
+    });
+  };
+
   return (
-    <Timeline active={2} lineWidth={lineWidth} bulletSize={bulletSize}>
-      {thoughts.map((thought, index) => (
-        <ThoughtDisplay key={index} thought={thought} />
-      ))}
-    </Timeline>
+    <>
+      <Timeline active={2} lineWidth={lineWidth} bulletSize={bulletSize}>
+        {thoughts.map((thought, index) => (
+          <TimelineItem title={thought.title}>
+            <Container>
+              <React.Fragment key={index}>
+                <ThoughtDisplay
+                  thought={thought}
+                  suggestions={suggestions[thought.id]}
+                />
+
+                <Divider
+                  labelPosition="center"
+                  my=""
+                  label={
+                    <>
+                      <ActionIcon
+                        variant="subtle"
+                        size="md"
+                        onClick={() => toggleSuggestionsOpen(index)}
+                      >
+                        {suggestionsOpen[index] ? (
+                          <IconChevronCompactUp />
+                        ) : (
+                          <IconChevronCompactDown />
+                        )}
+                      </ActionIcon>
+                    </>
+                  }
+                />
+
+                {/* Suggestions */}
+                {suggestionsOpen && suggestions[thought.id] && (
+                  // <Container bg="red">
+                  <ScrollArea h={350} type="auto">
+                    <Timeline lineWidth={lineWidth} bulletSize={bulletSize}>
+                      {suggestions[thought.id].map((suggestion, indexb) => (
+                        <TimelineItem
+                          key={`${index}-${indexb}`}
+                          title={suggestion.title}
+                          lineVariant="dotted"
+                        >
+                          <Container px={5}>
+                            <SuggestionDisplay thought={suggestion} />
+                          </Container>
+                        </TimelineItem>
+                      ))}
+                    </Timeline>
+                  </ScrollArea>
+                  // </Container>
+                )}
+              </React.Fragment>
+            </Container>
+          </TimelineItem>
+        ))}
+      </Timeline>
+    </>
   );
 };
 
-const SuggestionList: React.FC<ThoughtListProps> = ({ thoughts }) => {
-  if (thoughts.length === 0) {
-    return <></>;
-  }
+// const SuggestionList: React.FC<ThoughtListProps> = ({ thoughts }) => {
+//   if (thoughts.length === 0) {
+//     return <></>;
+//   }
 
-  const [open, setOpen] = useState(true);
+//   const [open, setOpen] = useState(true);
 
-  return (
-    <div>
-      <Divider
-        label={
-          <>
-            <ActionIcon
-              variant="subtle"
-              size="md"
-              onClick={() => setOpen(!open)}
-            >
-              {open ? <IconChevronCompactUp /> : <IconChevronCompactDown />}
-            </ActionIcon>
-          </>
-        }
-        labelPosition="center"
-        my="sm"
-      />
-      {open && (
-        <>
-          <ScrollArea h={250} type="auto">
-            <Timeline active={1} lineWidth={lineWidth} bulletSize={bulletSize}>
-              {thoughts.map((thought, index) => (
-                <SuggestionDisplay key={index} thought={thought} />
-              ))}
-            </Timeline>
-          </ScrollArea>
-          <Divider label="suggestions" labelPosition="center" my="sm" />
-        </>
-      )}
-    </div>
-  );
-};
+//   return (
+//     <div>
+//       <Divider
+//         label={
+//           <>
+//             <ActionIcon
+//               variant="subtle"
+//               size="md"
+//               onClick={() => setOpen(!open)}
+//             >
+//               {open ? <IconChevronCompactUp /> : <IconChevronCompactDown />}
+//             </ActionIcon>
+//           </>
+//         }
+//         labelPosition="center"
+//         my="sm"
+//       />
+//       {open && (
+//         <>
+//           <ScrollArea h={250} type="auto">
+//             <Timeline active={1} lineWidth={lineWidth} bulletSize={bulletSize}>
+//               {thoughts.map((thought, index) => (
+//                 <SuggestionDisplay
+//                   key={index}
+//                   thought={thought}
+//                   suggestions={suggestions[thought.id]}
+//                 />
+//               ))}
+//             </Timeline>
+//           </ScrollArea>
+//           <Divider label="suggestions" labelPosition="center" my="sm" />
+//         </>
+//       )}
+//     </div>
+//   );
+// };
 
 export default ThoughtList;
-export { ThoughtDisplay, SuggestionList, SuggestionDisplay };
+export { ThoughtDisplay, SuggestionDisplay };

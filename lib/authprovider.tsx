@@ -31,7 +31,7 @@ const AuthContext = createContext<{
   userId: "",
   color: "",
   thoughtMode: "public",
-  isLoading: true,
+  isLoading: false,
   isAuthenticated: false,
 });
 
@@ -43,20 +43,42 @@ class AuthProvider extends React.Component<{ children: React.ReactNode }> {
     password: "",
     userId: "",
     color: "black",
-    isLoading: true,
+    isLoading: false,
     isAuthenticated: false,
+  };
+
+  // Function to check if a token has expired
+  isTokenExpired = (token: string | null): boolean => {
+    if (!token) {
+      return true;
+    }
+
+    const tokenParts = token.split(".");
+    const payload = JSON.parse(atob(tokenParts[1]));
+    const expirationDate = new Date(payload.exp * 1000);
+
+    return expirationDate < new Date();
   };
 
   componentDidMount() {
     // Check if we already have a cookie, in which case we can log in
     const cookieToken = this.loadTokenFromCookie();
-    if (this.state.token === null && cookieToken) {
+    if (
+      this.state.token === null &&
+      cookieToken &&
+      !this.isTokenExpired(cookieToken)
+    ) {
       this.setToken(cookieToken);
     }
   }
 
-  // Function to store the authentication token in a cookie
+  // Function to store the authentication token in a cookie if the token is not expired
   storeTokenInCookie = (token: string, expirationDays: number = 7) => {
+    if (this.isTokenExpired(token)) {
+      console.log("Token has expired, not storing in cookie");
+      return;
+    }
+
     const expirationDate = new Date();
     expirationDate.setDate(expirationDate.getDate() + expirationDays);
 
@@ -80,7 +102,17 @@ class AuthProvider extends React.Component<{ children: React.ReactNode }> {
         cookie = cookie.substring(1);
       }
       if (cookie.indexOf(cookieName) === 0) {
-        return cookie.substring(cookieName.length, cookie.length);
+        const token = cookie.substring(cookieName.length, cookie.length);
+        const tokenParts = token.split(".");
+        const payload = JSON.parse(atob(tokenParts[1]));
+
+        if (!this.isTokenExpired(token)) {
+          return token;
+        } else {
+          // Token has expired, remove it from the cookie
+          console.log("Token has expired, removing from cookie");
+          document.cookie = `token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+        }
       }
     }
 
@@ -92,6 +124,7 @@ class AuthProvider extends React.Component<{ children: React.ReactNode }> {
   setToken = (token: string) => {
     const tokenParts = token.split(".");
     const payload = JSON.parse(atob(tokenParts[1]));
+    console.log("Payload: ", payload);
     this.setState({
       token,
       username: payload.username,
@@ -108,20 +141,24 @@ class AuthProvider extends React.Component<{ children: React.ReactNode }> {
   // Create a login method
   login = async (username: string, password: string) => {
     // First check if the user is already logged in
-    console.log("Checking if already logged in");
-    if (this.state.token) {
+    console.log("Trying to log in", this.state);
+    if (this.state.token && !this.isTokenExpired(this.state.token)) {
+      console.log("Token found in state, setting token");
+      this.setToken(this.state.token);
       return;
     }
 
     // Next, see if we already have a token in a cookie
     const cookieToken = this.loadTokenFromCookie();
-    console.log("Cookie token:", cookieToken);
-    if (cookieToken) {
+    if (cookieToken && !this.isTokenExpired(cookieToken)) {
+      console.log("Token found in cookie, setting token");
       this.setToken(cookieToken);
       return;
     }
 
+    console.log("Logging in as", username);
     try {
+      console.log("Pinging the server");
       const response = await fetch("https://nimbus.pfiffer.org/api/login", {
         method: "POST",
         headers: {
@@ -146,8 +183,6 @@ class AuthProvider extends React.Component<{ children: React.ReactNode }> {
       // Handle network error
       console.error("Network error:", error);
     }
-
-    console.log("Logged in as", username);
   };
 
   // Create a method to clear the authentication state and log out
@@ -163,12 +198,21 @@ class AuthProvider extends React.Component<{ children: React.ReactNode }> {
     });
 
     // Remove the token from the cookie
+    console.log("clearAuth: removing token");
     document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
   };
 
   render() {
     const { children } = this.props;
-    const { token, username, password, userId, color, isLoading, isAuthenticated } = this.state;
+    const {
+      token,
+      username,
+      password,
+      userId,
+      color,
+      isLoading,
+      isAuthenticated,
+    } = this.state;
 
     return (
       <AuthContext.Provider

@@ -5,7 +5,7 @@ import { AuthContext } from "@/lib/authprovider";
 import { Thought } from "@/lib/types/thoughts";
 import { ThoughtContext } from "@/lib/thoughtprovider";
 import Nav from "../app/nav";
-import ThoughtList, { SuggestionList } from "@/lib/display/thought_display";
+import ThoughtList from "@/lib/display/thought_display";
 
 import { EditorContent } from "@tiptap/react";
 import Comind from "@/lib/comind";
@@ -30,6 +30,7 @@ import Link from "next/link";
 import { useTheme } from "next-themes";
 import ThoughtBoxEditor from "@/lib/ThoughtBoxEditor";
 import Shell from "../app/Shell";
+import { comindContainerWidth } from "./Configuration";
 
 const ThemeChanger = () => {
   const { theme, setTheme } = useTheme();
@@ -45,7 +46,7 @@ const ThemeChanger = () => {
 
 const MeldView = () => {
   const auth = useContext(AuthContext);
-  const { addThoughtToProvider, thoughts, suggestions } =
+  const { addThoughtToProvider, getCurrentThoughts, getCurrentSuggestions } =
     useContext(ThoughtContext);
   const [editorValue, setEditorValue] = useState("");
   const editor = ThoughtBoxEditor({ onUpdate: setEditorValue });
@@ -61,6 +62,7 @@ const MeldView = () => {
       // the editor value is not empty.
       let trimmedEditorValue = editorValue.trim();
       if (trimmedEditorValue.length == 0) {
+        console.log("Editor value is empty, not sending thought");
         return;
       }
 
@@ -101,7 +103,7 @@ const MeldView = () => {
           paddingBottom: "32px",
         }}
       >
-        <Container size={"sm"}>
+        <Container size={comindContainerWidth}>
           <ThoughtBox editor={editor} />
         </Container>
       </div>
@@ -117,13 +119,16 @@ const MeldView = () => {
             >
               submit
             </Button> */}
-      <Container size="sm">
-        <ThoughtList thoughts={thoughts} />
+      <Container size={comindContainerWidth}>
+        <ThoughtList
+          thoughts={getCurrentThoughts()}
+          suggestions={getCurrentSuggestions()}
+        />
       </Container>
 
-      <Container size="sm">
-        <SuggestionList thoughts={suggestions} />
-      </Container>
+      {/* <Container size="sm">
+        <SuggestionList thoughts={getCurrentSuggestions()} />
+      </Container> */}
 
       <Space h="xl" />
     </Shell>

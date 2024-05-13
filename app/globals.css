@@ -21,8 +21,7 @@ body {
 a {
   color: rgb(var(--comind-foreground-rgb));
   text-decoration: underline;
-  /* text-decoration-thickness: 1px; */
-  text-underline-offset: 2px;
+  text-underline-offset: 0.1em;
 }
 
 a:hover {
@@ -54,3 +53,26 @@ p, h1, h2, h3, h4, h5, h6 {
 .comind-tertiary {
   color: rgb(var(--comind-tertiary-rgb));
 }
+
+.comind-logo-co {
+  /* font-family: "Bungee"; */
+  /* color: rgb(var(--comind-primary-rgb)); */
+  /* position: relative; */
+  /* text-decoration: underline; */
+  /* text-decoration-color: rgb(var(--comind-primary-rgb)); */
+}
+
+.comind-logo-mi {
+  /* font-family: "Bungee"; */
+  /* color: rgb(var(--comind-secondary-rgb)); */
+  /* text-decoration: underline; */
+  /* text-decoration-color: rgb(var(--comind-secondary-rgb)); */
+}
+
+.comind-logo-nd {
+  /* font-family: "Bungee"; */
+  /* color: rgb(var(--comind-tertiary-rgb)); */
+  /* text-decoration: underline; */
+  /* text-decoration-color: rgb(var(--comind-tertiary-rgb)); */
+}
+
