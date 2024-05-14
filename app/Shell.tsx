@@ -11,6 +11,8 @@ import {
   Group,
   UnstyledButton,
   Badge,
+  Center,
+  Stack,
 } from "@mantine/core";
 import Comind from "@/lib/comind";
 import Link from "next/link";
@@ -19,6 +21,7 @@ import { comindContainerWidth } from "@/lib/Configuration";
 import { ThoughtContext, ThoughtProvider } from "@/lib/thoughtprovider";
 import { useDisclosure } from "@mantine/hooks";
 import { AuthContext } from "@/lib/authprovider";
+import Logo from "@/lib/Logo";
 
 const Shell = ({ children }: { children: React.ReactNode }) => {
   const { isAuthenticated, username } = useContext(AuthContext);
@@ -30,38 +33,30 @@ const Shell = ({ children }: { children: React.ReactNode }) => {
     <>
       <AppShell
         padding="md"
-        header={{ height: 80 }}
-        navbar={{
-          width: 300,
-          breakpoint: "sm",
-          collapsed: { desktop: true, mobile: !opened },
-        }}
+        header={{ height: 40 }}
+        // navbar={{
+        //   width: 300,
+        //   breakpoint: "xs",
+        //   collapsed: { desktop: true, mobile: !opened },
+        // }}
       >
         <AppShell.Header>
           <Container size={comindContainerWidth}>
-            <Group>
-              <Burger
-                opened={opened}
-                onClick={toggle}
-                hiddenFrom="sm"
-                size="sm"
-              />
+            {/* <Burger
+              opened={opened}
+              onClick={toggle}
+              hiddenFrom="sm"
+              size="sm"
+            /> */}
 
+            <Group justify="space-around">
               {/* Logo */}
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  fontSize: "3rem",
-                }}
-              >
-                <ComindShort />
-                {/* <Comind /> */}
-              </div>
+              {/* <Logo size={100} /> */}
+              <Text size="xl">comind</Text>
 
               <Group justify="space-between" style={{ flex: 1 }}>
                 {isAuthenticated && (
-                  <Group ml="xl" gap={10} visibleFrom="sm">
+                  <Group ml="xl" gap={10}>
                     <Text size="xl">
                       <Link href="/">home</Link>
                     </Text>
@@ -99,8 +94,8 @@ const Shell = ({ children }: { children: React.ReactNode }) => {
           {/* Debug for current meld */}
           <div style={{ position: "fixed", bottom: 0, left: 0, zIndex: 1000 }}>
             <Group>
-              <Badge variant="contrast">{currentMeldSlug}</Badge>
-              <Badge variant="contrast">{username}</Badge>
+              <Badge variant="subtle">{currentMeldSlug}</Badge>
+              <Badge variant="subtle">{username}</Badge>
             </Group>
           </div>
 

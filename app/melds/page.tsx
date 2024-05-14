@@ -26,6 +26,7 @@ import {
   IconRefresh,
 } from "@tabler/icons-react";
 import Loading from "@/lib/loading";
+import { comindContainerWidth } from "@/lib/Configuration";
 
 interface MeldPageProps {
   // Add any additional props here
@@ -80,33 +81,31 @@ const MeldPage: React.FC<MeldPageProps> = () => {
 
   return (
     <Shell>
-      <Container size="sm">
-        <TextInput
-          placeholder="title"
-          label="new meld"
-          value={newMeldTitle}
-          onChange={(e) => setNewMeldTitle(e.target.value)}
-        />
-        <Space h={"xs"} />
-        <Textarea
-          placeholder="description (optional)"
-          value={newMeldDescription}
-          onChange={(e) => setNewMeldDescription(e.target.value)}
-        />
-        <Space h={"xs"} />
-        <ActionIconGroup>
-          <ActionIcon variant="default" onClick={handleAddMeldClick}>
-            <IconPlus />
-          </ActionIcon>
+      <TextInput
+        placeholder="title"
+        label="new meld"
+        value={newMeldTitle}
+        onChange={(e) => setNewMeldTitle(e.target.value)}
+      />
+      <Space h={"xs"} />
+      <Textarea
+        placeholder="description (optional)"
+        value={newMeldDescription}
+        onChange={(e) => setNewMeldDescription(e.target.value)}
+      />
+      <Space h={"xs"} />
+      <ActionIconGroup>
+        <ActionIcon variant="default" onClick={handleAddMeldClick}>
+          <IconPlus />
+        </ActionIcon>
 
-          {/* Refresh button */}
-          <ActionIcon variant="default" onClick={handleRefreshClick}>
-            <IconRefresh />
-          </ActionIcon>
-        </ActionIconGroup>
-        <Divider my="sm" />
-        <MeldList melds={melds} />
-      </Container>
+        {/* Refresh button */}
+        <ActionIcon variant="default" onClick={handleRefreshClick}>
+          <IconRefresh />
+        </ActionIcon>
+      </ActionIconGroup>
+      <Divider my="sm" />
+      <MeldList melds={melds} />
     </Shell>
   );
 };
@@ -118,16 +117,13 @@ interface MeldListProps {
 const MeldList: React.FC<MeldListProps> = ({ melds }) => {
   if (melds.length === 0) {
     return (
-      <Container>
-        {/* <Space h={"xl"} /> */}
-        <Center>
-          <Alert icon={<IconBulb />}>
-            {/* TODO #7 support notifying that there are no melds after retrieval */}
-            we're loading your melds, give us a sec. you might also not have any
-            melds but that's not in the server right now.
-          </Alert>
-        </Center>
-      </Container>
+      <Center>
+        <Alert icon={<IconBulb />}>
+          {/* TODO #7 support notifying that there are no melds after retrieval */}
+          we're loading your melds, give us a sec. you might also not have any
+          melds but that's not in the server right now.
+        </Alert>
+      </Center>
     );
   }
 

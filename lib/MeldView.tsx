@@ -30,7 +30,7 @@ import Link from "next/link";
 
 import { useTheme } from "next-themes";
 import ThoughtBoxEditor from "@/lib/ThoughtBoxEditor";
-import Shell from "../app/Shell";
+import Shell from "@/app/Shell";
 import { comindContainerWidth } from "./Configuration";
 
 const ThemeChanger = () => {
@@ -98,7 +98,7 @@ const MeldView = () => {
   }, [editorValue]);
 
   return (
-    <>
+    <Shell>
       {/* THE THOUGHT BOX */}
       <div
         style={{
@@ -128,7 +128,7 @@ const MeldView = () => {
       </Container> */}
 
       <Space h="xl" />
-    </>
+    </Shell>
   );
 };
 

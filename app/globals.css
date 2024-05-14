@@ -1,19 +1,18 @@
 :root {
   --comind-background-rgb: 255, 255, 255;
   --comind-surface-rgb: 200, 200, 200;
-  --comind-primary-rgb: 166, 111, 166;
+  /* --comind-primary-rgb: 166, 111, 166;
   --comind-secondary-rgb: 138, 69, 138;
-  --comind-tertiary-rgb: 138, 69, 138;
-  /* --comind-primary-rgb: 207, 94, 74;
+  --comind-tertiary-rgb: 138, 69, 138; */
+  --comind-primary-rgb: 207, 94, 74;
   --comind-secondary-rgb: 0, 137, 200;
-  --comind-tertiary-rgb: 0, 152, 119; */
+  --comind-tertiary-rgb: 0, 152, 119;
   --comind-md-editor-font-family: "Inter", sans-serif;
 }
 
 body {
   font-weight: 300;
 }
-
 
 [data-mantine-color-scheme="dark"] {
   --comind-surface-rgb: 36, 36, 36;
@@ -39,9 +38,13 @@ input:-webkit-autofill:active {
   transition: background-color 5000s ease-in-out 0s;
 }
 
-
-
-p, h1, h2, h3, h4, h5, h6 {
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   margin-top: 0;
 }
 
@@ -78,4 +81,3 @@ p, h1, h2, h3, h4, h5, h6 {
   /* text-decoration: underline; */
   /* text-decoration-color: rgb(var(--comind-tertiary-rgb)); */
 }
-
