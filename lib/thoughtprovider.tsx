@@ -17,15 +17,23 @@ interface ThoughtProviderProps {
 
 interface ThoughtContextValue {
   connected: boolean;
-  melds: Meld[];
+  melds: { [slug: string]: Meld };
   pings: Ping[];
   comindThoughts: Thought[];
   addThoughtToProvider: (thought: Thought) => void;
   getCurrentMeld: () => Meld | null;
   getCurrentThoughts: () => Thought[];
   getRootMeld: () => Meld | null;
-  setCurrentMeldIndex: (index: number) => void;
-  getCurrentSuggestions: () => { [id: string]: Thought[] };
+  setCurrentMeldSlug: (slug: string) => void;
+  getCurrentSuggestions: () => { [thoughtId: string]: Thought };
+  setActiveMeld: (slug: string) => void;
+  meldSlugs: string[];
+  meldIds: string[];
+  activeMeldSlug: string;
+  currentMeldSlug: string;
+  currentSlugIsLoaded: boolean;
+  currentMeldTitle: string;
+  currentMeldDescription: string;
 }
 
 const ThoughtContext = createContext<ThoughtContextValue>(
@@ -36,9 +44,14 @@ const ThoughtProvider: React.FC<ThoughtProviderProps> = ({ children }) => {
   const { token, userId } = useContext(AuthContext);
   const [connected, setConnected] = useState(false);
   const [pings, setPings] = useState<Ping[]>([]);
-  const [melds, setMelds] = useState<Meld[]>([]);
-  const meldsRef = useRef<Meld[]>([]);
-  const [currentMeldIndex, setCurrentMeldIndex] = useState<number>(0);
+  const [melds, setMelds] = useState<{ [slug: string]: Meld }>({});
+  const meldsRef = useRef<{ [slug: string]: Meld }>({});
+  const [currentMeldSlug, setCurrentMeldSlug] = useState<string>(
+    `/root/${userId}`
+  );
+  const [currentMeldTitle, setCurrentMeldTitle] = useState<string>("");
+  const [currentMeldDescription, setCurrentMeldDescription] =
+    useState<string>("");
   const [comindThoughts, setComindThoughts] = useState<Thought[]>([]);
   const websocketRef = useRef<WebSocket | null>(null);
 
@@ -47,30 +60,42 @@ const ThoughtProvider: React.FC<ThoughtProviderProps> = ({ children }) => {
     meldsRef.current = melds;
   }, [melds]);
 
-  // Find the index associated with the root meld
-  const findRootMeld = (): number => {
-    return meldsRef.current.findIndex(
-      (meld) => meld.slug === `/root/${userId}`
+  // Set the active meld
+  const setActiveMeld = (slug: string) => {
+    console.log("Trying to switch to slug", slug);
+
+    // Send a message to the server to switch to the meld
+    if (websocketRef.current?.readyState === WebSocket.OPEN) {
+      websocketRef.current.send(JSON.stringify({ meld_slug_request: slug }));
+    }
+
+    // Optimistically set the current meld slug
+    setCurrentMeldSlug(slug);
+  };
+
+  // List of meld slugs. Mostly used for debugging.
+  const meldSlugs = Object.keys(melds);
+  const meldIds = Object.values(melds).map((meld) => meld.meld_id);
+  const activeMeldSlug = currentMeldSlug;
+  const currentSlugIsLoaded = meldSlugs.includes(activeMeldSlug);
+
+  const getMeldById = (id: string): Meld | null => {
+    return (
+      Object.values(meldsRef.current).find((meld) => meld.meld_id === id) ||
+      null
     );
   };
 
-  const getMeldById = (id: string): Meld | null => {
-    const foundMeld = meldsRef.current.find((meld) => meld.meld_id === id);
-    return foundMeld || null;
-  };
-
   const getMeldBySlug = (slug: string): Meld | null => {
-    const foundMeld = meldsRef.current.find((meld) => meld.slug === slug);
-    return foundMeld || null;
+    return meldsRef.current[slug] || null;
   };
 
   const getCurrentMeld = (): Meld | null => {
-    return meldsRef.current[currentMeldIndex] || null;
+    return meldsRef.current[currentMeldSlug] || null;
   };
 
   const getRootMeld = (): Meld | null => {
-    const rootMeldIndex = findRootMeld();
-    return rootMeldIndex !== -1 ? meldsRef.current[rootMeldIndex] : null;
+    return meldsRef.current[`/root/${userId}`] || null;
   };
 
   const getCurrentThoughts = (): Thought[] => {
@@ -78,47 +103,36 @@ const ThoughtProvider: React.FC<ThoughtProviderProps> = ({ children }) => {
     return meld ? meld.thoughts : [];
   };
 
-  const getCurrentSuggestions = (): { [id: string]: Thought[] } => {
+  const getCurrentSuggestions = (): { [thoughtId: string]: Thought } => {
     const meld = getCurrentMeld();
-    return meld?.suggestions ?? {};
+    return meld ? meld.suggestions : {};
   };
 
   // Function to add a single suggestion to a meld
   const addSuggestionToMeld = (suggestion: Thought, meldSlug: string) => {
     setMelds((prevMelds) => {
-      const meldIndex = prevMelds.findIndex((meld) => meld.slug === meldSlug);
       const meld = getMeldBySlug(meldSlug);
       if (meld) {
         const updatedMeld = meld;
         updatedMeld.addSuggestion(suggestion);
-        return [
-          ...prevMelds.slice(0, meldIndex),
-          updatedMeld,
-          ...prevMelds.slice(meldIndex + 1),
-        ];
+        return {
+          ...prevMelds,
+          [meldSlug]: updatedMeld,
+        };
       }
       return prevMelds;
     });
   };
 
-  // Function to add multiple suggestions to a meld
-  // const addSuggestionsToMeld = (suggestions: Thought[], meldSlug: string) => {
-  //   setMelds((prevMelds) => {
-  //     const meld = getMeldBySlug(meldSlug);
-  //     if (meld) {
-  //       const updatedMeld = meld;
-  //       suggestions.forEach((suggestion) => {
-  //         updatedMeld.addSuggestion(suggestion);
-  //       });
-  //       return [
-  //         ...prevMelds.slice(0, meldIndex),
-  //         updatedMeld,
-  //         ...prevMelds.slice(meldIndex + 1),
-  //       ];
-  //     }
-  //     return prevMelds;
-  //   });
-  // };
+  // Function to add a meld to the list if it doesn't already exist
+  const addMeldIfNotExists = (meld: Meld) => {
+    setMelds((prevMelds) => {
+      if (!prevMelds[meld.slug]) {
+        return { ...prevMelds, [meld.slug]: meld };
+      }
+      return prevMelds;
+    });
+  };
 
   useEffect(() => {
     if (token && !websocketRef.current) {
@@ -139,7 +153,12 @@ const ThoughtProvider: React.FC<ThoughtProviderProps> = ({ children }) => {
 
         // Add the root meld
         const rootMeld = Meld.createRootMeld(userId);
-        setMelds([rootMeld]);
+        addMeldIfNotExists(rootMeld);
+
+        // Set the current meld slug to the root meld
+        setCurrentMeldSlug(rootMeld.slug);
+        setCurrentMeldTitle(rootMeld.title);
+        setCurrentMeldDescription(rootMeld.description);
       };
 
       websocketRef.current.onclose = (event) => {
@@ -169,6 +188,24 @@ const ThoughtProvider: React.FC<ThoughtProviderProps> = ({ children }) => {
         // Get the meld slug associated with this message, if available.
         const meld_slug = message.meld_slug ?? `/root/${userId}`;
 
+        // Check if we got a server message
+        if (message.message) {
+          console.log("Received server message:", message.message);
+
+          // If we got "here is the meld you requested" then set the meld to the meld we requested
+          if (message.message === "here is the meld you requested") {
+            // We should have meld and meld_slug keys.
+            if (message.meld && message.meld_slug) {
+              const meld = new Meld(message.meld);
+              const meldSlug = message.meld_slug;
+              addMeldIfNotExists(meld);
+              setCurrentMeldSlug(meldSlug);
+              setCurrentMeldTitle(meld.title);
+              setCurrentMeldDescription(meld.description);
+            }
+          }
+        }
+
         // Check if we got a single thought. add it if we don't
         // already have a thought with its id.
         if (message.thought) {
@@ -182,7 +219,7 @@ const ThoughtProvider: React.FC<ThoughtProviderProps> = ({ children }) => {
               );
               if (!thoughtExists) {
                 meld.addThought(newThought);
-                return [...prevMelds];
+                return { ...prevMelds, [meld_slug]: meld };
               }
             }
             return prevMelds;
@@ -204,7 +241,7 @@ const ThoughtProvider: React.FC<ThoughtProviderProps> = ({ children }) => {
                 return new Thought(thought);
               });
               meld.addThoughts(newThoughts);
-              return [...prevMelds];
+              return { ...prevMelds, [meld_slug]: meld };
             }
             return prevMelds;
           });
@@ -231,6 +268,7 @@ const ThoughtProvider: React.FC<ThoughtProviderProps> = ({ children }) => {
                 const suggestedThought = new Thought(suggestion);
                 meld.addSuggestion(suggestedThought);
               });
+              return { ...prevMelds, [meld_slug]: meld };
             }
             return prevMelds;
           });
@@ -284,6 +322,7 @@ const ThoughtProvider: React.FC<ThoughtProviderProps> = ({ children }) => {
       const meld = getCurrentMeld();
       if (meld) {
         meld.addThought(thought);
+        setMelds((prevMelds) => ({ ...prevMelds, [currentMeldSlug]: meld }));
       }
     } else {
       console.log("WebSocket is not open. Thought not sent.");
@@ -300,7 +339,15 @@ const ThoughtProvider: React.FC<ThoughtProviderProps> = ({ children }) => {
     getCurrentThoughts,
     getCurrentSuggestions,
     getRootMeld,
-    setCurrentMeldIndex,
+    setCurrentMeldSlug,
+    setActiveMeld,
+    meldSlugs,
+    meldIds,
+    activeMeldSlug,
+    currentSlugIsLoaded,
+    currentMeldTitle,
+    currentMeldDescription,
+    currentMeldSlug,
   };
 
   return (

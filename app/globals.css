@@ -1,9 +1,12 @@
 :root {
   --comind-background-rgb: 255, 255, 255;
   --comind-surface-rgb: 200, 200, 200;
-  --comind-primary-rgb: 207, 94, 74;
+  --comind-primary-rgb: 166, 111, 166;
+  --comind-secondary-rgb: 138, 69, 138;
+  --comind-tertiary-rgb: 138, 69, 138;
+  /* --comind-primary-rgb: 207, 94, 74;
   --comind-secondary-rgb: 0, 137, 200;
-  --comind-tertiary-rgb: 0, 152, 119;
+  --comind-tertiary-rgb: 0, 152, 119; */
   --comind-md-editor-font-family: "Inter", sans-serif;
 }
 
@@ -55,23 +58,23 @@ p, h1, h2, h3, h4, h5, h6 {
 }
 
 .comind-logo-co {
-  /* font-family: "Bungee"; */
-  /* color: rgb(var(--comind-primary-rgb)); */
+  /* font-family: "Frontage Pro Inline"; */
+  /* color: rgb(var(--comind-secondary-rgb)); */
   /* position: relative; */
   /* text-decoration: underline; */
   /* text-decoration-color: rgb(var(--comind-primary-rgb)); */
 }
 
 .comind-logo-mi {
-  /* font-family: "Bungee"; */
-  /* color: rgb(var(--comind-secondary-rgb)); */
+  /* font-family: "Frontage Pro Inline"; */
+  /* color: rgb(var(--comind-tertiary-rgb)); */
   /* text-decoration: underline; */
   /* text-decoration-color: rgb(var(--comind-secondary-rgb)); */
 }
 
 .comind-logo-nd {
-  /* font-family: "Bungee"; */
-  /* color: rgb(var(--comind-tertiary-rgb)); */
+  /* font-family: "Frontage Pro Inline"; */
+  /* color: rgb(var(--comind-primary-rgb)); */
   /* text-decoration: underline; */
   /* text-decoration-color: rgb(var(--comind-tertiary-rgb)); */
 }

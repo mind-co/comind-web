@@ -1,7 +1,9 @@
-'use client'
-import React, { useContext, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { AuthContext } from '@/lib/authprovider';
+"use client";
+import React, { useContext, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { AuthContext } from "@/lib/authprovider";
+import Shell from "../Shell";
+import { Center, Stack, Text, Title } from "@mantine/core";
 
 const LogoutPage = () => {
   const auth = useContext(AuthContext);
@@ -10,14 +12,20 @@ const LogoutPage = () => {
   useEffect(() => {
     if (auth) {
       auth.clearAuth(); // Assuming clearAuth is the method to clear the authentication context
-      router.push('/'); // Redirect to the home page after logout
+      router.push("/"); // Redirect to the home page after logout
     }
   }, [auth, router]);
 
   return (
-    <div className="comind-center-column">
-      <h1 className="instruction">Logging out...</h1>
-    </div>
+    <Shell>
+      <Center style={{ height: "60vh" }}>
+        <Stack>
+          <Title>you've been logged out</Title>
+          <Text size="xl">it was nice having you here</Text>
+          <Text size="xl">if you ever want to come back, just sign in</Text>
+        </Stack>
+      </Center>
+    </Shell>
   );
 };
 

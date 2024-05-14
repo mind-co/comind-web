@@ -8,6 +8,20 @@ import MeldView from "@/lib/MeldView";
 import Shell from "@/app/Shell";
 import Loading from "@/lib/loading";
 import Comind from "@/lib/comind";
+import {
+  Card,
+  Center,
+  Container,
+  Divider,
+  Loader,
+  Paper,
+  Space,
+  Text,
+  Title,
+} from "@mantine/core";
+import { comindContainerWidth } from "@/lib/Configuration";
+import { useParams } from "next/navigation";
+import { ThoughtContext } from "@/lib/thoughtprovider";
 
 interface MeldDisplayPageProps {
   // Add any additional props here
@@ -16,109 +30,76 @@ interface MeldDisplayPageProps {
 const MeldDisplayPage: React.FC<MeldDisplayPageProps> = () => {
   // Get the auth context
   const auth = useContext(AuthContext);
-  console.log(auth.username);
-  const [meld, setMeld] = useState<Meld | null>(null);
-  const [thoughts, setThoughts] = useState<Thought[]>([]);
 
+  // Get the thought context
+  const {
+    setActiveMeld,
+    connected,
+    getCurrentMeld,
+    activeMeldSlug,
+    meldSlugs,
+    currentSlugIsLoaded,
+    currentMeldTitle,
+    currentMeldDescription,
+    getCurrentThoughts,
+  } = useContext(ThoughtContext);
+
+  // Get the slug from the params
+  const slug = useParams().slug;
+  // console.log("At meld", { slug });
+  // setActiveMeld(slug as string); // TODO: #11 gracefully handle multiple path params
+
+  // Load the meld the first time the page renders
   useEffect(() => {
-    const startClient = async () => {
-      const username = auth.username || "test";
-      const password = "test";
-      // const username = process.env.USERNAME || "test";
-      // const password = process.env.PASSWORD || "test";
-
-      console.log(
-        `logging in with username ${username} and password ${password}`
-      );
-
-      try {
-        const ws = new WebSocket("ws://localhost:2333/ws");
-
-        ws.onopen = () => {
-          ws.onmessage = async (event) => {
-            const data = JSON.parse(event.data);
-            console.log(data);
-
-            // Prepare our authentication message.
-            const authMessage = JSON.stringify({
-              username,
-              password,
-            });
-
-            // Send the message and then wait for the server to respond.
-            ws.send(authMessage);
-
-            // Receive the server's response.
-            ws.onmessage = async (event) => {
-              const initMessage = JSON.parse(event.data);
-              console.log(initMessage);
-
-              // Unpack some stuff. We get our token, a message,
-              // our user_id, and the meld info.
-              // const token = initMessage.token;
-              const loginMessage = initMessage.message;
-              // const userId = initMessage.user_id;
-              const meldData = JSON.parse(initMessage.meld);
-
-              // Set the thoughts to whatever is in the meld.
-              setThoughts(initMessage.thoughts);
-
-              // Logging
-              console.log(`logged in as ${username}`);
-              console.log(loginMessage);
-
-              console.log("meld", meldData);
-
-              // Set the meld state
-              setMeld(meldData);
-
-              ws.close();
-            };
-          };
-        };
-      } catch (error) {
-        console.error("Error:", error);
-      }
-
-      console.log("client closed");
-    };
-
-    startClient();
-  }, [auth.username]);
+    if (connected) {
+      console.log("Setting active meld", slug);
+      setActiveMeld(slug as string);
+    }
+  }, [slug, connected]);
 
   // Return early if no meld
-  if (!meld) {
+  if (!currentSlugIsLoaded) {
     return (
       <Shell>
-        <div
-          style={{
-            width: "100vw",
-            height: "100vh",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
+        <Container size={comindContainerWidth}>
           <div style={{ fontSize: "10vmin" }}>
             melding
             {/* <Comind /> */}
           </div>
-
           <div style={{ fontSize: "5vmin" }}>give us a sec</div>
-        </div>
-      </Shell>
+          <Text fw={700}>{activeMeldSlug}</Text>
 
-      // <div className="comind-center-column">
-      //   <Nav />
-      //   ayo i&apos;m loading the meld
-      // </div>
+          <MeldView />
+        </Container>
+      </Shell>
     );
   }
 
-  // Return statement for debugging
-  // return <MeldView meld={meld} />;
-  return <div>under construction</div>;
+  return (
+    <Shell>
+      <Card withBorder={true}>
+        <Title>{currentMeldTitle}</Title>
+        <Text>{currentMeldDescription}</Text>
+      </Card>
+
+      <Divider
+        my="md"
+        label={`${getCurrentThoughts().length} thoughts`}
+      ></Divider>
+
+      <MeldView />
+
+      <Center>
+        <Text size="xs" c="dimmed">
+          end of meld
+        </Text>
+      </Center>
+      <Space h="xl" />
+      <Space h="xl" />
+      <Space h="xl" />
+      <Space h="xl" />
+    </Shell>
+  );
 };
 
 export default MeldDisplayPage;

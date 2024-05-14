@@ -8,10 +8,11 @@ import { Center, Container, Space, Text, Title } from "@mantine/core";
 import { ThoughtProvider } from "@/lib/thoughtprovider";
 import ComindShort from "@/lib/ComindShort";
 import Link from "next/link";
+import Shell from "./Shell";
 
 // Main entry point for the application
 export default function App() {
-  const { token, isLoading } = useContext(AuthContext);
+  const { isAuthenticated, isLoading } = useContext(AuthContext);
 
   // Wait on loading
   if (isLoading) {
@@ -36,7 +37,7 @@ export default function App() {
           {/* <Comind /> */}
         </div>
 
-        {!token && (
+        {!isAuthenticated && (
           <div style={{ fontSize: "5vmin" }}>
             do you want to <Link href="/login">login</Link>?
           </div>
@@ -48,9 +49,18 @@ export default function App() {
   }
 
   // If we aren't logged in, redirect to the login page
-  // if (!token) {
-  //   return redirect("/login");
-  // }
+  if (!isAuthenticated) {
+    return (
+      <Shell>
+        <Center style={{ height: "60vh" }}>
+          <Text size="xl">
+            you really gotta login to use comind, go{" "}
+            <Link href="/login">login</Link>
+          </Text>
+        </Center>
+      </Shell>
+    );
+  }
 
   // If we are logged in, show the main page
 

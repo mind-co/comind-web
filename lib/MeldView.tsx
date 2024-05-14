@@ -12,6 +12,7 @@ import Comind from "@/lib/comind";
 
 import ThoughtBox from "@/lib/thought_box";
 import {
+  Alert,
   AppShell,
   AppShellFooter,
   Burger,
@@ -46,8 +47,14 @@ const ThemeChanger = () => {
 
 const MeldView = () => {
   const auth = useContext(AuthContext);
-  const { addThoughtToProvider, getCurrentThoughts, getCurrentSuggestions } =
-    useContext(ThoughtContext);
+  const {
+    addThoughtToProvider,
+    getCurrentThoughts,
+    getCurrentSuggestions,
+    activeMeldSlug,
+    currentMeldTitle,
+    currentMeldDescription,
+  } = useContext(ThoughtContext);
   const [editorValue, setEditorValue] = useState("");
   const editor = ThoughtBoxEditor({ onUpdate: setEditorValue });
   const [opened, { toggle }] = useDisclosure();
@@ -91,7 +98,8 @@ const MeldView = () => {
   }, [editorValue]);
 
   return (
-    <Shell>
+    <>
+      {/* THE THOUGHT BOX */}
       <div
         style={{
           position: "fixed",
@@ -108,17 +116,6 @@ const MeldView = () => {
         </Container>
       </div>
 
-      {/* <EditorContent editor={editor} /> */}
-      {/* <Button
-              className="text-3xl rounded-xl"
-              onClick={() => {
-                document.dispatchEvent(new CustomEvent("submit"));
-              }}
-              variant="ghost"
-              size="md"
-            >
-              submit
-            </Button> */}
       <Container size={comindContainerWidth}>
         <ThoughtList
           thoughts={getCurrentThoughts()}
@@ -131,7 +128,7 @@ const MeldView = () => {
       </Container> */}
 
       <Space h="xl" />
-    </Shell>
+    </>
   );
 };
 

@@ -13,7 +13,9 @@ import {
   IconIdBadge,
   IconMaximize,
   IconPlus,
+  IconLineDashed,
   IconTrash,
+  IconInfoCircle,
 } from "@tabler/icons-react";
 // import { convertToRelativeTimestamp } from "@/lib/utils";
 // import { AuthContext } from "@/lib/authprovider";
@@ -39,8 +41,10 @@ import {
   Divider,
   ScrollArea,
   Box,
+  Modal,
 } from "@mantine/core";
 import { convertToRelativeTimestamp } from "../utils";
+import { useDisclosure } from "@mantine/hooks";
 
 // Visual stuff
 const lineWidth = 2;
@@ -65,6 +69,7 @@ const ThoughtDisplay: React.FC<ThoughtDisplayProps> = ({
 
   // State variables
   const [contextMenuVisible, setContextMenuVisible] = useState(false);
+  const [suggestionsOpen, setSuggestionsOpen] = useState(false);
   // const [hovered, setHovered] = useState(true);
   // const [editorValue, setEditorValue] = useState("");
 
@@ -77,13 +82,13 @@ const ThoughtDisplay: React.FC<ThoughtDisplayProps> = ({
     setContextMenuVisible(!contextMenuVisible);
   };
 
-  // const onMouseEnter = () => {
-  //   setHovered(true);
-  // };
+  // Toggle suggestions
+  const toggleSuggestionsOpen = () => {
+    setSuggestionsOpen(!suggestionsOpen);
+  };
 
-  // const onMouseLeave = () => {
-  //   setHovered(false);
-  // };
+  // Info modal stuff
+  const [opened, { open, close }] = useDisclosure(false);
 
   /**
    * Asynchronously saves a new thought based on the current editor value.
@@ -130,66 +135,98 @@ const ThoughtDisplay: React.FC<ThoughtDisplayProps> = ({
   // };
 
   // Visual configs
-  const buttonSize = "sm";
+  const buttonSize = "xs";
   const buttonColor = "light";
 
   //
 
   return (
     <>
+      {/* Misc modals and shit */}
+      <Modal opened={opened} onClose={close} title="Info" centered size="lg">
+        <Text>{thought.id}</Text>
+      </Modal>
+
+      <Group>
+        <Badge variant="default">{thought.username}</Badge>
+        <Text>{thought.title}</Text>
+      </Group>
+
       {/* Content */}
-      {/* <Card radius="md" withBorder variant=""> */}
-      {/* <TypographyStylesProvider>
+      <TypographyStylesProvider>
         <Markdown remarkPlugins={[remarkGfm]}>{thought.body}</Markdown>
-      </TypographyStylesProvider> */}
+      </TypographyStylesProvider>
 
       {/* <Divider my="md" /> */}
 
-      {/* <Group>
-        <Tooltip label="Think">
-          <ActionIcon variant="subtle" size={buttonSize} color={buttonColor}>
-            <IconBubble />
-          </ActionIcon>
-        </Tooltip>
-
-        <Tooltip label="Remove">
-          <ActionIcon variant="subtle" size={buttonSize} color={buttonColor}>
-            <IconTrash />
-          </ActionIcon>
-        </Tooltip>
-      </Group>
-      <Space h="xs" /> */}
+      <Space h="xs" />
 
       {/* Time info */}
-      {/* <Group>
-        <Text size="xs" c="dimmed">
-          {prettyTimestamp}
-        </Text>
-      </Group> */}
-      <>
-        <Card shadow="xs" padding="xs" radius="lg" withBorder={true}>
-          <Group>
-            <Badge variant="dot">{thought.username}</Badge>
-          </Group>
+      <Group justify="space-between">
+        <Group>
+          <Text size="xs" c="dimmed">
+            {prettyTimestamp}
+          </Text>
+        </Group>
 
-          <Markdown remarkPlugins={[remarkGfm]}>{thought.body}</Markdown>
-          {/* <div className="w-full px-4 flex flex-row space-x-2 text-xs">
-        <div className="text-xs">{prettyTimestamp}</div>
-      </div> */}
-          <Group>
-            {/* Maximize button */}
-            <Tooltip label="Maximize">
-              <ActionIcon variant="subtle" size="xs">
-                <IconMaximize />
-              </ActionIcon>
-            </Tooltip>
-          </Group>
+        <Group>
+          <Tooltip label="Info">
+            <ActionIcon
+              variant="subtle"
+              size={buttonSize}
+              color={buttonColor}
+              onClick={open}
+            >
+              <IconInfoCircle />
+            </ActionIcon>
+          </Tooltip>
+
+          <Tooltip label="Think">
+            <ActionIcon variant="subtle" size={buttonSize} color={buttonColor}>
+              <IconBubble />
+            </ActionIcon>
+          </Tooltip>
+
+          <Tooltip label="Remove">
+            <ActionIcon variant="subtle" size={buttonSize} color={buttonColor}>
+              <IconTrash />
+            </ActionIcon>
+          </Tooltip>
+        </Group>
+      </Group>
+
+      <Divider
+        labelPosition="center"
+        my="md"
+        label={
+          suggestions?.length > 0 ? (
+            <ActionIcon
+              variant="subtle"
+              size="md"
+              onClick={toggleSuggestionsOpen}
+            >
+              {suggestionsOpen ? (
+                <IconChevronCompactUp />
+              ) : (
+                <IconChevronCompactDown />
+              )}
+            </ActionIcon>
+          ) : (
+            <IconLineDashed />
+          )
+        }
+      />
+
+      {/* Suggestions */}
+      {suggestionsOpen && suggestions && (
+        <Card radius="xl" withBorder>
+          {suggestions.map((suggestion, indexb) => (
+            <SuggestionDisplay key={suggestion.id} thought={suggestion} />
+          ))}
+          {/* <Divider my="md" /> */}
         </Card>
-        <Space h="xs" />
-      </>
+      )}
     </>
-
-    // Card variant
   );
 };
 
@@ -264,61 +301,14 @@ const ThoughtList: React.FC<ThoughtListProps> = ({ thoughts, suggestions }) => {
 
   return (
     <>
-      <Timeline active={2} lineWidth={lineWidth} bulletSize={bulletSize}>
-        {thoughts.map((thought, index) => (
-          <TimelineItem title={thought.title}>
-            <Container>
-              <React.Fragment key={index}>
-                <ThoughtDisplay
-                  thought={thought}
-                  suggestions={suggestions[thought.id]}
-                />
-
-                <Divider
-                  labelPosition="center"
-                  my=""
-                  label={
-                    <>
-                      <ActionIcon
-                        variant="subtle"
-                        size="md"
-                        onClick={() => toggleSuggestionsOpen(index)}
-                      >
-                        {suggestionsOpen[index] ? (
-                          <IconChevronCompactUp />
-                        ) : (
-                          <IconChevronCompactDown />
-                        )}
-                      </ActionIcon>
-                    </>
-                  }
-                />
-
-                {/* Suggestions */}
-                {suggestionsOpen && suggestions[thought.id] && (
-                  // <Container bg="red">
-                  <ScrollArea h={350} type="auto">
-                    <Timeline lineWidth={lineWidth} bulletSize={bulletSize}>
-                      {suggestions[thought.id].map((suggestion, indexb) => (
-                        <TimelineItem
-                          key={`${index}-${indexb}`}
-                          title={suggestion.title}
-                          lineVariant="dotted"
-                        >
-                          <Container px={5}>
-                            <SuggestionDisplay thought={suggestion} />
-                          </Container>
-                        </TimelineItem>
-                      ))}
-                    </Timeline>
-                  </ScrollArea>
-                  // </Container>
-                )}
-              </React.Fragment>
-            </Container>
-          </TimelineItem>
-        ))}
-      </Timeline>
+      {thoughts.map((thought, index) => (
+        <React.Fragment key={index}>
+          <ThoughtDisplay
+            thought={thought}
+            suggestions={suggestions[thought.id]}
+          />
+        </React.Fragment>
+      ))}
     </>
   );
 };
