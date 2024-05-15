@@ -16,6 +16,9 @@ import {
   IconLineDashed,
   IconTrash,
   IconInfoCircle,
+  IconLock,
+  IconGlobe,
+  IconWorld,
 } from "@tabler/icons-react";
 // import { convertToRelativeTimestamp } from "@/lib/utils";
 // import { AuthContext } from "@/lib/authprovider";
@@ -42,6 +45,8 @@ import {
   ScrollArea,
   Box,
   Modal,
+  Progress,
+  ThemeIcon,
 } from "@mantine/core";
 import { convertToRelativeTimestamp } from "../utils";
 import { useDisclosure } from "@mantine/hooks";
@@ -147,9 +152,11 @@ const ThoughtDisplay: React.FC<ThoughtDisplayProps> = ({
         <Text>{thought.id}</Text>
       </Modal>
 
-      <Group>
+      <Group justify="space-between" align="center">
+        <div style={{ fontFamily: "Bungee" }}>
+          <Text>{thought.title}</Text>
+        </div>
         <Badge variant="default">{thought.username}</Badge>
-        <Text>{thought.title}</Text>
       </Group>
 
       {/* Content */}
@@ -164,6 +171,9 @@ const ThoughtDisplay: React.FC<ThoughtDisplayProps> = ({
       {/* Time info */}
       <Group justify="space-between">
         <Group>
+          <ThemeIcon variant="default" color="gray" size="xs">
+            {thought.public ? <IconWorld /> : <IconLock />}
+          </ThemeIcon>
           <Text size="xs" c="dimmed">
             {prettyTimestamp}
           </Text>
@@ -219,12 +229,16 @@ const ThoughtDisplay: React.FC<ThoughtDisplayProps> = ({
 
       {/* Suggestions */}
       {suggestionsOpen && suggestions && (
-        <Card radius="xl" withBorder>
-          {suggestions.map((suggestion, indexb) => (
-            <SuggestionDisplay key={suggestion.id} thought={suggestion} />
-          ))}
-          {/* <Divider my="md" /> */}
-        </Card>
+        <>
+          <Card radius="xl" withBorder>
+            {suggestions.map((suggestion, indexb) => (
+              <>
+                <SuggestionDisplay key={suggestion.id} thought={suggestion} />
+              </>
+            ))}
+          </Card>
+          <Divider my="md" />
+        </>
       )}
     </>
   );
@@ -262,15 +276,35 @@ const SuggestionDisplay: React.FC<SuggestionDisplayProps> = ({ thought }) => {
 
   return (
     <>
+      <Group justify="space-between" align="center">
+        <div style={{ fontFamily: "Bungee" }}>
+          <Text>{thought.title}</Text>
+        </div>
+        <Progress
+          value={
+            thought.cosine_similarity ? thought.cosine_similarity * 100 : 0
+          }
+        />
+
+        <Badge variant="default">{thought.username}</Badge>
+      </Group>
       <TypographyStylesProvider>
         <Markdown remarkPlugins={[remarkGfm]}>{thought.body}</Markdown>
       </TypographyStylesProvider>
+
+      <Space h="xs" />
+
       {/* Time info */}
       <Group>
+        <ThemeIcon variant="default" color="gray" size="xs">
+          {thought.public ? <IconWorld /> : <IconLock />}
+        </ThemeIcon>
         <Text size="xs" c="dimmed">
           {prettyTimestamp}
         </Text>
       </Group>
+
+      <Divider my="md" />
     </>
   );
 };
@@ -305,7 +339,7 @@ const ThoughtList: React.FC<ThoughtListProps> = ({ thoughts, suggestions }) => {
         <React.Fragment key={index}>
           <ThoughtDisplay
             thought={thought}
-            suggestions={suggestions[thought.id]}
+            suggestions={suggestions ? suggestions[thought.id] : []}
           />
         </React.Fragment>
       ))}

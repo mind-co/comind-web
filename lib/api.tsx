@@ -651,8 +651,8 @@ async function getUserMelds(context: any): Promise<Meld[]> {
     }
 
     const data = await response.json();
-    console.log("Reveived user melds: ", data);
-    return data.melds;
+    console.log("Received user melds: ", data);
+    return data.melds.map((meldData: any) => new Meld(meldData));
   } catch (error) {
     console.error("Error fetching user melds. Detailed error:", error);
     throw new Error(`An error occurred while fetching user melds: ${error}`);
@@ -797,11 +797,13 @@ async function deleteMeld(context: any, meldId: string): Promise<void> {
   };
 
   try {
-    const response = await fetch(`https://nimbus.pfiffer.org/api/melds/`, {
-      method: "DELETE",
-      headers,
-      body: JSON.stringify({ id: meldId }),
-    });
+    const response = await fetch(
+      `https://nimbus.pfiffer.org/api/melds/${meldId}`,
+      {
+        method: "DELETE",
+        headers,
+      }
+    );
 
     if (!response.ok) {
       throw new Error(

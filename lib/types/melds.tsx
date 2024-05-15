@@ -5,7 +5,7 @@ class Meld {
   description: string;
   user_id: string;
   group_id: string;
-  meld_id: string;
+  id: string;
   date_created: string;
   date_updated: string;
   color: string;
@@ -19,7 +19,7 @@ class Meld {
     this.description = json.description;
     this.user_id = json.user_id;
     this.group_id = json.group_id;
-    this.meld_id = json.meld_id;
+    this.id = json.id;
     this.date_created = json.date_created;
     this.date_updated = json.date_updated;
     this.color = json.color;
@@ -39,7 +39,7 @@ class Meld {
       description: this.description,
       user_id: this.user_id,
       group_id: this.group_id,
-      meld_id: this.meld_id,
+      id: this.id,
       date_created: this.date_created,
       date_updated: this.date_updated,
       color: this.color,
@@ -103,7 +103,7 @@ class Meld {
       description: "This is the root meld.",
       user_id: userId,
       group_id: "", // Assuming no group initially
-      meld_id: uuidv4(), // Generate a UUIDv4 for the meld ID
+      id: uuidv4(), // Generate a UUIDv4 for the meld ID
       date_created: new Date().toISOString(),
       date_updated: new Date().toISOString(),
       color: "#FFFFFF", // Default white color for root
@@ -122,7 +122,7 @@ const testMeldJson = {
   description: "This is a test meld.",
   user_id: "1",
   group_id: "1",
-  meld_id: "1",
+  id: "1",
   date_created: "2021-08-06T00:00:00Z",
   date_updated: "2021-10-06T00:00:00Z",
   color: "#000000",

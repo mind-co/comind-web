@@ -25,7 +25,7 @@ interface ThoughtContextValue {
   getCurrentThoughts: () => Thought[];
   getRootMeld: () => Meld | null;
   setCurrentMeldSlug: (slug: string) => void;
-  getCurrentSuggestions: () => { [thoughtId: string]: Thought };
+  getCurrentSuggestions: () => { [thoughtId: string]: Thought[] };
   setActiveMeld: (slug: string) => void;
   meldSlugs: string[];
   meldIds: string[];
@@ -75,14 +75,13 @@ const ThoughtProvider: React.FC<ThoughtProviderProps> = ({ children }) => {
 
   // List of meld slugs. Mostly used for debugging.
   const meldSlugs = Object.keys(melds);
-  const meldIds = Object.values(melds).map((meld) => meld.meld_id);
+  const meldIds = Object.values(melds).map((meld) => meld.id);
   const activeMeldSlug = currentMeldSlug;
   const currentSlugIsLoaded = meldSlugs.includes(activeMeldSlug);
 
   const getMeldById = (id: string): Meld | null => {
     return (
-      Object.values(meldsRef.current).find((meld) => meld.meld_id === id) ||
-      null
+      Object.values(meldsRef.current).find((meld) => meld.id === id) || null
     );
   };
 
@@ -103,7 +102,7 @@ const ThoughtProvider: React.FC<ThoughtProviderProps> = ({ children }) => {
     return meld ? meld.thoughts : [];
   };
 
-  const getCurrentSuggestions = (): { [thoughtId: string]: Thought } => {
+  const getCurrentSuggestions = (): { [thoughtId: string]: Thought[] } => {
     const meld = getCurrentMeld();
     return meld ? meld.suggestions : {};
   };
@@ -263,12 +262,21 @@ const ThoughtProvider: React.FC<ThoughtProviderProps> = ({ children }) => {
               suggestions: message.suggestions,
             });
             if (meld) {
+              // Add the suggestions to the meld
               message.suggestions.forEach((suggestion: any) => {
                 const thoughtId = suggestion.thought_id;
                 const suggestedThought = new Thought(suggestion);
-                meld.addSuggestion(suggestedThought);
+
+                // Check if the suggestion already exists in the meld
+                const suggestionExists = meld.suggestions[thoughtId]?.some(
+                  (existingSuggestion) =>
+                    existingSuggestion.id === suggestedThought.id
+                );
+
+                if (!suggestionExists) {
+                  meld.addSuggestion(suggestedThought);
+                }
               });
-              return { ...prevMelds, [meld_slug]: meld };
             }
             return prevMelds;
           });

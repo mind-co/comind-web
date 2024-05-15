@@ -61,16 +61,14 @@ const MeldDisplayPage: React.FC<MeldDisplayPageProps> = () => {
   if (!currentSlugIsLoaded) {
     return (
       <Shell>
-        <Container size={comindContainerWidth}>
-          <div style={{ fontSize: "10vmin" }}>
-            melding
-            {/* <Comind /> */}
-          </div>
-          <div style={{ fontSize: "5vmin" }}>give us a sec</div>
-          <Text fw={700}>{activeMeldSlug}</Text>
+        <div style={{ fontSize: "10vmin" }}>
+          melding
+          {/* <Comind /> */}
+        </div>
+        <div style={{ fontSize: "5vmin" }}>give us a sec</div>
+        <Text fw={700}>{activeMeldSlug}</Text>
 
-          <MeldView />
-        </Container>
+        <MeldView />
       </Shell>
     );
   }
