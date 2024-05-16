@@ -10,6 +10,12 @@
   --comind-md-editor-font-family: "Inter", sans-serif;
 }
 
+
+/* Override code background color */
+code {
+  background-color: transparent !important;
+}
+
 body {
   font-weight: 300;
 }

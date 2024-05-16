@@ -120,8 +120,8 @@ const MeldList: React.FC<MeldListProps> = ({ melds }) => {
       <Center>
         <Alert icon={<IconBulb />}>
           {/* TODO #7 support notifying that there are no melds after retrieval */}
-          we're loading your melds, give us a sec. you might also not have any
-          melds but that's not in the server right now.
+          we&apos;re loading your melds, give us a sec. you might also not have
+          any melds but that&apos;s not in the server right now.
         </Alert>
       </Center>
     );

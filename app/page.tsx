@@ -1,11 +1,11 @@
 "use client";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { AuthContext } from "@/lib/authprovider";
 import MainPage from "../lib/MeldView";
 import { redirect } from "next/navigation";
 import Comind from "@/lib/comind";
 import { Center, Container, Space, Text, Title } from "@mantine/core";
-import { ThoughtProvider } from "@/lib/thoughtprovider";
+import { ThoughtContext, ThoughtProvider } from "@/lib/thoughtprovider";
 import ComindShort from "@/lib/ComindShort";
 import Link from "next/link";
 import Shell from "./Shell";
@@ -13,6 +13,12 @@ import Shell from "./Shell";
 // Main entry point for the application
 export default function App() {
   const { isAuthenticated, isLoading } = useContext(AuthContext);
+  const { setActiveToRootMeld } = useContext(ThoughtContext);
+
+  // Set to root meld on page load
+  useEffect(() => {
+    setActiveToRootMeld();
+  }, []);
 
   // Wait on loading
   if (isLoading) {

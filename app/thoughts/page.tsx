@@ -37,9 +37,7 @@ const ThoughtPage: React.FC<ThoughtsPageProps> = () => {
 
   return (
     <Shell>
-      <Container size="sm">
-        <ThoughtList thoughts={thoughts} />
-      </Container>
+      <ThoughtList thoughts={thoughts} suggestions={{}} />
     </Shell>
   );
 };

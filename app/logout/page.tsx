@@ -20,7 +20,7 @@ const LogoutPage = () => {
     <Shell>
       <Center style={{ height: "60vh" }}>
         <Stack>
-          <Title>you've been logged out</Title>
+          <Title>you&apos;ve been logged out</Title>
           <Text size="xl">it was nice having you here</Text>
           <Text size="xl">if you ever want to come back, just sign in</Text>
         </Stack>

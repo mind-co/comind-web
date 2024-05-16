@@ -7,9 +7,7 @@ const useMelds = (initialMelds: Meld[]) => {
 
   const addThoughtToMeld = useCallback((thought: Thought, meldId: string) => {
     setMelds((currentMelds) => {
-      const meldIndex = currentMelds.findIndex(
-        (meld) => meld.meld_id === meldId
-      );
+      const meldIndex = currentMelds.findIndex((meld) => meld.id === meldId);
 
       if (meldIndex !== -1) {
         const updatedMelds = [...currentMelds];

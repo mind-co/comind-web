@@ -68,8 +68,8 @@ const MeldDisplay: React.FC<MeldDisplayProps> = ({ meld }) => {
     <>
       <Modal opened={opened} onClose={close} title="delete">
         <Text>
-          are you sure you want to delete this meld? cameron isn't that good at
-          stuff and probably can't get it back.
+          are you sure you want to delete this meld? cameron isn&apos;t that
+          good at stuff and probably can&apos;t get it back.
         </Text>
 
         <Text>

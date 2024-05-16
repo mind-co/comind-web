@@ -29,10 +29,7 @@ import {
   ActionIcon,
   Badge,
   Card,
-  Center,
-  Container,
   Group,
-  Paper,
   Space,
   Timeline,
   TimelineItem,
@@ -161,7 +158,7 @@ const ThoughtDisplay: React.FC<ThoughtDisplayProps> = ({
 
       {/* Content */}
       <TypographyStylesProvider>
-        <Markdown remarkPlugins={[remarkGfm]}>{thought.body}</Markdown>
+        {<Markdown remarkPlugins={[remarkGfm]}>{thought.body}</Markdown>}
       </TypographyStylesProvider>
 
       {/* <Divider my="md" /> */}
@@ -315,11 +312,6 @@ interface ThoughtListProps {
 }
 
 const ThoughtList: React.FC<ThoughtListProps> = ({ thoughts, suggestions }) => {
-  if (thoughts.length === 0) {
-    return <></>;
-    // return <div className="w-full text-center">. . .</div>;
-  }
-
   const [suggestionsOpen, setSuggestionsOpen] = useState<boolean[]>(
     new Array(thoughts.length).fill(false) as boolean[]
   );
@@ -332,6 +324,10 @@ const ThoughtList: React.FC<ThoughtListProps> = ({ thoughts, suggestions }) => {
       return newArray;
     });
   };
+
+  if (thoughts.length === 0) {
+    return <></>;
+  }
 
   return (
     <>

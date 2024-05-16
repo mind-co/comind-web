@@ -124,15 +124,6 @@ const MeldView = () => {
       {/* <Container size="sm">
         <SuggestionList thoughts={getCurrentSuggestions()} />
       </Container> */}
-
-      <Space h="xl" />
-      <Space h="xl" />
-      <Space h="xl" />
-      <Space h="xl" />
-      <Space h="xl" />
-      <Space h="xl" />
-      <Space h="xl" />
-      <Space h="xl" />
     </Shell>
   );
 };

@@ -27,6 +27,7 @@ interface ThoughtContextValue {
   setCurrentMeldSlug: (slug: string) => void;
   getCurrentSuggestions: () => { [thoughtId: string]: Thought[] };
   setActiveMeld: (slug: string) => void;
+  setActiveToRootMeld: () => void;
   meldSlugs: string[];
   meldIds: string[];
   activeMeldSlug: string;
@@ -71,6 +72,14 @@ const ThoughtProvider: React.FC<ThoughtProviderProps> = ({ children }) => {
 
     // Optimistically set the current meld slug
     setCurrentMeldSlug(slug);
+  };
+
+  // Set the active meld to the root meld
+  const setActiveToRootMeld = () => {
+    const rootMeld = getRootMeld();
+    if (rootMeld) {
+      setActiveMeld(rootMeld.slug);
+    }
   };
 
   // List of meld slugs. Mostly used for debugging.
@@ -349,6 +358,7 @@ const ThoughtProvider: React.FC<ThoughtProviderProps> = ({ children }) => {
     getRootMeld,
     setCurrentMeldSlug,
     setActiveMeld,
+    setActiveToRootMeld,
     meldSlugs,
     meldIds,
     activeMeldSlug,
