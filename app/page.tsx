@@ -9,6 +9,7 @@ import { ThoughtContext, ThoughtProvider } from "@/lib/thoughtprovider";
 import ComindShort from "@/lib/ComindShort";
 import Link from "next/link";
 import Shell from "./Shell";
+import Logo from "@/lib/Logo";
 
 // Main entry point for the application
 export default function App() {
@@ -33,10 +34,8 @@ export default function App() {
           alignItems: "center",
         }}
       >
-        <div style={{ fontSize: "20vmin" }}>
-          {/* <ComindShort /> */}
-          <Comind />
-        </div>
+        {/* <ComindShort /> */}
+        <Logo size={200} />
 
         <div style={{ fontSize: "5vmin" }}>
           is thinking
@@ -55,7 +54,7 @@ export default function App() {
   }
 
   // If we aren't logged in, redirect to the login page
-  if (!isAuthenticated) {
+  if (!isAuthenticated && !isLoading) {
     return (
       <Shell>
         <Center style={{ height: "60vh" }}>

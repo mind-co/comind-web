@@ -43,7 +43,7 @@ class AuthProvider extends React.Component<{ children: React.ReactNode }> {
     password: "",
     userId: "",
     color: "black",
-    isLoading: false,
+    isLoading: true,
     isAuthenticated: false,
   };
 

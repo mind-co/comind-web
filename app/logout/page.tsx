@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { AuthContext } from "@/lib/authprovider";
 import Shell from "../Shell";
 import { Center, Stack, Text, Title } from "@mantine/core";
+import Link from "next/link";
 
 const LogoutPage = () => {
   const auth = useContext(AuthContext);
@@ -22,7 +23,10 @@ const LogoutPage = () => {
         <Stack>
           <Title>you&apos;ve been logged out</Title>
           <Text size="xl">it was nice having you here</Text>
-          <Text size="xl">if you ever want to come back, just sign in</Text>
+          <Text size="xl">
+            if you ever want to come back, just{" "}
+            <Link href="/">sign in again</Link>
+          </Text>
         </Stack>
       </Center>
     </Shell>
