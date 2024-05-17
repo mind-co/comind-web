@@ -144,7 +144,8 @@ const ThoughtProvider: React.FC<ThoughtProviderProps> = ({ children }) => {
 
   useEffect(() => {
     if (token && !websocketRef.current) {
-      websocketRef.current = new WebSocket("ws://localhost:2333/");
+      // websocketRef.current = new WebSocket("ws://localhost:2333/");
+      websocketRef.current = new WebSocket("wss://nimbus.pfiffer.org/ws");
 
       //
       // open connection

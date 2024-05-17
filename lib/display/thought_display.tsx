@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { Thought } from "@/lib/types/thoughts";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -45,9 +45,12 @@ import {
   Progress,
   ThemeIcon,
   Paper,
+  Pill,
 } from "@mantine/core";
 import { convertToRelativeTimestamp } from "../utils";
 import { useDisclosure } from "@mantine/hooks";
+import { setPublic } from "../api";
+import { AuthContext } from "../authprovider";
 
 // Visual stuff
 const lineWidth = 2;
@@ -69,11 +72,12 @@ const ThoughtDisplay: React.FC<ThoughtDisplayProps> = ({
   // const { userId } = useContext(AuthContext);
 
   const theme = useMantineTheme();
+  const auth = useContext(AuthContext);
 
   // State variables
   const [contextMenuVisible, setContextMenuVisible] = useState(false);
   const [suggestionsOpen, setSuggestionsOpen] = useState(false);
-  // const [hovered, setHovered] = useState(true);
+  const [isPublicThought, setIsPublicThought] = useState(thought.public);
   // const [editorValue, setEditorValue] = useState("");
 
   // Date created converted to a pretty date time
@@ -88,6 +92,17 @@ const ThoughtDisplay: React.FC<ThoughtDisplayProps> = ({
   // Toggle suggestions
   const toggleSuggestionsOpen = () => {
     setSuggestionsOpen(!suggestionsOpen);
+  };
+
+  const togglePublic = async () => {
+    try {
+      console.log("Toggling public status", auth);
+      await setPublic(auth, thought.id, !isPublicThought);
+      // Update the local thought state to reflect the new public status
+      setIsPublicThought(!isPublicThought);
+    } catch (error) {
+      console.error("Failed to toggle public status:", error);
+    }
   };
 
   // Info modal stuff
@@ -154,7 +169,7 @@ const ThoughtDisplay: React.FC<ThoughtDisplayProps> = ({
         <div style={{ fontFamily: "Bungee" }}>
           <Text>{thought.title}</Text>
         </div>
-        <Badge variant="default">{thought.username}</Badge>
+        <Text c="dimmed">{thought.username}</Text>
       </Group>
 
       {/* Content */}
@@ -177,9 +192,19 @@ const ThoughtDisplay: React.FC<ThoughtDisplayProps> = ({
         </Group>
 
         <Group>
-          <ThemeIcon variant="default" color="gray" size="xs">
-            {thought.public ? <IconWorld /> : <IconLock />}
-          </ThemeIcon>
+          {/* Public/private */}
+          <Tooltip label={thought.public ? "Public" : "Private"}>
+            <ActionIcon
+              variant="subtle"
+              size={buttonSize}
+              color={buttonColor}
+              onClick={togglePublic}
+            >
+              {isPublicThought ? <IconWorld /> : <IconLock />}
+            </ActionIcon>
+          </Tooltip>
+
+          {/* Info */}
           <Tooltip label="Info">
             <ActionIcon
               variant="subtle"

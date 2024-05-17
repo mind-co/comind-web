@@ -50,10 +50,10 @@ const endpoint = (path: string): string => {
 const getBaseHeaders = (context: any): Record<string, string> => {
   const headers: Record<string, string> = {};
 
-  const username = context.authProvider.username;
+  const username = context.username;
   headers["ComindUsername"] = username;
 
-  const token = context.authProvider.token;
+  const token = context.token;
   headers["Authorization"] = `Bearer ${token}`;
 
   return headers;
@@ -74,45 +74,6 @@ export const fetchThoughts = async (context: any): Promise<Thought[]> => {
     throw new Error(
       `Failed to load thoughts, status code: ${response.status} and body: ${response.data}`
     );
-  }
-};
-
-export const saveQuickThought = async (
-  context: any,
-  body: string,
-  isPublic: boolean,
-  parentThoughtId?: string,
-  childThoughtId?: string
-): Promise<Thought> => {
-  const url = endpoint("/api/thoughts/");
-  const headers = getBaseHeaders(context);
-
-  const bodyJson: Record<string, any> = {
-    body,
-    public: isPublic,
-    synthetic: false,
-    origin: "app",
-  };
-
-  if (parentThoughtId) {
-    bodyJson["parent_thought_id"] = parentThoughtId;
-  }
-
-  if (childThoughtId) {
-    bodyJson["child_thought_id"] = childThoughtId;
-  }
-
-  const response: AxiosResponse = await axios.post(url, bodyJson, { headers });
-
-  if (response.status !== 200) {
-    throw new Error("Failed to save thought");
-  }
-
-  try {
-    const jsonResponse = response.data;
-    return new Thought(jsonResponse);
-  } catch (e) {
-    throw new Error("Failed to parse new thought as JSON");
   }
 };
 
@@ -234,59 +195,6 @@ export const emailExists = async (email: string): Promise<boolean> => {
   const jsonResponse = response.data;
   return jsonResponse.taken;
 };
-
-export class SearchResult {
-  id: string;
-  body: string;
-  title: string;
-  username: string;
-  cosineSimilarity: number;
-  numLinks?: number;
-  linkedTo?: boolean;
-  linkedFrom?: boolean;
-
-  constructor({
-    id,
-    body,
-    username,
-    title,
-    cosineSimilarity,
-    numLinks = 0,
-    linkedTo = false,
-    linkedFrom = false,
-  }: {
-    id: string;
-    body: string;
-    username: string;
-    title: string;
-    cosineSimilarity: number;
-    numLinks?: number;
-    linkedTo?: boolean;
-    linkedFrom?: boolean;
-  }) {
-    this.id = id;
-    this.body = body;
-    this.username = username;
-    this.title = title;
-    this.cosineSimilarity = cosineSimilarity;
-    this.numLinks = numLinks;
-    this.linkedTo = linkedTo;
-    this.linkedFrom = linkedFrom;
-  }
-
-  static fromJson(json: any): SearchResult {
-    return new SearchResult({
-      id: json.id,
-      body: json.body,
-      username: json.username,
-      title: json.title,
-      cosineSimilarity: json.cosinesimilarity,
-      numLinks: json.numlinks,
-      linkedTo: json.linked_to,
-      linkedFrom: json.linked_from,
-    });
-  }
-}
 
 export const searchThoughts = async (
   context: any,
@@ -464,7 +372,6 @@ export const setPublic = async (
   headers["ComindThoughtId"] = thoughtId;
 
   const body = JSON.stringify({ public: isPublic });
-
   const response: AxiosResponse = await axios.patch(url, body, { headers });
 
   if (response.status !== 200) {
@@ -588,13 +495,9 @@ async function getUserThoughts(context: any): Promise<Thought[]> {
   }
 
   // Set the headers
-  const headers: Record<string, string> = {
-    "Content-Type": "application/json",
-    Authorization: `Bearer ${context.token}`,
-    ComindUsername: context.username,
-    ComindPageNo: "0",
-    ComindLimit: "100",
-  };
+  const headers = getBaseHeaders(context);
+  headers["ComindPageNo"] = "0";
+  headers["ComindLimit"] = "100";
 
   try {
     const token = context.token; // Accessing token from context
