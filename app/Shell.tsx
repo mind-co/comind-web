@@ -217,8 +217,8 @@ const Shell = ({ children }: { children: React.ReactNode }) => {
           </Stack>
         </AppShell.Navbar>
         <AppShell.Main>
-          {children}
-          {/* <Container size={comindContainerWidth}>{children}</Container> */}
+          {/* {children} */}
+          <Container size={comindContainerWidth}>{children}</Container>
         </AppShell.Main>
 
         {/* Aside */}
