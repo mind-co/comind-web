@@ -108,7 +108,7 @@ const MeldView = () => {
           right: 0,
           zIndex: 10,
           backgroundColor: "var(--mantine-color-body)",
-          paddingBottom: "32px",
+          paddingBottom: "54px",
         }}
       >
         <Container size={comindContainerWidth}>

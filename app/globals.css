@@ -10,6 +10,10 @@
   --comind-md-editor-font-family: "Inter", sans-serif;
 }
 
+/* Override button font weight globally */
+.navButton {
+  font-weight: 300;
+}
 
 /* Override code background color */
 code {

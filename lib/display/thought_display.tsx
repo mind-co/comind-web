@@ -44,6 +44,7 @@ import {
   Modal,
   Progress,
   ThemeIcon,
+  Paper,
 } from "@mantine/core";
 import { convertToRelativeTimestamp } from "../utils";
 import { useDisclosure } from "@mantine/hooks";
@@ -157,9 +158,11 @@ const ThoughtDisplay: React.FC<ThoughtDisplayProps> = ({
       </Group>
 
       {/* Content */}
-      <TypographyStylesProvider>
-        {<Markdown remarkPlugins={[remarkGfm]}>{thought.body}</Markdown>}
-      </TypographyStylesProvider>
+      <Paper withBorder radius="lg" p="md">
+        <TypographyStylesProvider>
+          {<Markdown remarkPlugins={[remarkGfm]}>{thought.body}</Markdown>}
+        </TypographyStylesProvider>
+      </Paper>
 
       {/* <Divider my="md" /> */}
 
@@ -168,15 +171,15 @@ const ThoughtDisplay: React.FC<ThoughtDisplayProps> = ({
       {/* Time info */}
       <Group justify="space-between">
         <Group>
-          <ThemeIcon variant="default" color="gray" size="xs">
-            {thought.public ? <IconWorld /> : <IconLock />}
-          </ThemeIcon>
           <Text size="xs" c="dimmed">
             {prettyTimestamp}
           </Text>
         </Group>
 
         <Group>
+          <ThemeIcon variant="default" color="gray" size="xs">
+            {thought.public ? <IconWorld /> : <IconLock />}
+          </ThemeIcon>
           <Tooltip label="Info">
             <ActionIcon
               variant="subtle"
@@ -202,7 +205,9 @@ const ThoughtDisplay: React.FC<ThoughtDisplayProps> = ({
         </Group>
       </Group>
 
-      <Divider
+      <Space h="md" />
+
+      {/* <Divider
         labelPosition="center"
         my="md"
         label={
@@ -222,7 +227,7 @@ const ThoughtDisplay: React.FC<ThoughtDisplayProps> = ({
             <IconLineDashed />
           )
         }
-      />
+      /> */}
 
       {/* Suggestions */}
       {suggestionsOpen && suggestions && (
@@ -285,6 +290,7 @@ const SuggestionDisplay: React.FC<SuggestionDisplayProps> = ({ thought }) => {
 
         <Badge variant="default">{thought.username}</Badge>
       </Group>
+
       <TypographyStylesProvider>
         <Markdown remarkPlugins={[remarkGfm]}>{thought.body}</Markdown>
       </TypographyStylesProvider>

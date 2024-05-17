@@ -18,6 +18,7 @@ import {
   Loader,
   Center,
   Alert,
+  Title,
 } from "@mantine/core";
 import {
   IconBulb,
@@ -81,9 +82,9 @@ const MeldPage: React.FC<MeldPageProps> = () => {
 
   return (
     <Shell>
+      <Title order={3}></Title>
       <TextInput
         placeholder="title"
-        label="new meld"
         value={newMeldTitle}
         onChange={(e) => setNewMeldTitle(e.target.value)}
       />

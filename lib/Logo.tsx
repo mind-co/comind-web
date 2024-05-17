@@ -98,7 +98,8 @@ const Logo: React.FC<LogoProps> = ({ size }) => {
         dominantBaseline="middle"
         fontSize="60"
         letterSpacing={letterSpacing}
-        fontFamily="Frontage Pro Neon"
+        // fontWeight={600}
+        fontFamily="Frontage Pro Line"
       >
         <tspan fill="var(--mantine-color-text)">{"{"}</tspan>
         <tspan fill="var(--mantine-color-text)">co</tspan>

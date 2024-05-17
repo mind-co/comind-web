@@ -31,7 +31,7 @@ const LogoShort: React.FC<LogoProps> = ({ size }) => {
         dominantBaseline="middle"
         letterSpacing={letterSpacing}
         fontSize="60"
-        fontFamily="Frontage Pro"
+        fontFamily="Frontage Pro Bottom"
         opacity={0.25}
       >
         <tspan fill="rgb(var(--comind-secondary-rgb))">{"{"}</tspan>
@@ -47,7 +47,7 @@ const LogoShort: React.FC<LogoProps> = ({ size }) => {
         dominantBaseline="middle"
         letterSpacing={letterSpacing}
         fontSize="60"
-        fontFamily="Frontage Pro Bottom"
+        fontFamily="Frontage Pro"
         opacity={0.25}
       >
         <tspan fill="rgb(var(--comind-secondary-rgb))">{"{"}</tspan>
@@ -93,13 +93,14 @@ const LogoShort: React.FC<LogoProps> = ({ size }) => {
         dominantBaseline="middle"
         fontSize="60"
         letterSpacing={letterSpacing}
-        fontFamily="Frontage Pro Neon"
+        fontFamily="Frontage Pro Line"
       >
         <tspan fill="var(--mantine-color-text)">{"{"}</tspan>
         <tspan fill="var(--mantine-color-text)">c</tspan>
         <tspan fill="var(--mantine-color-text)">o</tspan>
         <tspan fill="var(--mantine-color-text)">{"}"}</tspan>
       </text>
+
       {/* <text
         x="50%"
         y="50%"
