@@ -67,8 +67,6 @@ const MeldDisplayPage: React.FC<MeldDisplayPageProps> = () => {
         </div>
         <div style={{ fontSize: "5vmin" }}>give us a sec</div>
         <Text fw={700}>{activeMeldSlug}</Text>
-
-        <MeldView />
       </Shell>
     );
   }

@@ -101,10 +101,10 @@ const Logo: React.FC<LogoProps> = ({ size }) => {
         // fontWeight={600}
         fontFamily="Frontage Pro Line"
       >
-        <tspan fill="var(--mantine-color-text)">{"{"}</tspan>
-        <tspan fill="var(--mantine-color-text)">co</tspan>
-        <tspan fill="var(--mantine-color-text)">mind</tspan>
-        <tspan fill="var(--mantine-color-text)">{"}"}</tspan>
+        <tspan fill="white">{"{"}</tspan>
+        <tspan fill="white">co</tspan>
+        <tspan fill="white">mind</tspan>
+        <tspan fill="white">{"}"}</tspan>
       </text>
       {/* <text
         x="50%"

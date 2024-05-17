@@ -98,7 +98,7 @@ const MeldView = () => {
   }, [editorValue]);
 
   return (
-    <Shell>
+    <>
       {/* THE THOUGHT BOX */}
       <div
         style={{
@@ -124,7 +124,7 @@ const MeldView = () => {
       {/* <Container size="sm">
         <SuggestionList thoughts={getCurrentSuggestions()} />
       </Container> */}
-    </Shell>
+    </>
   );
 };
 
