@@ -26,11 +26,7 @@ const extensions = [
   }),
 ];
 
-const ThoughtBoxEditor = ({
-  onUpdate,
-}: {
-  onUpdate?: (text: string) => void;
-}) => {
+const ThoughtBoxEditor = () => {
   const editor = useEditor({
     extensions: [
       StarterKit,
@@ -45,11 +41,6 @@ const ThoughtBoxEditor = ({
 
   return useEditor({
     extensions: extensions,
-    onUpdate: ({ editor }) => {
-      if (onUpdate) {
-        onUpdate(editor.getText());
-      }
-    },
   }) as Editor;
 };
 

@@ -13,13 +13,15 @@ import Logo from "@/lib/Logo";
 
 // Main entry point for the application
 export default function App() {
-  const { isAuthenticated, isLoading } = useContext(AuthContext);
+  const { isAuthenticated, isLoading, token } = useContext(AuthContext);
   const { setActiveToRootMeld } = useContext(ThoughtContext);
 
   // Set to root meld on page load
   useEffect(() => {
     setActiveToRootMeld();
   }, []);
+
+  console.log({ isAuthenticated, isLoading, token });
 
   // Wait on loading
   if (isLoading) {

@@ -19,6 +19,11 @@ import {
   IconLock,
   IconGlobe,
   IconWorld,
+  IconLine,
+  IconSlashes,
+  IconCircleDot,
+  IconX,
+  IconInnerShadowBottomRight,
 } from "@tabler/icons-react";
 // import { convertToRelativeTimestamp } from "@/lib/utils";
 // import { AuthContext } from "@/lib/authprovider";
@@ -78,7 +83,7 @@ const ThoughtDisplay: React.FC<ThoughtDisplayProps> = ({
   const [contextMenuVisible, setContextMenuVisible] = useState(false);
   const [suggestionsOpen, setSuggestionsOpen] = useState(false);
   const [isPublicThought, setIsPublicThought] = useState(thought.public);
-  // const [editorValue, setEditorValue] = useState("");
+  const [thoughtBodyHidden, setThoughtBodyHidden] = useState(false);
 
   // Date created converted to a pretty date time
   const prettyTimestamp = convertToRelativeTimestamp(thought.date_created);
@@ -107,6 +112,10 @@ const ThoughtDisplay: React.FC<ThoughtDisplayProps> = ({
 
   // Info modal stuff
   const [opened, { open, close }] = useDisclosure(false);
+
+  const toggleThoughtBodyVisibility = () => {
+    setThoughtBodyHidden(!thoughtBodyHidden);
+  };
 
   /**
    * Asynchronously saves a new thought based on the current editor value.
@@ -166,73 +175,95 @@ const ThoughtDisplay: React.FC<ThoughtDisplayProps> = ({
       </Modal>
 
       <Group justify="space-between" align="center">
-        <div style={{ fontFamily: "Bungee" }}>
-          <Text>{thought.title}</Text>
-        </div>
-        <Text c="dimmed">{thought.username}</Text>
-      </Group>
-
-      {/* Content */}
-      <Paper withBorder radius="lg" p="md">
-        <TypographyStylesProvider>
-          {<Markdown remarkPlugins={[remarkGfm]}>{thought.body}</Markdown>}
-        </TypographyStylesProvider>
-      </Paper>
-
-      {/* <Divider my="md" /> */}
-
-      <Space h="xs" />
-
-      {/* Time info */}
-      <Group justify="space-between">
         <Group>
-          <Text size="xs" c="dimmed">
-            {prettyTimestamp}
+          <ActionIcon
+            variant="subtle"
+            size="xs"
+            onClick={toggleThoughtBodyVisibility}
+            color={buttonColor}
+          >
+            {thoughtBodyHidden ? <IconInnerShadowBottomRight /> : <IconX />}
+          </ActionIcon>
+          <Text c={thoughtBodyHidden ? "" : "dimmed"} fw={200}>
+            {thought.title}
           </Text>
         </Group>
-
-        <Group>
-          {/* Public/private */}
-          <Tooltip label={thought.public ? "Public" : "Private"}>
-            <ActionIcon
-              variant="subtle"
-              size={buttonSize}
-              color={buttonColor}
-              onClick={togglePublic}
-            >
-              {isPublicThought ? <IconWorld /> : <IconLock />}
-            </ActionIcon>
-          </Tooltip>
-
-          {/* Info */}
-          <Tooltip label="Info">
-            <ActionIcon
-              variant="subtle"
-              size={buttonSize}
-              color={buttonColor}
-              onClick={open}
-            >
-              <IconInfoCircle />
-            </ActionIcon>
-          </Tooltip>
-
-          <Tooltip label="Think">
-            <ActionIcon variant="subtle" size={buttonSize} color={buttonColor}>
-              <IconBubble />
-            </ActionIcon>
-          </Tooltip>
-
-          <Tooltip label="Remove">
-            <ActionIcon variant="subtle" size={buttonSize} color={buttonColor}>
-              <IconTrash />
-            </ActionIcon>
-          </Tooltip>
-        </Group>
+        <Text c="dimmed" fw={200}>
+          {thought.username}
+        </Text>
       </Group>
 
-      <Space h="md" />
+      {!thoughtBodyHidden && (
+        <>
+          {/* Content */}
+          <Paper withBorder radius="lg" p="md">
+            <TypographyStylesProvider>
+              {<Markdown remarkPlugins={[remarkGfm]}>{thought.body}</Markdown>}
+            </TypographyStylesProvider>
+          </Paper>
 
-      {/* <Divider
+          {/* <Divider my="md" /> */}
+
+          <Space h="xs" />
+
+          {/* Time info */}
+          <Group justify="space-between">
+            <Group>
+              <Text size="xs" c="dimmed">
+                {prettyTimestamp}
+              </Text>
+            </Group>
+
+            <Group>
+              {/* Public/private */}
+              <Tooltip label={thought.public ? "Public" : "Private"}>
+                <ActionIcon
+                  variant="subtle"
+                  size={buttonSize}
+                  color={buttonColor}
+                  onClick={togglePublic}
+                >
+                  {isPublicThought ? <IconWorld /> : <IconLock />}
+                </ActionIcon>
+              </Tooltip>
+
+              {/* Info */}
+              <Tooltip label="Info">
+                <ActionIcon
+                  variant="subtle"
+                  size={buttonSize}
+                  color={buttonColor}
+                  onClick={open}
+                >
+                  <IconInfoCircle />
+                </ActionIcon>
+              </Tooltip>
+
+              <Tooltip label="Think">
+                <ActionIcon
+                  variant="subtle"
+                  size={buttonSize}
+                  color={buttonColor}
+                >
+                  <IconBubble />
+                </ActionIcon>
+              </Tooltip>
+
+              <Tooltip label="Remove">
+                <ActionIcon
+                  variant="subtle"
+                  size={buttonSize}
+                  color={buttonColor}
+                >
+                  <IconTrash />
+                </ActionIcon>
+              </Tooltip>
+            </Group>
+          </Group>
+
+          <Space h="md" />
+
+          {/* <Divider
         labelPosition="center"
         my="md"
         label={
@@ -254,17 +285,22 @@ const ThoughtDisplay: React.FC<ThoughtDisplayProps> = ({
         }
       /> */}
 
-      {/* Suggestions */}
-      {suggestionsOpen && suggestions && (
-        <>
-          <Card radius="xl" withBorder>
-            {suggestions.map((suggestion, indexb) => (
-              <>
-                <SuggestionDisplay key={suggestion.id} thought={suggestion} />
-              </>
-            ))}
-          </Card>
-          <Divider my="md" />
+          {/* Suggestions */}
+          {suggestionsOpen && suggestions && (
+            <>
+              <Card radius="xl" withBorder>
+                {suggestions.map((suggestion, indexb) => (
+                  <>
+                    <SuggestionDisplay
+                      key={suggestion.id}
+                      thought={suggestion}
+                    />
+                  </>
+                ))}
+              </Card>
+              <Divider my="md" />
+            </>
+          )}
         </>
       )}
     </>

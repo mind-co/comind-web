@@ -1,5 +1,5 @@
 "use client";
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AuthContext } from "@/lib/authprovider";
 import Shell from "../Shell";
@@ -8,14 +8,14 @@ import Link from "next/link";
 
 const LogoutPage = () => {
   const auth = useContext(AuthContext);
-  const router = useRouter();
+  const [signedOut, setSignedOut] = useState(false);
 
   useEffect(() => {
-    if (auth) {
+    if (auth && auth.token != null && !signedOut) {
       auth.clearAuth(); // Assuming clearAuth is the method to clear the authentication context
-      router.push("/"); // Redirect to the home page after logout
+      setSignedOut(true);
     }
-  }, [auth, router]);
+  }, [auth, setSignedOut]);
 
   return (
     <Shell>
@@ -25,7 +25,9 @@ const LogoutPage = () => {
           <Text size="xl">it was nice having you here</Text>
           <Text size="xl">
             if you ever want to come back, just{" "}
-            <Link href="/">sign in again</Link>
+            <Link href="/login" passHref>
+              sign in again
+            </Link>
           </Text>
         </Stack>
       </Center>

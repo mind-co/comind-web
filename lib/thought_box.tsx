@@ -4,7 +4,23 @@ import ThoughtBoxEditor from "./ThoughtBoxEditor";
 import { ActionIcon, Center, Container } from "@mantine/core";
 import { IconBulb } from "@tabler/icons-react";
 
-const ThoughtBox = ({ editor }: { editor: Editor }) => {
+interface ThoughtBoxProps {
+  onSubmit: (html: string) => void;
+}
+
+const ThoughtBox = ({ onSubmit }: ThoughtBoxProps) => {
+  const editor = ThoughtBoxEditor();
+
+  const getHTML = () => {
+    return editor?.getHTML() || "";
+  };
+
+  const handleSubmit = () => {
+    const html = getHTML();
+    const event = new CustomEvent("submit", { detail: { html } });
+    document.dispatchEvent(event);
+  };
+
   return (
     <div style={{ position: "relative" }}>
       <RichTextEditor editor={editor}>
@@ -63,9 +79,7 @@ const ThoughtBox = ({ editor }: { editor: Editor }) => {
           variant="default"
           mr={7}
           mb={7}
-          onClick={() => {
-            document.dispatchEvent(new CustomEvent("submit"));
-          }}
+          onClick={handleSubmit}
         >
           <IconBulb size={32} />
         </ActionIcon>

@@ -7,8 +7,7 @@ import { ThoughtContext } from "@/lib/thoughtprovider";
 import Nav from "../app/nav";
 import ThoughtList from "@/lib/display/thought_display";
 
-import { EditorContent } from "@tiptap/react";
-import Comind from "@/lib/comind";
+import TurndownService from "turndown";
 
 import ThoughtBox from "@/lib/thought_box";
 import {
@@ -46,6 +45,13 @@ const ThemeChanger = () => {
 };
 
 const MeldView = () => {
+  // Used for converting Tiptap HTML to markdown.
+  var turndownService = new TurndownService({
+    headingStyle: "atx",
+    codeBlockStyle: "fenced",
+    hr: "---",
+  });
+
   const auth = useContext(AuthContext);
   const {
     addThoughtToProvider,
@@ -55,19 +61,21 @@ const MeldView = () => {
     currentMeldTitle,
     currentMeldDescription,
   } = useContext(ThoughtContext);
-  const [editorValue, setEditorValue] = useState("");
-  const editor = ThoughtBoxEditor({ onUpdate: setEditorValue });
+  const editor = ThoughtBoxEditor();
   const [opened, { toggle }] = useDisclosure();
 
   // On think method, we should send the current thought to the server.
   const onThink = async (event: any) => {
     event.preventDefault();
-    console.log("Sending thought:", editorValue);
 
     try {
+      // Try to convert the HTML value from the editor into markdown
+      console.log(event);
+      let markdownValue = turndownService.turndown(event.detail.html);
+
       // Call the API function to send the thought to the database, only if
       // the editor value is not empty.
-      let trimmedEditorValue = editorValue.trim();
+      let trimmedEditorValue = markdownValue.trim();
       if (trimmedEditorValue.length == 0) {
         console.log("Editor value is empty, not sending thought");
         return;
@@ -82,7 +90,6 @@ const MeldView = () => {
       // console.log("Thought sent to the database");
 
       // Clear the editor value
-      setEditorValue("");
       editor.commands.clearContent();
     } catch (error) {
       console.error("Error sending thought to the database:", error);
@@ -95,7 +102,7 @@ const MeldView = () => {
     return () => {
       document.removeEventListener("submit", onThink);
     };
-  }, [editorValue]);
+  }, []);
 
   return (
     <>
@@ -112,7 +119,7 @@ const MeldView = () => {
         }}
       >
         <Container size={comindContainerWidth}>
-          <ThoughtBox editor={editor} />
+          <ThoughtBox onSubmit={onThink} />
         </Container>
       </div>
 

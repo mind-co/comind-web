@@ -20,11 +20,7 @@ const LoginPage: React.FC = () => {
     return null;
   }
 
-  return (
-    <AuthProvider>
-      <LoginForm />
-    </AuthProvider>
-  );
+  return <LoginForm />;
 };
 
 export default LoginPage;
