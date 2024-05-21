@@ -51,6 +51,7 @@ import {
   ThemeIcon,
   Paper,
   Pill,
+  Button,
 } from "@mantine/core";
 import { convertToRelativeTimestamp } from "../utils";
 import { useDisclosure } from "@mantine/hooks";
@@ -176,14 +177,14 @@ const ThoughtDisplay: React.FC<ThoughtDisplayProps> = ({
 
       <Group justify="space-between" align="center">
         <Group>
-          <ActionIcon
+          {/* <ActionIcon
             variant="subtle"
             size="xs"
             onClick={toggleThoughtBodyVisibility}
             color={buttonColor}
           >
             {thoughtBodyHidden ? <IconInnerShadowBottomRight /> : <IconX />}
-          </ActionIcon>
+          </ActionIcon> */}
           <Text c={thoughtBodyHidden ? "" : "dimmed"} fw={200}>
             {thought.title}
           </Text>
@@ -215,6 +216,17 @@ const ThoughtDisplay: React.FC<ThoughtDisplayProps> = ({
             </Group>
 
             <Group>
+              {/* Delete */}
+              <Tooltip label="Remove">
+                <ActionIcon
+                  variant="subtle"
+                  size={buttonSize}
+                  color={buttonColor}
+                >
+                  <IconTrash />
+                </ActionIcon>
+              </Tooltip>
+
               {/* Public/private */}
               <Tooltip label={thought.public ? "Public" : "Private"}>
                 <ActionIcon
@@ -228,7 +240,7 @@ const ThoughtDisplay: React.FC<ThoughtDisplayProps> = ({
               </Tooltip>
 
               {/* Info */}
-              <Tooltip label="Info">
+              <Tooltip label="Info" variant="outline">
                 <ActionIcon
                   variant="subtle"
                   size={buttonSize}
@@ -239,25 +251,19 @@ const ThoughtDisplay: React.FC<ThoughtDisplayProps> = ({
                 </ActionIcon>
               </Tooltip>
 
-              <Tooltip label="Think">
-                <ActionIcon
-                  variant="subtle"
-                  size={buttonSize}
-                  color={buttonColor}
-                >
-                  <IconBubble />
-                </ActionIcon>
-              </Tooltip>
-
-              <Tooltip label="Remove">
-                <ActionIcon
-                  variant="subtle"
-                  size={buttonSize}
-                  color={buttonColor}
-                >
-                  <IconTrash />
-                </ActionIcon>
-              </Tooltip>
+              {/* Think button */}
+              <Button
+                radius="lg"
+                size="xs"
+                py="xs"
+                px="sm"
+                variant="outline"
+                color="gray"
+                disabled={!suggestions || suggestions.length == 0}
+                onClick={toggleSuggestionsOpen}
+              >
+                Think
+              </Button>
             </Group>
           </Group>
 
