@@ -84,16 +84,6 @@ const MeldDisplayPage: React.FC<MeldDisplayPageProps> = () => {
       ></Divider>
 
       <MeldView />
-
-      <Center>
-        <Text size="xs" c="dimmed">
-          end of meld
-        </Text>
-      </Center>
-      <Space h="xl" />
-      <Space h="xl" />
-      <Space h="xl" />
-      <Space h="xl" />
     </Shell>
   );
 };

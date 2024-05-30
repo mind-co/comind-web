@@ -24,6 +24,7 @@ import {
   IconCircleDot,
   IconX,
   IconInnerShadowBottomRight,
+  IconNetwork,
 } from "@tabler/icons-react";
 // import { convertToRelativeTimestamp } from "@/lib/utils";
 // import { AuthContext } from "@/lib/authprovider";
@@ -52,6 +53,7 @@ import {
   Paper,
   Pill,
   Button,
+  ButtonGroup,
 } from "@mantine/core";
 import { convertToRelativeTimestamp } from "../utils";
 import { useDisclosure } from "@mantine/hooks";
@@ -197,7 +199,7 @@ const ThoughtDisplay: React.FC<ThoughtDisplayProps> = ({
       {!thoughtBodyHidden && (
         <>
           {/* Content */}
-          <Paper withBorder radius="lg" p="md">
+          <Paper withBorder radius="lg" p="xs">
             <TypographyStylesProvider>
               {<Markdown remarkPlugins={[remarkGfm]}>{thought.body}</Markdown>}
             </TypographyStylesProvider>
@@ -251,18 +253,37 @@ const ThoughtDisplay: React.FC<ThoughtDisplayProps> = ({
                 </ActionIcon>
               </Tooltip>
 
+              {/* Examine button */}
+              <Button
+                radius="lg"
+                size="xs"
+                variant="filled"
+                color="gray"
+                onClick={toggleSuggestionsOpen}
+              >
+                <Text size="xs">Examine</Text>
+              </Button>
+
+              {/* Suggest button */}
+              <Button
+                radius="lg"
+                size="xs"
+                variant="filled"
+                color="gray"
+                onClick={toggleSuggestionsOpen}
+              >
+                <Text size="xs">Suggest</Text>
+              </Button>
+
               {/* Think button */}
               <Button
                 radius="lg"
                 size="xs"
-                py="xs"
-                px="sm"
-                variant="outline"
+                variant="filled"
                 color="gray"
-                disabled={!suggestions || suggestions.length == 0}
                 onClick={toggleSuggestionsOpen}
               >
-                Think
+                <Text size="xs">Think</Text>
               </Button>
             </Group>
           </Group>

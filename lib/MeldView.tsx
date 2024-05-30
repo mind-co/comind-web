@@ -22,8 +22,9 @@ import {
   Grid,
   Space,
   Stack,
+  Text,
 } from "@mantine/core";
-import { useDisclosure } from "@mantine/hooks";
+import { useDisclosure, useScrollIntoView } from "@mantine/hooks";
 import { RichTextEditor } from "@mantine/tiptap";
 import Link from "next/link";
 
@@ -45,6 +46,11 @@ const ThemeChanger = () => {
 };
 
 const MeldView = () => {
+  // Scroll to the bottom of the page.
+  const { scrollIntoView, targetRef } = useScrollIntoView<HTMLDivElement>({
+    offset: 60,
+  });
+
   // Used for converting Tiptap HTML to markdown.
   var turndownService = new TurndownService({
     headingStyle: "atx",
@@ -105,11 +111,11 @@ const MeldView = () => {
   }, []);
 
   return (
-    <>
+    <div>
       {/* THE THOUGHT BOX */}
       <div
         style={{
-          position: "fixed",
+          position: "sticky",
           bottom: 0,
           left: 0,
           right: 0,
@@ -128,10 +134,18 @@ const MeldView = () => {
         suggestions={getCurrentSuggestions()}
       />
 
+      <Center>
+        <Text size="xs" c="dimmed" ref={targetRef}>
+          end of meld
+        </Text>
+      </Center>
+
+      <Space h="xl" />
+
       {/* <Container size="sm">
         <SuggestionList thoughts={getCurrentSuggestions()} />
       </Container> */}
-    </>
+    </div>
   );
 };
 

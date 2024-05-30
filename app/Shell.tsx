@@ -18,6 +18,7 @@ import {
   Button,
   SegmentedControl,
   ButtonGroup,
+  ActionIcon,
 } from "@mantine/core";
 import Comind from "@/lib/comind";
 import { Spotlight, SpotlightActionData, spotlight } from "@mantine/spotlight";
@@ -32,11 +33,13 @@ import LogoShort from "@/lib/LogoShort";
 import {
   IconAffiliate,
   IconBubble,
+  IconBurger,
   IconDashboard,
   IconFileText,
   IconHome,
   IconLogout,
   IconSearch,
+  IconX,
 } from "@tabler/icons-react";
 
 const actions: SpotlightActionData[] = [
@@ -74,7 +77,7 @@ const Shell = ({ children }: { children: React.ReactNode }) => {
   const { connected, currentMeldSlug } = useContext(ThoughtContext);
 
   const [opened, { toggle }] = useDisclosure();
-  const pinned = useHeadroom({ fixedAt: 50 });
+  const pinned = useHeadroom({ fixedAt: 500 });
   const navButtonVariant = "subtle";
   const navButtonColor = "gray";
   const navButtonJustify = "start";
@@ -106,7 +109,7 @@ const Shell = ({ children }: { children: React.ReactNode }) => {
 
       <AppShell
         padding="md"
-        header={{ height: 100, collapsed: !pinned && !opened }}
+        header={{ height: 100 }}
         navbar={{
           width: asideAndNavbarWidth,
           breakpoint: "sm",
@@ -152,12 +155,15 @@ const Shell = ({ children }: { children: React.ReactNode }) => {
                 alignItems: "center",
               }}
             >
-              <Burger
-                opened={opened}
-                onClick={toggle}
-                hiddenFrom="sm"
-                size="sm"
-              />
+              <ActionIcon onClick={toggle} variant="subtle" color="gray">
+                {opened ? <IconX /> : <IconBurger />}
+                {/* <Burger
+                  opened={opened}
+                  onClick={toggle}
+                  hiddenFrom="sm"
+                  size="sm"
+                /> */}
+              </ActionIcon>
             </div>
           </Container>
         </AppShell.Header>
@@ -227,18 +233,18 @@ const Shell = ({ children }: { children: React.ReactNode }) => {
         {/* Footer */}
         <AppShell.Footer p="sm" withBorder={false}>
           {/* Debug for current meld */}
-          <Group>
+          <Group justify="end">
             {/* Connected indicator */}
             {/* <Indicator
               position="middle-start"
               color={connected ? "green" : "red"}
             > */}
-            <Pill variant="contrast">
-              {connected ? "connected" : "disconnected"}
-            </Pill>
             {/* </Indicator> */}
             <Pill variant="subtle">{currentMeldSlug}</Pill>
             <Pill variant="subtle">{username}</Pill>
+            <Pill variant="contrast">
+              {connected ? "✅ connected" : "❌ disconnected"}
+            </Pill>
           </Group>
         </AppShell.Footer>
       </AppShell>
