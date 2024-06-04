@@ -19,6 +19,7 @@ import {
   SegmentedControl,
   ButtonGroup,
   ActionIcon,
+  Space,
 } from "@mantine/core";
 import Comind from "@/lib/comind";
 import { Spotlight, SpotlightActionData, spotlight } from "@mantine/spotlight";
@@ -109,7 +110,7 @@ const Shell = ({ children }: { children: React.ReactNode }) => {
 
       <AppShell
         padding="md"
-        header={{ height: 100 }}
+        // header={{ height: 80 }}
         navbar={{
           width: asideAndNavbarWidth,
           breakpoint: "sm",
@@ -122,7 +123,7 @@ const Shell = ({ children }: { children: React.ReactNode }) => {
         }}
         footer={{ height: 40 }}
       >
-        <AppShell.Header>
+        {/* <AppShell.Header>
           <Container
             size={comindContainerWidth}
             style={{ position: "relative" }}
@@ -136,14 +137,12 @@ const Shell = ({ children }: { children: React.ReactNode }) => {
                 zIndex: 0,
               }}
             >
-              {/* Logo */}
               <Center visibleFrom="xs">
-                <Logo size={125} />
+                <Logo size={80} />
               </Center>
 
-              {/* Logo small */}
               <Center hiddenFrom="xs">
-                <LogoShort size={125} />
+                <LogoShort size={80} />
               </Center>
             </Container>
             <div
@@ -155,18 +154,15 @@ const Shell = ({ children }: { children: React.ReactNode }) => {
                 alignItems: "center",
               }}
             >
-              <ActionIcon onClick={toggle} variant="subtle" color="gray">
-                {opened ? <IconX /> : <IconBurger />}
-                {/* <Burger
-                  opened={opened}
-                  onClick={toggle}
-                  hiddenFrom="sm"
-                  size="sm"
-                /> */}
-              </ActionIcon>
+              <Burger
+                opened={opened}
+                onClick={toggle}
+                hiddenFrom="sm"
+                size="sm"
+              />
             </div>
           </Container>
-        </AppShell.Header>
+        </AppShell.Header> */}
 
         {/* Navbar */}
         <AppShell.Navbar p="md">

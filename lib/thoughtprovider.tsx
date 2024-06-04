@@ -10,6 +10,7 @@ import { Thought } from "@/lib/types/thoughts";
 import { Ping } from "@/lib/types/ping";
 import { AuthContext } from "./authprovider";
 import { Meld } from "./types/melds";
+import { saveThought } from "./api";
 
 interface ThoughtProviderProps {
   children: React.ReactNode;
@@ -42,7 +43,7 @@ const ThoughtContext = createContext<ThoughtContextValue>(
 );
 
 const ThoughtProvider: React.FC<ThoughtProviderProps> = ({ children }) => {
-  const { token, userId } = useContext(AuthContext);
+  const { token, userId, username } = useContext(AuthContext);
   const [connected, setConnected] = useState(false);
   const [pings, setPings] = useState<Ping[]>([]);
   const [melds, setMelds] = useState<{ [slug: string]: Meld }>({});
@@ -343,7 +344,19 @@ const ThoughtProvider: React.FC<ThoughtProviderProps> = ({ children }) => {
         setMelds((prevMelds) => ({ ...prevMelds, [currentMeldSlug]: meld }));
       }
     } else {
-      console.log("WebSocket is not open. Thought not sent.");
+      console.log(
+        "WebSocket is not open. Thought not sent. Attempting to send thought to server via HTTPS"
+      );
+
+      try {
+        saveThought({ token, username: username }, thought, true).then(
+          (response) => {
+            console.log("Saved thought to server via HTTPS:", response);
+          }
+        );
+      } catch (error) {
+        console.error("Failed to send thought to server via HTTPS:", error);
+      }
     }
   };
 

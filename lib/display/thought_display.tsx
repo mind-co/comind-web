@@ -1,31 +1,22 @@
 "use client";
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Thought } from "@/lib/types/thoughts";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import {
-  IconArrowBarToUp,
-  IconBubble,
   IconBulb,
-  IconChevronCompactDown,
-  IconChevronCompactUp,
-  IconGitBranch,
-  IconIdBadge,
-  IconMaximize,
   IconPlus,
-  IconLineDashed,
-  IconTrash,
   IconInfoCircle,
   IconLock,
-  IconGlobe,
   IconWorld,
-  IconLine,
-  IconSlashes,
-  IconCircleDot,
+  IconMinus,
   IconX,
-  IconInnerShadowBottomRight,
-  IconNetwork,
+  IconBulbFilled,
+  IconBulbOff,
+  IconCheck,
+  IconLink,
 } from "@tabler/icons-react";
+import TurndownService from "turndown";
 // import { convertToRelativeTimestamp } from "@/lib/utils";
 // import { AuthContext } from "@/lib/authprovider";
 // import Link from "next/link";
@@ -37,6 +28,7 @@ import {
   Card,
   Group,
   Space,
+  Flex,
   Timeline,
   TimelineItem,
   Text,
@@ -54,11 +46,27 @@ import {
   Pill,
   Button,
   ButtonGroup,
+  CardSection,
+  Container,
+  Stack,
+  Spoiler,
+  Anchor,
 } from "@mantine/core";
 import { convertToRelativeTimestamp } from "../utils";
 import { useDisclosure } from "@mantine/hooks";
-import { setPublic } from "../api";
+import {
+  deleteThought,
+  fetchSuggestions,
+  linkThoughts,
+  saveThought,
+  sendThoughtToDatabase,
+  setPublic,
+  unlinkThoughts,
+} from "../api";
 import { AuthContext } from "../authprovider";
+import ThoughtBoxEditor from "../ThoughtBoxEditor";
+import { RichTextEditor } from "@mantine/tiptap";
+import Link from "next/link";
 
 // Visual stuff
 const lineWidth = 2;
@@ -69,10 +77,7 @@ type ThoughtDisplayProps = {
   suggestions: Thought[];
 };
 
-const ThoughtDisplay: React.FC<ThoughtDisplayProps> = ({
-  thought,
-  suggestions,
-}) => {
+const ThoughtDisplay: React.FC<ThoughtDisplayProps> = ({ thought }) => {
   // Modal stuff
   // const auth = useContext(AuthContext);
 
@@ -82,24 +87,86 @@ const ThoughtDisplay: React.FC<ThoughtDisplayProps> = ({
   const theme = useMantineTheme();
   const auth = useContext(AuthContext);
 
+  // Info modal stuff
+  const [opened, { open, close }] = useDisclosure(false);
+
   // State variables
   const [contextMenuVisible, setContextMenuVisible] = useState(false);
   const [suggestionsOpen, setSuggestionsOpen] = useState(false);
   const [isPublicThought, setIsPublicThought] = useState(thought.public);
   const [thoughtBodyHidden, setThoughtBodyHidden] = useState(false);
+  const [newThoughtBoxIsOpen, setNewThoughtBoxIsOpen] = useState(false);
+  const [deletePressCount, setDeletePressCount] = useState(0);
+  const [deleted, setDeleted] = useState(false);
+  const [newThoughtContent, setNewThoughtContent] = useState("");
+  const [editThoughtContent, setEditThoughtContent] = useState(thought.body);
+  const [editMode, setEditMode] = useState(false);
+  const [suggestions, setSuggestions] = useState<Thought[]>([]);
 
   // Date created converted to a pretty date time
   const prettyTimestamp = convertToRelativeTimestamp(thought.date_created);
   // const isUserThought = thought.user_id == userId;
 
+  const handleSendThought = async () => {
+    try {
+      if (newThoughtContent.trim().length === 0) {
+        console.log("New thought content is empty, not sending thought");
+        return;
+      }
+
+      if (auth.token) {
+        let newThought = Thought.newThought(
+          newThoughtContent,
+          auth,
+          undefined,
+          thought.id
+        );
+        await saveThought(auth, newThought, true);
+        console.log("Thought sent to the database");
+        setNewThoughtContent("");
+        setNewThoughtBoxIsOpen(false);
+      } else {
+        console.error(
+          "User token is missing, unable to send thought to database"
+        );
+      }
+    } catch (error) {
+      console.error("Error sending thought to the database:", error);
+    }
+  };
+
   // Toggle context menu
-  const openContextMenu = () => {
+  const toggleContextMenu = () => {
     setContextMenuVisible(!contextMenuVisible);
+
+    // Reset the delete press count
+    setDeletePressCount(0);
   };
 
   // Toggle suggestions
   const toggleSuggestionsOpen = () => {
+    // If it's open then close it.
+    if (suggestionsOpen) {
+      setSuggestionsOpen(false);
+      return;
+    }
+
+    // If we have any suggestions, we can just open the suggestions
+    if (suggestions.length > 0) {
+      setSuggestionsOpen(true);
+      return;
+    }
+
+    // Otherwise, we need to generate suggestions
+    fetchSuggestions(auth, thought.id).then((suggestions) => {
+      setSuggestions(suggestions);
+    });
+
     setSuggestionsOpen(!suggestionsOpen);
+  };
+
+  const toggleEditMode = () => {
+    setEditMode(!editMode);
   };
 
   const togglePublic = async () => {
@@ -113,62 +180,56 @@ const ThoughtDisplay: React.FC<ThoughtDisplayProps> = ({
     }
   };
 
-  // Info modal stuff
-  const [opened, { open, close }] = useDisclosure(false);
+  const toggleNewThoughtBox = () => {
+    setNewThoughtBoxIsOpen(!newThoughtBoxIsOpen);
+  };
 
   const toggleThoughtBodyVisibility = () => {
     setThoughtBodyHidden(!thoughtBodyHidden);
   };
 
-  /**
-   * Asynchronously saves a new thought based on the current editor value.
-   *
-   * This function first checks if the editorValue state variable, which represents
-   * the content of the thought to be saved, is not empty. If it is empty, an error
-   * message is logged, and the function returns early without attempting to save the thought.
-   *
-   * If the editorValue is not empty, the function attempts to save the thought by calling
-   * the saveQuickThought function imported from "@/lib/api". This API call requires several
-   * parameters:
-   * - context: An object containing the authProvider with the user's token. This is used for
-   *   authentication purposes.
-   * - body: The content of the thought to be saved, represented by editorValue.
-   * - isPublic: A boolean flag indicating whether the thought should be public. It is set to true.
-   * - parentThoughtId: The ID of the parent thought, if any. In this case, it uses the ID of the
-   *   thought being displayed.
-   *
-   * If the saveQuickThought function successfully saves the thought, a success message is logged
-   * to the console along with the newly saved thought object. If the function throws an error,
-   * an error message is logged to the console.
-   */
-  // const think = async () => {
-  //   // Check if the editor value is empty
-  //   if (editorValue.trim().length === 0) {
-  //     console.error("Editor value is empty.");
-  //     return;
-  //   }
+  // Handle delete
+  const handleDelete = async () => {
+    setDeletePressCount(deletePressCount + 1);
 
-  //   try {
-  //     // Attempt to save the new thought
-  //     const newThought = await saveQuickThought(
-  //       auth,
-  //       editorValue,
-  //       true,
-  //       thought.id
-  //     );
-  //     // Log success message
-  //     console.log("Thought saved successfully:", newThought);
-  //   } catch (error) {
-  //     // Log error message if saving fails
-  //     console.error("Failed to save thought:", error);
-  //   }
-  // };
+    if (deletePressCount >= 2) {
+      try {
+        await deleteThought(auth, thought.id);
+        // Optionally, update the UI to remove the deleted thought
+        // For example, if thoughts are stored in a state variable:
+        setDeleted(true);
+      } catch (error) {
+        console.error("Failed to delete thought:", error);
+      }
+    }
+  };
 
-  // Visual configs
-  const buttonSize = "xs";
-  const buttonColor = "light";
+  // Handle save
+  const handleSave = async () => {
+    console.log("Saving", editThoughtContent);
+    try {
+      // Copy the thought and update the body
+      const editedThought = { ...thought, body: editThoughtContent };
 
-  //
+      // await saveThought(auth, editedThought, false);
+      console.log("Thought saved successfully.", editThoughtContent);
+    } catch (error) {
+      console.error("Failed to save thought:", error);
+    }
+  };
+
+  // Verb button configs
+  const verbButtonSize = "xs";
+  const verbButtonTextSize = "sm";
+  const verbButtonColor = "gray";
+  const verbButtonVariant = "outline";
+  const verbButtonStyle = {
+    borderColor: theme.colors.gray[7],
+  };
+
+  if (deleted) {
+    return <></>;
+  }
 
   return (
     <>
@@ -177,16 +238,9 @@ const ThoughtDisplay: React.FC<ThoughtDisplayProps> = ({
         <Text>{thought.id}</Text>
       </Modal>
 
+      {/* Title and username */}
       <Group justify="space-between" align="center">
         <Group>
-          {/* <ActionIcon
-            variant="subtle"
-            size="xs"
-            onClick={toggleThoughtBodyVisibility}
-            color={buttonColor}
-          >
-            {thoughtBodyHidden ? <IconInnerShadowBottomRight /> : <IconX />}
-          </ActionIcon> */}
           <Text c={thoughtBodyHidden ? "" : "dimmed"} fw={200}>
             {thought.title}
           </Text>
@@ -196,138 +250,265 @@ const ThoughtDisplay: React.FC<ThoughtDisplayProps> = ({
         </Text>
       </Group>
 
+      {/* The thought body, including verb bar */}
       {!thoughtBodyHidden && (
         <>
           {/* Content */}
-          <Paper withBorder radius="lg" p="xs">
-            <TypographyStylesProvider>
-              {<Markdown remarkPlugins={[remarkGfm]}>{thought.body}</Markdown>}
-            </TypographyStylesProvider>
-          </Paper>
+          <Paper
+            withBorder
+            radius="lg"
+            p="xs"
+            style={{ position: "relative" }}
+            w="100%"
+          >
+            {editMode && (
+              <>
+                <EditThoughtBox
+                  initialContent={editThoughtContent}
+                  onUpdate={(content) => {
+                    setEditThoughtContent(content);
+                    console.log("Content updated", content);
+                  }}
+                />
+              </>
+            )}
 
-          {/* <Divider my="md" /> */}
+            {!editMode && (
+              <>
+                <TypographyStylesProvider>
+                  {
+                    <Markdown remarkPlugins={[remarkGfm]}>
+                      {thought.body}
+                    </Markdown>
+                  }
+                </TypographyStylesProvider>
+              </>
+            )}
+            {/* New thought box */}
+            {newThoughtBoxIsOpen && (
+              <NewThoughtBox
+                parentThoughtId={thought.id}
+                content={newThoughtContent}
+                setContent={setNewThoughtContent}
+              />
+            )}
+            {/* Action row / verb bar */}
 
-          <Space h="xs" />
+            <Divider my="xs" />
 
-          {/* Time info */}
-          <Group justify="space-between">
-            <Group>
+            <Group justify="end" p="0" m="0" gap="4px">
+              {/* <Group>
               <Text size="xs" c="dimmed">
                 {prettyTimestamp}
               </Text>
-            </Group>
+            </Group> */}
 
-            <Group>
-              {/* Delete */}
-              <Tooltip label="Remove">
-                <ActionIcon
-                  variant="subtle"
-                  size={buttonSize}
-                  color={buttonColor}
-                >
-                  <IconTrash />
-                </ActionIcon>
-              </Tooltip>
+              {!newThoughtBoxIsOpen && (
+                <>
+                  <Paper withBorder>
+                    {contextMenuVisible && (
+                      <>
+                        {/* Delete */}
+                        <Tooltip label="Remove">
+                          <Button
+                            variant={verbButtonVariant}
+                            size={verbButtonSize}
+                            color={
+                              deletePressCount == 0
+                                ? verbButtonColor
+                                : deletePressCount == 1
+                                ? "yellow"
+                                : "red"
+                            }
+                            style={verbButtonStyle}
+                            onClick={handleDelete}
+                          >
+                            <Text size={verbButtonTextSize}>
+                              {deletePressCount == 0
+                                ? "delete"
+                                : deletePressCount == 1
+                                ? "are you sure?"
+                                : "CLICK TO DELETE"}
+                            </Text>
+                          </Button>
+                        </Tooltip>
 
-              {/* Public/private */}
-              <Tooltip label={thought.public ? "Public" : "Private"}>
-                <ActionIcon
-                  variant="subtle"
-                  size={buttonSize}
-                  color={buttonColor}
-                  onClick={togglePublic}
-                >
-                  {isPublicThought ? <IconWorld /> : <IconLock />}
-                </ActionIcon>
-              </Tooltip>
+                        {/* Public/private */}
+                        <Tooltip
+                          label={
+                            thought.public
+                              ? "make this thought private"
+                              : "make this thought public"
+                          }
+                        >
+                          <Button
+                            radius="lg"
+                            size={verbButtonSize}
+                            variant={verbButtonVariant}
+                            color={verbButtonColor}
+                            onClick={togglePublic}
+                            style={verbButtonStyle}
+                          >
+                            <Text size={verbButtonTextSize}>
+                              {isPublicThought ? "private" : "public"}
+                            </Text>
+                          </Button>
+                        </Tooltip>
 
-              {/* Info */}
-              <Tooltip label="Info" variant="outline">
-                <ActionIcon
-                  variant="subtle"
-                  size={buttonSize}
-                  color={buttonColor}
-                  onClick={open}
-                >
-                  <IconInfoCircle />
-                </ActionIcon>
-              </Tooltip>
+                        {/* Info */}
+                        <Tooltip label="Info" variant="outline">
+                          <Button
+                            radius="lg"
+                            size={verbButtonSize}
+                            variant={verbButtonVariant}
+                            color={verbButtonColor}
+                            onClick={open}
+                            style={verbButtonStyle}
+                          >
+                            <Text size={verbButtonTextSize}>info</Text>
+                          </Button>
+                        </Tooltip>
+                      </>
+                    )}
 
-              {/* Examine button */}
-              <Button
-                radius="lg"
-                size="xs"
-                variant="filled"
-                color="gray"
-                onClick={toggleSuggestionsOpen}
-              >
-                <Text size="xs">Examine</Text>
-              </Button>
+                    {/* More button */}
+                    <Button
+                      size={verbButtonSize}
+                      variant={verbButtonVariant}
+                      color={verbButtonColor}
+                      onClick={toggleContextMenu}
+                      style={verbButtonStyle}
+                    >
+                      <Text size={verbButtonTextSize}>
+                        {contextMenuVisible ? "Less" : "More"}
+                      </Text>
+                    </Button>
+                  </Paper>
 
-              {/* Suggest button */}
-              <Button
-                radius="lg"
-                size="xs"
-                variant="filled"
-                color="gray"
-                onClick={toggleSuggestionsOpen}
-              >
-                <Text size="xs">Suggest</Text>
-              </Button>
+                  {/* Save button */}
+                  {editMode && (
+                    <Button
+                      size={verbButtonSize}
+                      color="green"
+                      variant="filled"
+                      onClick={handleSave}
+                      style={verbButtonStyle}
+                    >
+                      <Text size={verbButtonTextSize}>Save</Text>
+                    </Button>
+                  )}
 
-              {/* Think button */}
-              <Button
-                radius="lg"
-                size="xs"
-                variant="filled"
-                color="gray"
-                onClick={toggleSuggestionsOpen}
-              >
-                <Text size="xs">Think</Text>
-              </Button>
-            </Group>
-          </Group>
+                  {/* Cancel button */}
+                  {editMode && (
+                    <Button
+                      size={verbButtonSize}
+                      color="red"
+                      variant="filled"
+                      onClick={() => setEditMode(false)}
+                      style={verbButtonStyle}
+                    >
+                      <Text size={verbButtonTextSize}>Cancel</Text>
+                    </Button>
+                  )}
 
-          <Space h="md" />
+                  {/* edit button */}
+                  {!editMode && (
+                    <Button
+                      size={verbButtonSize}
+                      variant={verbButtonVariant}
+                      color={verbButtonColor}
+                      onClick={toggleEditMode}
+                      style={verbButtonStyle}
+                    >
+                      <Text size={verbButtonTextSize}>Edit</Text>
+                    </Button>
+                  )}
 
-          {/* <Divider
-        labelPosition="center"
-        my="md"
-        label={
-          suggestions?.length > 0 ? (
-            <ActionIcon
-              variant="subtle"
-              size="md"
-              onClick={toggleSuggestionsOpen}
-            >
-              {suggestionsOpen ? (
-                <IconChevronCompactUp />
-              ) : (
-                <IconChevronCompactDown />
+                  {/* Examine button */}
+                  <Button
+                    size={verbButtonSize}
+                    variant={verbButtonVariant}
+                    color={verbButtonColor}
+                    onClick={toggleSuggestionsOpen}
+                    style={verbButtonStyle}
+                    disabled={true}
+                  >
+                    <Text size={verbButtonTextSize}>Examine</Text>
+                  </Button>
+
+                  {/* Suggest button */}
+                  <Button
+                    size={verbButtonSize}
+                    variant={verbButtonVariant}
+                    color={verbButtonColor}
+                    onClick={toggleSuggestionsOpen}
+                    style={verbButtonStyle}
+                  >
+                    <Text size={verbButtonTextSize}>Suggest</Text>
+                  </Button>
+
+                  {/* Think button */}
+                  <Button
+                    size={verbButtonSize}
+                    variant={verbButtonVariant}
+                    color={verbButtonColor}
+                    onClick={toggleSuggestionsOpen}
+                    style={verbButtonStyle}
+                    disabled={true}
+                  >
+                    <Text size={verbButtonTextSize}>Think</Text>
+                  </Button>
+                </>
               )}
-            </ActionIcon>
-          ) : (
-            <IconLineDashed />
-          )
-        }
-      /> */}
 
-          {/* Suggestions */}
-          {suggestionsOpen && suggestions && (
-            <>
-              <Card radius="xl" withBorder>
-                {suggestions.map((suggestion, indexb) => (
-                  <>
-                    <SuggestionDisplay
-                      key={suggestion.id}
-                      thought={suggestion}
-                    />
-                  </>
-                ))}
-              </Card>
-              <Divider my="md" />
-            </>
-          )}
+              {/* Add to thought */}
+              <ActionIcon
+                radius="lg"
+                size="md"
+                variant={verbButtonVariant}
+                color={verbButtonColor}
+                onClick={toggleNewThoughtBox}
+                style={verbButtonStyle}
+              >
+                {newThoughtBoxIsOpen ? (
+                  <IconX size={20} />
+                ) : (
+                  <IconPlus size={20} />
+                )}
+              </ActionIcon>
+
+              {newThoughtBoxIsOpen && (
+                <ActionIcon
+                  radius="lg"
+                  size="md"
+                  variant={verbButtonVariant}
+                  color={verbButtonColor}
+                  onClick={handleSendThought}
+                  style={verbButtonStyle}
+                >
+                  <IconCheck />
+                </ActionIcon>
+              )}
+
+              {/* Suggestions */}
+              {suggestionsOpen && suggestions && (
+                <>
+                  <Card radius="xl" withBorder>
+                    {suggestions.map((suggestion, indexb) => (
+                      <>
+                        <SuggestionDisplay
+                          key={suggestion.id}
+                          thought={suggestion}
+                          parent_thought_id={thought.id}
+                        />
+                      </>
+                    ))}
+                  </Card>
+                  <Divider my="md" />
+                </>
+              )}
+            </Group>
+          </Paper>
         </>
       )}
     </>
@@ -336,19 +517,19 @@ const ThoughtDisplay: React.FC<ThoughtDisplayProps> = ({
 
 type SuggestionDisplayProps = {
   thought: Thought;
+  parent_thought_id: string;
 };
 
-const SuggestionDisplay: React.FC<SuggestionDisplayProps> = ({ thought }) => {
+const SuggestionDisplay: React.FC<SuggestionDisplayProps> = ({
+  thought,
+  parent_thought_id,
+}) => {
   // Modal stuff
-  // const auth = useContext(AuthContext);
-
-  // Load context
-  // const { userId } = useContext(AuthContext);
-
-  const theme = useMantineTheme();
+  const auth = useContext(AuthContext);
 
   // State variables
   const [contextMenuVisible, setContextMenuVisible] = useState(false);
+  const [linked, setLinked] = useState(false);
   // const [hovered, setHovered] = useState(true);
   // const [editorValue, setEditorValue] = useState("");
 
@@ -356,43 +537,71 @@ const SuggestionDisplay: React.FC<SuggestionDisplayProps> = ({ thought }) => {
   const prettyTimestamp = convertToRelativeTimestamp(thought.date_created);
   // const isUserThought = thought.user_id == userId;
 
-  // Toggle context menu
-  const openContextMenu = () => {
-    setContextMenuVisible(!contextMenuVisible);
-  };
-
-  const buttonSize = "sm";
-  const buttonColor = "light";
-
   return (
     <>
       <Group justify="space-between" align="center">
         <div style={{ fontFamily: "Bungee" }}>
           <Text>{thought.title}</Text>
         </div>
-        <Progress
-          value={
-            thought.cosine_similarity ? thought.cosine_similarity * 100 : 0
-          }
-        />
 
         <Badge variant="default">{thought.username}</Badge>
       </Group>
 
-      <TypographyStylesProvider>
-        <Markdown remarkPlugins={[remarkGfm]}>{thought.body}</Markdown>
-      </TypographyStylesProvider>
+      {!linked && (
+        <>
+          <Space h="xs" />
+          <Tooltip label="Cosine similarity. This is a rough measure of how similar this thought is to the parent thought.">
+            <Progress
+              value={
+                thought.cosine_similarity ? thought.cosine_similarity * 100 : 0
+              }
+            />
+          </Tooltip>
+          <Space h="xs" />
 
-      <Space h="xs" />
+          <Spoiler maxHeight={100} showLabel="Show more" hideLabel="Show less">
+            <TypographyStylesProvider>
+              <Markdown remarkPlugins={[remarkGfm]}>{thought.body}</Markdown>
+            </TypographyStylesProvider>
+          </Spoiler>
 
+          <Space h="xs" />
+        </>
+      )}
       {/* Time info */}
-      <Group>
-        <ThemeIcon variant="default" color="gray" size="xs">
-          {thought.public ? <IconWorld /> : <IconLock />}
-        </ThemeIcon>
-        <Text size="xs" c="dimmed">
-          {prettyTimestamp}
-        </Text>
+      <Group justify="space-between">
+        <Group>
+          <ThemeIcon variant="default" color="gray" size="xs">
+            {thought.public ? <IconWorld /> : <IconLock />}
+          </ThemeIcon>
+          <Text size="xs" c="dimmed">
+            {prettyTimestamp}
+          </Text>
+        </Group>
+
+        <Group gap="xs">
+          {linked ? (
+            <Anchor
+              component="button"
+              onClick={() => {
+                unlinkThoughts(auth, thought.id, parent_thought_id);
+                setLinked(false);
+              }}
+            >
+              unlink
+            </Anchor>
+          ) : (
+            <Anchor
+              component="button"
+              onClick={() => {
+                linkThoughts(auth, thought.id, parent_thought_id);
+                setLinked(true);
+              }}
+            >
+              link
+            </Anchor>
+          )}
+        </Group>
       </Group>
 
       <Divider my="md" />
@@ -437,49 +646,152 @@ const ThoughtList: React.FC<ThoughtListProps> = ({ thoughts, suggestions }) => {
   );
 };
 
-// const SuggestionList: React.FC<ThoughtListProps> = ({ thoughts }) => {
-//   if (thoughts.length === 0) {
-//     return <></>;
-//   }
+interface NewThoughtBoxProps {
+  parentThoughtId?: string | null;
+  content: string;
+  setContent: (content: string) => void;
+}
 
-//   const [open, setOpen] = useState(true);
+const NewThoughtBox: React.FC<NewThoughtBoxProps> = ({
+  parentThoughtId,
+  content,
+  setContent,
+}) => {
+  const editor = ThoughtBoxEditor({ onUpdate: setContent });
+  const auth = useContext(AuthContext);
 
-//   return (
-//     <div>
-//       <Divider
-//         label={
-//           <>
-//             <ActionIcon
-//               variant="subtle"
-//               size="md"
-//               onClick={() => setOpen(!open)}
-//             >
-//               {open ? <IconChevronCompactUp /> : <IconChevronCompactDown />}
-//             </ActionIcon>
-//           </>
-//         }
-//         labelPosition="center"
-//         my="sm"
-//       />
-//       {open && (
-//         <>
-//           <ScrollArea h={250} type="auto">
-//             <Timeline active={1} lineWidth={lineWidth} bulletSize={bulletSize}>
-//               {thoughts.map((thought, index) => (
-//                 <SuggestionDisplay
-//                   key={index}
-//                   thought={thought}
-//                   suggestions={suggestions[thought.id]}
-//                 />
-//               ))}
-//             </Timeline>
-//           </ScrollArea>
-//           <Divider label="suggestions" labelPosition="center" my="sm" />
-//         </>
-//       )}
-//     </div>
-//   );
-// };
+  // Used for converting Tiptap HTML to markdown.
+  var turndownService = new TurndownService({
+    headingStyle: "atx",
+    codeBlockStyle: "fenced",
+    hr: "---",
+  });
+
+  // On think method, we should send the current thought to the server.
+  const onThink = async (event: any) => {
+    event.preventDefault();
+
+    try {
+      // Try to convert the HTML value from the editor into markdown
+      let markdownValue = turndownService.turndown(event.detail.html);
+
+      // Call the API function to send the thought to the database, only if
+      // the editor value is not empty.
+      let trimmedEditorValue = markdownValue.trim();
+      if (trimmedEditorValue.length == 0) {
+        console.log("Editor value is empty, not sending thought");
+        return;
+      }
+
+      // Add the thought to the provider. This relays to the websocket server,
+      // which will also handle uploading to the database.
+      if (auth.token) {
+        // Pass the parentThoughtId when creating a new thought
+        let thought = Thought.newThought(
+          trimmedEditorValue,
+          auth,
+          undefined,
+          parentThoughtId
+        );
+        await saveThought(auth, thought, true);
+        console.log("Thought sent to the database");
+      } else {
+        console.error(
+          "User token is missing, unable to send thought to database"
+        );
+      }
+      // // Clear the editor value
+      // editor.commands.clearContent();
+    } catch (error) {
+      console.error("Error sending thought to the database:", error);
+    }
+  };
+
+  const getHTML = () => {
+    return editor?.getHTML() || "";
+  };
+
+  const handleSubmit = () => {
+    const html = getHTML();
+    const event = new CustomEvent("submit", { detail: { html } });
+    document.dispatchEvent(event);
+  };
+
+  // Add a submit event listener to the document.
+  useEffect(() => {
+    document.addEventListener("submit", onThink);
+    return () => {
+      document.removeEventListener("submit", onThink);
+    };
+  }, []);
+
+  useEffect(() => {
+    const onUpdate = () => {
+      const html = getHTML();
+      const markdownValue = turndownService.turndown(html);
+      setContent(markdownValue);
+    };
+
+    editor?.on("update", onUpdate);
+
+    return () => {
+      editor?.off("update", onUpdate);
+    };
+  }, [editor]);
+
+  return (
+    <Paper w="100%">
+      <RichTextEditor editor={editor} autoFocus={true}>
+        <RichTextEditor.Content />
+      </RichTextEditor>
+
+      {/* <div style={{ position: "absolute", bottom: "0", right: "0" }}>
+        <ActionIcon
+          size="xl"
+          variant="filled"
+          mr={7}
+          mb={7}
+          onClick={handleSubmit}
+        >
+          <IconPlus size={32} />
+        </ActionIcon> */}
+      {/* <ActionIcon size="xl" variant="light" mr={4}>
+          <IconBulb size={64} />
+        </ActionIcon> */}
+      {/* </div> */}
+    </Paper>
+  );
+};
+
+interface EditThoughtBoxProps {
+  initialContent: string;
+  onUpdate: (content: string) => void;
+}
+
+const EditThoughtBox: React.FC<EditThoughtBoxProps> = ({
+  initialContent,
+  onUpdate,
+}) => {
+  const editor = ThoughtBoxEditor({
+    onUpdate: onUpdate,
+    initialContent: initialContent,
+  });
+
+  return (
+    <>
+      <RichTextEditor editor={editor} autoFocus={true}>
+        <RichTextEditor.Content />
+      </RichTextEditor>
+      {/* <div
+        style={{
+          marginTop: "10px",
+          display: "flex",
+          justifyContent: "flex-end",
+        }}
+      > */}
+    </>
+  );
+};
 
 export default ThoughtList;
 export { ThoughtDisplay, SuggestionDisplay };

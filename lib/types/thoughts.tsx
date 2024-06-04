@@ -1,5 +1,6 @@
 import { v4 as uuidv4 } from "uuid";
 import { AuthContext } from "../authprovider";
+import { DO_NOT_USE_OR_YOU_WILL_BE_FIRED_CALLBACK_REF_RETURN_VALUES } from "react";
 
 class Thought {
   title: string;
@@ -16,6 +17,7 @@ class Thought {
   color: string;
   cosine_similarity: number | null;
   embedding: number[] | null;
+  parent_thought_id: string | null; // Indicates whether this thought should be linked to the parent
 
   // Suggested thought ID is a string associated with a specific thought --
   // i.e. we have some thought A and some thought B, and A is suggested
@@ -39,9 +41,16 @@ class Thought {
     this.cosine_similarity = json?.cosine_similarity || null;
     this.embedding = json?.embedding || null;
     this.suggested_thought_id = json?.suggested_thought_id || null;
+    this.parent_thought_id = json?.parent_thought_id || null;
   }
 
-  static newThought(body: string, auth: any, title?: string): Thought {
+  static newThought(
+    body: string,
+    auth: any,
+    title?: string,
+    parentThoughtId?: string | null,
+    id?: string | null
+  ): Thought {
     return new Thought({
       title: title || "",
       body,
@@ -50,7 +59,7 @@ class Thought {
       date_created: new Date().toISOString(),
       date_updated: new Date().toISOString(),
       revision: 0,
-      id: uuidv4(),
+      id: id || uuidv4(),
       public: true,
       synthetic: false,
       origin: "web",
@@ -58,6 +67,7 @@ class Thought {
       cosine_similarity: null,
       embedding: null,
       suggested_thought_id: null,
+      parent_thought_id: parentThoughtId || null,
     });
   }
 
@@ -78,6 +88,7 @@ class Thought {
       cosine_similarity: null,
       embedding: null,
       suggested_thought_id: null,
+      parent_thought_id: null,
     });
   }
 
@@ -98,6 +109,7 @@ class Thought {
       cosine_similarity: null,
       embedding: null,
       suggested_thought_id: null,
+      parent_thought_id: null,
     });
   }
 }

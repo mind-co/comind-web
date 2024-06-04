@@ -22,8 +22,9 @@ const Logo: React.FC<LogoProps> = ({ size }) => {
         dominantBaseline="middle"
         fill="var(--mantine-color-text)"
         fontSize="60"
+        fontFamily="Bungee Pop"
       >
-        comind
+        {"{comind}"}
       </text>
     </svg>
   );

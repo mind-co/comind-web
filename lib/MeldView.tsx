@@ -32,6 +32,7 @@ import { useTheme } from "next-themes";
 import ThoughtBoxEditor from "@/lib/ThoughtBoxEditor";
 import Shell from "@/app/Shell";
 import { comindContainerWidth } from "./Configuration";
+import Logo from "./Logo";
 
 const ThemeChanger = () => {
   const { theme, setTheme } = useTheme();
@@ -97,6 +98,7 @@ const MeldView = () => {
 
       // Clear the editor value
       editor.commands.clearContent();
+      editor.commands.blur();
     } catch (error) {
       console.error("Error sending thought to the database:", error);
     }
@@ -110,42 +112,50 @@ const MeldView = () => {
     };
   }, []);
 
+  const numberOfThoughts = getCurrentThoughts().length;
+
   return (
-    <div>
-      {/* THE THOUGHT BOX */}
-      <div
-        style={{
-          position: "sticky",
-          bottom: 0,
-          left: 0,
-          right: 0,
-          zIndex: 10,
-          backgroundColor: "var(--mantine-color-body)",
-          paddingBottom: "54px",
-        }}
-      >
-        <Container size={comindContainerWidth}>
-          <ThoughtBox onSubmit={onThink} />
-        </Container>
-      </div>
-
-      <ThoughtList
-        thoughts={getCurrentThoughts()}
-        suggestions={getCurrentSuggestions()}
-      />
-
+    <>
       <Center>
-        <Text size="xs" c="dimmed" ref={targetRef}>
-          end of meld
-        </Text>
+        <Logo size={80} />
       </Center>
 
-      <Space h="xl" />
+      {numberOfThoughts > 0 && (
+        <>
+          <ThoughtList
+            thoughts={getCurrentThoughts()}
+            suggestions={getCurrentSuggestions()}
+          />
+        </>
+      )}
+
+      {/* THE THOUGHT BOX */}
+      {numberOfThoughts === 0 ? (
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            alignItems: "center",
+            height: numberOfThoughts === 0 ? "50vh" : "auto",
+            flex: 1,
+          }}
+        >
+          <div style={{ width: "100%" }}>
+            <ThoughtBox onSubmit={onThink} />
+          </div>
+        </div>
+      ) : (
+        <>
+          <Space my="md" />
+          <ThoughtBox onSubmit={onThink} />
+        </>
+      )}
 
       {/* <Container size="sm">
         <SuggestionList thoughts={getCurrentSuggestions()} />
       </Container> */}
-    </div>
+    </>
   );
 };
 

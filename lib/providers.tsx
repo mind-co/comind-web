@@ -18,7 +18,22 @@ interface ProvidersProps {
 
 // Make the theme
 const theme = createTheme({
-  primaryColor: "yellow",
+  colors: {
+    comind: [
+      "rgb(var(--comind-primary-rgb))",
+      "rgb(var(--comind-secondary-rgb))",
+      "rgb(var(--comind-tertiary-rgb))",
+      "var(--mantine-color-text)",
+      "var(--mantine-color-text)",
+      "var(--mantine-color-text)",
+      "var(--mantine-color-text)",
+      "var(--mantine-color-text)",
+      "var(--mantine-color-text)",
+      "var(--mantine-color-text)",
+    ],
+  },
+  primaryColor: "comind",
+  defaultRadius: "lg",
 });
 
 // Create a provider that wraps the NextUIProvider and AuthProvider

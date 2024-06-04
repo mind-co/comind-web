@@ -116,6 +116,7 @@ export const saveThought = async (
     headers["ComindThoughtId"] = thought.id;
 
     const body = JSON.stringify({
+      id: thought.id,
       body: thought.body,
       public: thought.public,
       synthetic: false,
@@ -304,17 +305,32 @@ export const linkThoughts = async (
   fromId: string,
   toId: string
 ): Promise<boolean> => {
-  const url = endpoint("/api/link/");
+  const url = endpoint(`/api/link/?from=${fromId}&to=${toId}`);
   const headers = getBaseHeaders(context);
-  headers["ComindFromId"] = fromId;
-  headers["ComindToId"] = toId;
 
-  const response: AxiosResponse = await axios.post(url, null, { headers });
+  const response: AxiosResponse = await axios.get(url, { headers });
 
   if (response.status === 200) {
     return true;
   } else {
     throw new Error("Failed to link thoughts");
+  }
+};
+
+export const unlinkThoughts = async (
+  context: any,
+  fromId: string,
+  toId: string
+): Promise<boolean> => {
+  const url = endpoint(`/api/link/?from=${fromId}&to=${toId}`);
+  const headers = getBaseHeaders(context);
+
+  const response: AxiosResponse = await axios.delete(url, { headers });
+
+  if (response.status === 200) {
+    return true;
+  } else {
+    throw new Error("Failed to unlink thoughts");
   }
 };
 
@@ -720,3 +736,33 @@ async function deleteMeld(context: any, meldId: string): Promise<void> {
 }
 
 export { addMeld, updateMeld, deleteMeld };
+
+async function fetchSuggestions(context: any, thoughtId: string): Promise<any> {
+  if (!context.token) {
+    throw new Error("Authentication token is missing.");
+  }
+
+  const headers = getBaseHeaders(context);
+  const url = endpoint(`/api/suggest/${thoughtId}`);
+
+  try {
+    const response = await fetch(url, {
+      method: "GET",
+      headers,
+    });
+
+    if (!response.ok) {
+      throw new Error(
+        `Failed to fetch suggestions. Server responded with status: ${response.status} ${response.statusText}`
+      );
+    }
+
+    const data = await response.json();
+    return data.suggestions;
+  } catch (error) {
+    console.error("Error fetching suggestions. Detailed error:", error);
+    throw new Error(`An error occurred while fetching suggestions: ${error}`);
+  }
+}
+
+export { fetchSuggestions };
