@@ -33,6 +33,7 @@ import ThoughtBoxEditor from "@/lib/ThoughtBoxEditor";
 import Shell from "@/app/Shell";
 import { comindContainerWidth } from "./Configuration";
 import Logo from "./Logo";
+import LogoShort from "./LogoShort";
 
 const ThemeChanger = () => {
   const { theme, setTheme } = useTheme();
@@ -98,7 +99,6 @@ const MeldView = () => {
 
       // Clear the editor value
       editor.commands.clearContent();
-      editor.commands.blur();
     } catch (error) {
       console.error("Error sending thought to the database:", error);
     }
@@ -116,8 +116,12 @@ const MeldView = () => {
 
   return (
     <>
-      <Center>
-        <Logo size={80} />
+      <Center visibleFrom="sm">
+        <Logo size={120} />
+      </Center>
+
+      <Center hiddenFrom="sm">
+        <LogoShort size={120} />
       </Center>
 
       {numberOfThoughts > 0 && (
@@ -131,16 +135,7 @@ const MeldView = () => {
 
       {/* THE THOUGHT BOX */}
       {numberOfThoughts === 0 ? (
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-            alignItems: "center",
-            height: numberOfThoughts === 0 ? "50vh" : "auto",
-            flex: 1,
-          }}
-        >
+        <div>
           <div style={{ width: "100%" }}>
             <ThoughtBox onSubmit={onThink} />
           </div>

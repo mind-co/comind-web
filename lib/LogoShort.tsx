@@ -5,14 +5,18 @@ interface LogoProps {
 }
 
 const LogoShort: React.FC<LogoProps> = ({ size }) => {
-  const letterSpacing = "-10";
+  const letterSpacing = "0";
 
   return (
     <svg
       width={size * 4.5}
       height={size}
       viewBox="0 0 100 100"
-      style={{ zIndex: -1, pointerEvents: "none" }}
+      style={{
+        zIndex: -1,
+        pointerEvents: "none",
+        letterSpacing: letterSpacing,
+      }}
     >
       <text
         x="50%"
@@ -22,7 +26,7 @@ const LogoShort: React.FC<LogoProps> = ({ size }) => {
         fill="var(--mantine-color-text)"
         fontSize="60"
       >
-        co
+        {"{"}co{"}"}
       </text>
     </svg>
   );

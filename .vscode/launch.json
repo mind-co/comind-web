@@ -1,6 +1,7 @@
 {
     "version": "0.2.0",
     "configurations": [
+
       {
         "name": "Next.js: debug server-side",
         "type": "node-terminal",
@@ -23,6 +24,13 @@
           "uriFormat": "%s",
           "action": "debugWithChrome"
         }
+      },
+      {
+        "name": "Next.js: run release",
+        "type": "node-terminal",
+        "request": "launch",
+        "command": "npm run build && npm run start"
       }
     ]
   }
+

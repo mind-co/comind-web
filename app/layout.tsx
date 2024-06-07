@@ -2,10 +2,12 @@ import "@mantine/core/styles.css";
 import "@mantine/tiptap/styles.css";
 import "./globals.css";
 
-import { ColorSchemeScript, MantineProvider } from "@mantine/core";
+import { ColorSchemeScript, MantineProvider, createTheme } from "@mantine/core";
 
 import { Lexend_Deca } from "next/font/google";
 import Providers from "@/lib/providers";
+import { useColorScheme } from "@mantine/hooks";
+import { useState } from "react";
 
 // Metadata
 export const metadata = {
@@ -30,13 +32,35 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Make the theme
+  const theme = createTheme({
+    colors: {
+      comind: [
+        "rgb(var(--comind-primary-rgb))",
+        "rgb(var(--comind-secondary-rgb))",
+        "rgb(var(--comind-tertiary-rgb))",
+        "var(--mantine-color-text)",
+        "var(--mantine-color-text)",
+        "var(--mantine-color-text)",
+        "var(--mantine-color-text)",
+        "var(--mantine-color-text)",
+        "var(--mantine-color-text)",
+        "var(--mantine-color-text)",
+      ],
+    },
+    primaryColor: "comind",
+    defaultRadius: "lg",
+  });
+
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
         <ColorSchemeScript />
       </head>
       <body className={core_font.className}>
-        <Providers>{children}</Providers>
+        <MantineProvider theme={theme} defaultColorScheme="auto">
+          <Providers>{children}</Providers>
+        </MantineProvider>
       </body>
     </html>
   );

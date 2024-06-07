@@ -4,9 +4,11 @@ import ThoughtBoxEditor from "./ThoughtBoxEditor";
 import {
   ActionIcon,
   Button,
+  Card,
   Center,
   Container,
   Group,
+  Paper,
   Space,
   Text,
 } from "@mantine/core";
@@ -36,24 +38,30 @@ const ThoughtBox = ({ onSubmit }: ThoughtBoxProps) => {
 
   return (
     <div style={{ position: "relative" }}>
-      <RichTextEditor editor={editor}>
-        {/* TODO: #6 Make thought box toolbar useful */}
-        <RichTextEditor.Content />
-      </RichTextEditor>
+      <Card>
+        <RichTextEditor
+          editor={editor}
+          styles={{
+            root: { borderWidth: 2 },
+          }}
+        >
+          {/* TODO: #6 Make thought box toolbar useful */}
+          <RichTextEditor.Content />
+        </RichTextEditor>
 
-      <Space my={4}></Space>
+        <Space my={4}></Space>
 
-      <Group justify="flex-end">
-        {ComindButton(
-          "now",
-          () => {
-            console.error("now not implemented");
-          },
-          true
-        )}
-        {ComindButton("think", handleSubmit)}
-      </Group>
-
+        <Group justify="flex-end">
+          {ComindButton(
+            "now",
+            () => {
+              console.error("now not implemented");
+            },
+            true
+          )}
+          {ComindButton("think", handleSubmit)}
+        </Group>
+      </Card>
       {/* <div style={{ position: "absolute", bottom: "0", right: "0" }}>
         <ActionIcon
           size="xl"

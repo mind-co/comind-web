@@ -54,6 +54,7 @@ const ThoughtBoxEditor = (
 
   return useEditor({
     content: initialContent,
+    autofocus: true,
     onUpdate: onUpdate
       ? ({ editor }) => {
           const html = editor.getHTML().trim();

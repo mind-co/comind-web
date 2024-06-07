@@ -211,8 +211,14 @@ const ThoughtDisplay: React.FC<ThoughtDisplayProps> = ({ thought }) => {
       // Copy the thought and update the body
       const editedThought = { ...thought, body: editThoughtContent };
 
-      // await saveThought(auth, editedThought, false);
+      // TODO: #12 check if the thought has been changed upon save
+      await saveThought(auth, editedThought, false);
       console.log("Thought saved successfully.", editThoughtContent);
+
+      thought.body = editThoughtContent;
+
+      // Close the edit mode
+      setEditMode(false);
     } catch (error) {
       console.error("Failed to save thought:", error);
     }
@@ -284,17 +290,30 @@ const ThoughtDisplay: React.FC<ThoughtDisplayProps> = ({ thought }) => {
                 </TypographyStylesProvider>
               </>
             )}
+
+            {/* 
+            =========================================
+            ██╗   ██╗███████╗██████╗ ██████╗ ███████╗
+            ██║   ██║██╔════╝██╔══██╗██╔══██╗██╔════╝
+            ██║   ██║█████╗  ██████╔╝██████╔╝███████╗
+            ╚██╗ ██╔╝██╔══╝  ██╔══██╗██╔══██╗╚════██║
+             ╚████╔╝ ███████╗██║  ██║██████╔╝███████║
+              ╚═══╝  ╚══════╝╚═╝  ╚═╝╚═════╝ ╚══════╝
+            =========================================
+            */}
+
             {/* New thought box */}
             {newThoughtBoxIsOpen && (
-              <NewThoughtBox
-                parentThoughtId={thought.id}
-                content={newThoughtContent}
-                setContent={setNewThoughtContent}
-              />
-            )}
-            {/* Action row / verb bar */}
+              <>
+                <NewThoughtBox
+                  parentThoughtId={thought.id}
+                  content={newThoughtContent}
+                  setContent={setNewThoughtContent}
+                />
 
-            <Divider my="xs" />
+                <Space h="sm" />
+              </>
+            )}
 
             <Group justify="end" p="0" m="0" gap="4px">
               {/* <Group>
@@ -437,15 +456,19 @@ const ThoughtDisplay: React.FC<ThoughtDisplayProps> = ({ thought }) => {
                   </Button>
 
                   {/* Suggest button */}
-                  <Button
-                    size={verbButtonSize}
-                    variant={verbButtonVariant}
-                    color={verbButtonColor}
-                    onClick={toggleSuggestionsOpen}
-                    style={verbButtonStyle}
-                  >
-                    <Text size={verbButtonTextSize}>Suggest</Text>
-                  </Button>
+                  <>
+                    <Button
+                      size={verbButtonSize}
+                      variant={verbButtonVariant}
+                      color={suggestionsOpen ? "red" : verbButtonColor}
+                      onClick={toggleSuggestionsOpen}
+                      style={verbButtonStyle}
+                    >
+                      <Text size={verbButtonTextSize}>
+                        {suggestionsOpen ? "Close" : "Suggest"}
+                      </Text>
+                    </Button>
+                  </>
 
                   {/* Think button */}
                   <Button
@@ -494,14 +517,12 @@ const ThoughtDisplay: React.FC<ThoughtDisplayProps> = ({ thought }) => {
               {suggestionsOpen && suggestions && (
                 <>
                   <Card radius="xl" withBorder>
-                    {suggestions.map((suggestion, indexb) => (
-                      <>
-                        <SuggestionDisplay
-                          key={suggestion.id}
-                          thought={suggestion}
-                          parent_thought_id={thought.id}
-                        />
-                      </>
+                    {suggestions.map((suggestion, index) => (
+                      <SuggestionDisplay
+                        key={suggestion.id}
+                        thought={suggestion}
+                        parent_thought_id={thought.id}
+                      />
                     ))}
                   </Card>
                   <Divider my="md" />
@@ -640,6 +661,7 @@ const ThoughtList: React.FC<ThoughtListProps> = ({ thoughts, suggestions }) => {
             thought={thought}
             suggestions={suggestions ? suggestions[thought.id] : []}
           />
+          <Space my="md" />
         </React.Fragment>
       ))}
     </>
