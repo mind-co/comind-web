@@ -36,6 +36,8 @@ interface ThoughtContextValue {
   currentSlugIsLoaded: boolean;
   currentMeldTitle: string;
   currentMeldDescription: string;
+  delvingThoughtId: string | null;
+  setDelvingThoughtId: (thoughtId: string | null) => void;
 }
 
 const ThoughtContext = createContext<ThoughtContextValue>(
@@ -46,6 +48,7 @@ const ThoughtProvider: React.FC<ThoughtProviderProps> = ({ children }) => {
   const { token, userId, username } = useContext(AuthContext);
   const [connected, setConnected] = useState(false);
   const [pings, setPings] = useState<Ping[]>([]);
+  const [delvingThoughtId, setDelvingThoughtId] = useState<string | null>(null);
   const [melds, setMelds] = useState<{ [slug: string]: Meld }>({});
   const meldsRef = useRef<{ [slug: string]: Meld }>({});
   const [currentMeldSlug, setCurrentMeldSlug] = useState<string>(
@@ -380,6 +383,8 @@ const ThoughtProvider: React.FC<ThoughtProviderProps> = ({ children }) => {
     currentMeldTitle,
     currentMeldDescription,
     currentMeldSlug,
+    delvingThoughtId,
+    setDelvingThoughtId,
   };
 
   return (

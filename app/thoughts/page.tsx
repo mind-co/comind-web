@@ -4,14 +4,15 @@ import { getUserThoughts } from "@/lib/api";
 import React, { useContext, useEffect, useState } from "react";
 import { AuthContext } from "@/lib/authprovider";
 import Nav from "../nav";
-import ThoughtList from "@/lib/display/thought_display";
-import { AppShell, Card, Container, Overlay } from "@mantine/core";
+import ThoughtList, { ThoughtDisplay } from "@/lib/display/thought_display";
+import { AppShell, Card, Container, Overlay, Text } from "@mantine/core";
 import Shell from "../Shell";
 import ThoughtBox from "@/lib/thought_box";
 import TurndownService from "turndown";
 import ThoughtBoxEditor from "@/lib/ThoughtBoxEditor";
 import { ThoughtContext } from "@/lib/thoughtprovider";
 import { comindContainerWidth } from "@/lib/Configuration";
+import DelveView from "@/lib/DelveView";
 
 interface ThoughtsPageProps {
   // Add any additional props here
@@ -19,6 +20,8 @@ interface ThoughtsPageProps {
 
 const ThoughtPage: React.FC<ThoughtsPageProps> = () => {
   const auth = useContext(AuthContext);
+  const [delveViewOpen, setDelveViewOpen] = useState(false);
+  const { delvingThoughtId } = useContext(ThoughtContext);
 
   // Used for converting Tiptap HTML to markdown.
   var turndownService = new TurndownService({
@@ -100,8 +103,19 @@ const ThoughtPage: React.FC<ThoughtsPageProps> = () => {
     };
   }, []);
 
+  if (delvingThoughtId) {
+    return (
+      <>
+        <Shell>
+          <DelveView />
+        </Shell>
+      </>
+    );
+  }
+
   return (
     <Shell>
+      <Text>{delvingThoughtId}</Text>
       <ThoughtList thoughts={thoughts} suggestions={{}} />
 
       <div

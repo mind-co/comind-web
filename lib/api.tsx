@@ -766,3 +766,34 @@ async function fetchSuggestions(context: any, thoughtId: string): Promise<any> {
 }
 
 export { fetchSuggestions };
+
+async function delve(context: any, thoughtId: string): Promise<any> {
+  if (!context.token) {
+    throw new Error("Authentication token is missing.");
+  }
+
+  const headers = getBaseHeaders(context);
+  const url = endpoint(`/api/delve/${thoughtId}`);
+
+  try {
+    const response = await fetch(url, {
+      method: "GET",
+      headers,
+    });
+
+    if (!response.ok) {
+      throw new Error(
+        `Failed to delve. Server responded with status: \
+        ${response.status} ${response.statusText}`
+      );
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error delving. Detailed error:", error);
+    throw new Error(`An error occurred while delving: ${error}`);
+  }
+}
+
+export { delve };

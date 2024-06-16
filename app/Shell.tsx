@@ -220,7 +220,9 @@ const Shell = ({ children }: { children: React.ReactNode }) => {
         </AppShell.Navbar>
         <AppShell.Main>
           {/* {children} */}
-          <Container size={comindContainerWidth}>{children}</Container>
+          <Container size={comindContainerWidth} p="0">
+            {children}
+          </Container>
         </AppShell.Main>
 
         {/* Aside */}

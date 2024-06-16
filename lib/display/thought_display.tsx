@@ -15,6 +15,7 @@ import {
   IconBulbOff,
   IconCheck,
   IconLink,
+  IconCircle,
 } from "@tabler/icons-react";
 import TurndownService from "turndown";
 // import { convertToRelativeTimestamp } from "@/lib/utils";
@@ -51,6 +52,7 @@ import {
   Stack,
   Spoiler,
   Anchor,
+  Center,
 } from "@mantine/core";
 import { convertToRelativeTimestamp } from "../utils";
 import { useDisclosure } from "@mantine/hooks";
@@ -67,6 +69,7 @@ import { AuthContext } from "../authprovider";
 import ThoughtBoxEditor from "../ThoughtBoxEditor";
 import { RichTextEditor } from "@mantine/tiptap";
 import Link from "next/link";
+import { ThoughtContext } from "../thoughtprovider";
 
 // Visual stuff
 const lineWidth = 2;
@@ -86,13 +89,16 @@ const ThoughtDisplay: React.FC<ThoughtDisplayProps> = ({ thought }) => {
 
   const theme = useMantineTheme();
   const auth = useContext(AuthContext);
+  const { setDelvingThoughtId } = useContext(ThoughtContext);
 
   // Info modal stuff
   const [opened, { open, close }] = useDisclosure(false);
 
   // State variables
-  const [contextMenuVisible, setContextMenuVisible] = useState(false);
+  const [verbsVisible, setVerbsVisible] = useState(false);
+  const [moreMenuVisible, setMoreMenuVisible] = useState(false);
   const [suggestionsOpen, setSuggestionsOpen] = useState(false);
+  const [delveViewOpen, setDelveViewOpen] = useState(false);
   const [isPublicThought, setIsPublicThought] = useState(thought.public);
   const [thoughtBodyHidden, setThoughtBodyHidden] = useState(false);
   const [newThoughtBoxIsOpen, setNewThoughtBoxIsOpen] = useState(false);
@@ -137,7 +143,7 @@ const ThoughtDisplay: React.FC<ThoughtDisplayProps> = ({ thought }) => {
 
   // Toggle context menu
   const toggleContextMenu = () => {
-    setContextMenuVisible(!contextMenuVisible);
+    setMoreMenuVisible(!moreMenuVisible);
 
     // Reset the delete press count
     setDeletePressCount(0);
@@ -163,6 +169,10 @@ const ThoughtDisplay: React.FC<ThoughtDisplayProps> = ({ thought }) => {
     });
 
     setSuggestionsOpen(!suggestionsOpen);
+  };
+
+  const toggleDelveView = () => {
+    setDelvingThoughtId(thought.id);
   };
 
   const toggleEditMode = () => {
@@ -226,7 +236,7 @@ const ThoughtDisplay: React.FC<ThoughtDisplayProps> = ({ thought }) => {
 
   // Verb button configs
   const verbButtonSize = "xs";
-  const verbButtonTextSize = "sm";
+  const verbButtonTextSize = "xs";
   const verbButtonColor = "gray";
   const verbButtonVariant = "outline";
   const verbButtonStyle = {
@@ -246,11 +256,11 @@ const ThoughtDisplay: React.FC<ThoughtDisplayProps> = ({ thought }) => {
 
       {/* Title and username */}
       <Group justify="space-between" align="center">
-        <Group>
+        {/* <Group>
           <Text c={thoughtBodyHidden ? "" : "dimmed"} fw={200}>
             {thought.title}
           </Text>
-        </Group>
+        </Group> */}
         <Text c="dimmed" fw={200}>
           {thought.username}
         </Text>
@@ -315,220 +325,242 @@ const ThoughtDisplay: React.FC<ThoughtDisplayProps> = ({ thought }) => {
               </>
             )}
 
-            <Group justify="end" p="0" m="0" gap="4px">
-              {/* <Group>
-              <Text size="xs" c="dimmed">
-                {prettyTimestamp}
-              </Text>
-            </Group> */}
+            {verbsVisible && (
+              <>
+                <Divider my="xs" label="verbs" />
+                <Group justify="end" p="0" m="0" gap="4px">
+                  {!newThoughtBoxIsOpen && (
+                    <>
+                      {moreMenuVisible && (
+                        <>
+                          {/* Delete */}
+                          <Tooltip label="delete this thought">
+                            <Button
+                              variant={"default"}
+                              size={verbButtonSize}
+                              color={
+                                deletePressCount == 0
+                                  ? verbButtonColor
+                                  : deletePressCount == 1
+                                  ? "yellow"
+                                  : "red"
+                              }
+                              style={verbButtonStyle}
+                              onClick={handleDelete}
+                            >
+                              <Text size={verbButtonTextSize}>
+                                {deletePressCount == 0
+                                  ? "delete"
+                                  : deletePressCount == 1
+                                  ? "are you sure?"
+                                  : "CLICK TO DELETE"}
+                              </Text>
+                            </Button>
+                          </Tooltip>
 
-              {!newThoughtBoxIsOpen && (
-                <>
-                  <Paper withBorder>
-                    {contextMenuVisible && (
-                      <>
-                        {/* Delete */}
-                        <Tooltip label="Remove">
-                          <Button
-                            variant={verbButtonVariant}
-                            size={verbButtonSize}
-                            color={
-                              deletePressCount == 0
-                                ? verbButtonColor
-                                : deletePressCount == 1
-                                ? "yellow"
-                                : "red"
+                          {/* Public/private */}
+                          <Tooltip
+                            label={
+                              thought.public
+                                ? "make this thought private"
+                                : "make this thought public"
                             }
-                            style={verbButtonStyle}
-                            onClick={handleDelete}
                           >
-                            <Text size={verbButtonTextSize}>
-                              {deletePressCount == 0
-                                ? "delete"
-                                : deletePressCount == 1
-                                ? "are you sure?"
-                                : "CLICK TO DELETE"}
-                            </Text>
-                          </Button>
-                        </Tooltip>
+                            <Button
+                              radius="lg"
+                              size={verbButtonSize}
+                              variant={verbButtonVariant}
+                              color={verbButtonColor}
+                              onClick={togglePublic}
+                              style={verbButtonStyle}
+                            >
+                              <Text size={verbButtonTextSize}>
+                                {isPublicThought ? "private" : "public"}
+                              </Text>
+                            </Button>
+                          </Tooltip>
 
-                        {/* Public/private */}
-                        <Tooltip
-                          label={
-                            thought.public
-                              ? "make this thought private"
-                              : "make this thought public"
-                          }
+                          {/* Info */}
+                          <Tooltip label="Info" variant="outline">
+                            <Button
+                              radius="lg"
+                              size={verbButtonSize}
+                              variant={verbButtonVariant}
+                              color={verbButtonColor}
+                              onClick={open}
+                              style={verbButtonStyle}
+                            >
+                              <Text size={verbButtonTextSize}>info</Text>
+                            </Button>
+                          </Tooltip>
+                        </>
+                      )}
+
+                      {/* More button */}
+                      <Button
+                        size={verbButtonSize}
+                        variant={verbButtonVariant}
+                        color={verbButtonColor}
+                        onClick={toggleContextMenu}
+                        style={verbButtonStyle}
+                      >
+                        <Text size={verbButtonTextSize}>
+                          {moreMenuVisible ? "less" : "more"}
+                        </Text>
+                      </Button>
+
+                      {/* Save button */}
+                      {editMode && (
+                        <Button
+                          size={verbButtonSize}
+                          color="green"
+                          variant="filled"
+                          onClick={handleSave}
+                          style={verbButtonStyle}
                         >
-                          <Button
-                            radius="lg"
-                            size={verbButtonSize}
-                            variant={verbButtonVariant}
-                            color={verbButtonColor}
-                            onClick={togglePublic}
-                            style={verbButtonStyle}
-                          >
-                            <Text size={verbButtonTextSize}>
-                              {isPublicThought ? "private" : "public"}
-                            </Text>
-                          </Button>
-                        </Tooltip>
+                          <Text size={verbButtonTextSize}>Save</Text>
+                        </Button>
+                      )}
 
-                        {/* Info */}
-                        <Tooltip label="Info" variant="outline">
-                          <Button
-                            radius="lg"
-                            size={verbButtonSize}
-                            variant={verbButtonVariant}
-                            color={verbButtonColor}
-                            onClick={open}
-                            style={verbButtonStyle}
-                          >
-                            <Text size={verbButtonTextSize}>info</Text>
-                          </Button>
-                        </Tooltip>
+                      {/* Cancel button */}
+                      {editMode && (
+                        <Button
+                          size={verbButtonSize}
+                          color="red"
+                          variant="filled"
+                          onClick={() => setEditMode(false)}
+                          style={verbButtonStyle}
+                        >
+                          <Text size={verbButtonTextSize}>Cancel</Text>
+                        </Button>
+                      )}
+
+                      {/* edit button */}
+                      {!editMode && (
+                        <Button
+                          size={verbButtonSize}
+                          variant={verbButtonVariant}
+                          color={verbButtonColor}
+                          onClick={toggleEditMode}
+                          style={verbButtonStyle}
+                        >
+                          <Text size={verbButtonTextSize}>edit</Text>
+                        </Button>
+                      )}
+
+                      {/* delve button */}
+                      <Button
+                        size={verbButtonSize}
+                        variant={verbButtonVariant}
+                        color={verbButtonColor}
+                        onClick={toggleDelveView}
+                        style={verbButtonStyle}
+                      >
+                        <Text size={verbButtonTextSize}>delve</Text>
+                      </Button>
+
+                      {/* suggest button */}
+                      <>
+                        <Button
+                          size={verbButtonSize}
+                          variant={verbButtonVariant}
+                          color={suggestionsOpen ? "red" : verbButtonColor}
+                          onClick={toggleSuggestionsOpen}
+                          style={verbButtonStyle}
+                        >
+                          <Text size={verbButtonTextSize}>
+                            {suggestionsOpen ? "slose" : "suggest"}
+                          </Text>
+                        </Button>
                       </>
+
+                      {/* Think button */}
+                      <Button
+                        size={verbButtonSize}
+                        variant={verbButtonVariant}
+                        color={verbButtonColor}
+                        onClick={toggleSuggestionsOpen}
+                        style={verbButtonStyle}
+                        disabled={true}
+                      >
+                        <Text size={verbButtonTextSize}>think</Text>
+                      </Button>
+                    </>
+                  )}
+
+                  {/* Add to thought */}
+                  <ActionIcon
+                    radius="lg"
+                    size="md"
+                    variant={verbButtonVariant}
+                    color={verbButtonColor}
+                    onClick={toggleNewThoughtBox}
+                    style={verbButtonStyle}
+                  >
+                    {newThoughtBoxIsOpen ? (
+                      <IconX size={20} />
+                    ) : (
+                      <IconPlus size={20} />
                     )}
+                  </ActionIcon>
 
-                    {/* More button */}
-                    <Button
-                      size={verbButtonSize}
+                  {newThoughtBoxIsOpen && (
+                    <ActionIcon
+                      radius="lg"
+                      size="md"
                       variant={verbButtonVariant}
                       color={verbButtonColor}
-                      onClick={toggleContextMenu}
+                      onClick={handleSendThought}
                       style={verbButtonStyle}
                     >
-                      <Text size={verbButtonTextSize}>
-                        {contextMenuVisible ? "Less" : "More"}
-                      </Text>
-                    </Button>
-                  </Paper>
-
-                  {/* Save button */}
-                  {editMode && (
-                    <Button
-                      size={verbButtonSize}
-                      color="green"
-                      variant="filled"
-                      onClick={handleSave}
-                      style={verbButtonStyle}
-                    >
-                      <Text size={verbButtonTextSize}>Save</Text>
-                    </Button>
+                      <IconCheck />
+                    </ActionIcon>
                   )}
 
-                  {/* Cancel button */}
-                  {editMode && (
-                    <Button
-                      size={verbButtonSize}
-                      color="red"
-                      variant="filled"
-                      onClick={() => setEditMode(false)}
-                      style={verbButtonStyle}
-                    >
-                      <Text size={verbButtonTextSize}>Cancel</Text>
-                    </Button>
+                  {/* Suggestions */}
+                  {suggestionsOpen && suggestions && (
+                    <>
+                      <Card radius="xl" withBorder>
+                        {suggestions.map((suggestion, index) => (
+                          <SuggestionDisplay
+                            key={suggestion.id}
+                            thought={suggestion}
+                            parent_thought_id={thought.id}
+                          />
+                        ))}
+                      </Card>
+                      <Divider my="md" />
+                    </>
                   )}
+                </Group>
 
-                  {/* edit button */}
-                  {!editMode && (
-                    <Button
-                      size={verbButtonSize}
-                      variant={verbButtonVariant}
-                      color={verbButtonColor}
-                      onClick={toggleEditMode}
-                      style={verbButtonStyle}
-                    >
-                      <Text size={verbButtonTextSize}>Edit</Text>
-                    </Button>
-                  )}
+                <Space h="xs" />
+              </>
+            )}
 
-                  {/* Examine button */}
-                  <Button
-                    size={verbButtonSize}
-                    variant={verbButtonVariant}
-                    color={verbButtonColor}
-                    onClick={toggleSuggestionsOpen}
-                    style={verbButtonStyle}
-                    disabled={true}
-                  >
-                    <Text size={verbButtonTextSize}>Examine</Text>
-                  </Button>
-
-                  {/* Suggest button */}
-                  <>
-                    <Button
-                      size={verbButtonSize}
-                      variant={verbButtonVariant}
-                      color={suggestionsOpen ? "red" : verbButtonColor}
-                      onClick={toggleSuggestionsOpen}
-                      style={verbButtonStyle}
-                    >
-                      <Text size={verbButtonTextSize}>
-                        {suggestionsOpen ? "Close" : "Suggest"}
-                      </Text>
-                    </Button>
-                  </>
-
-                  {/* Think button */}
-                  <Button
-                    size={verbButtonSize}
-                    variant={verbButtonVariant}
-                    color={verbButtonColor}
-                    onClick={toggleSuggestionsOpen}
-                    style={verbButtonStyle}
-                    disabled={true}
-                  >
-                    <Text size={verbButtonTextSize}>Think</Text>
-                  </Button>
-                </>
-              )}
-
-              {/* Add to thought */}
+            {/* Verb bar toggle */}
+            <div
+              style={{
+                position: "absolute",
+                bottom: "-16px",
+                right: "0px",
+                left: "0px",
+                textAlign: "center",
+              }}
+            >
               <ActionIcon
-                radius="lg"
-                size="md"
-                variant={verbButtonVariant}
-                color={verbButtonColor}
-                onClick={toggleNewThoughtBox}
-                style={verbButtonStyle}
+                // variant="filled"
+                variant="outline"
+                style={{
+                  backgroundColor: "var(--mantine-color-dark-filled-hover)",
+                  borderColor: "var(--mantine-color-dark-outline)",
+                }}
+                size="sm"
+                onClick={() => setVerbsVisible(!verbsVisible)}
               >
-                {newThoughtBoxIsOpen ? (
-                  <IconX size={20} />
-                ) : (
-                  <IconPlus size={20} />
-                )}
+                {/* {verbsVisible ? <IconX size={18} /> : <IconCircle size={18} />} */}
               </ActionIcon>
-
-              {newThoughtBoxIsOpen && (
-                <ActionIcon
-                  radius="lg"
-                  size="md"
-                  variant={verbButtonVariant}
-                  color={verbButtonColor}
-                  onClick={handleSendThought}
-                  style={verbButtonStyle}
-                >
-                  <IconCheck />
-                </ActionIcon>
-              )}
-
-              {/* Suggestions */}
-              {suggestionsOpen && suggestions && (
-                <>
-                  <Card radius="xl" withBorder>
-                    {suggestions.map((suggestion, index) => (
-                      <SuggestionDisplay
-                        key={suggestion.id}
-                        thought={suggestion}
-                        parent_thought_id={thought.id}
-                      />
-                    ))}
-                  </Card>
-                  <Divider my="md" />
-                </>
-              )}
-            </Group>
+            </div>
           </Paper>
         </>
       )}
