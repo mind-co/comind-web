@@ -117,7 +117,7 @@ const MeldView = () => {
   return (
     <>
       {/* If there's no thoughts, show the logo */}
-      {numberOfThoughts === 0 && (
+      {/* {numberOfThoughts === 0 && (
         <>
           <Center visibleFrom="sm">
             <Logo size={120} />
@@ -127,7 +127,7 @@ const MeldView = () => {
             <LogoShort size={120} />
           </Center>
         </>
-      )}
+      )} */}
 
       {numberOfThoughts > 0 && (
         <>
@@ -139,7 +139,7 @@ const MeldView = () => {
       )}
 
       {/* THE THOUGHT BOX */}
-      {numberOfThoughts === 0 ? (
+      {numberOfThoughts === 1 ? (
         <div>
           <div style={{ width: "100%" }}>
             <ThoughtBox onSubmit={onThink} />

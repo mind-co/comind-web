@@ -20,6 +20,7 @@ import {
   ButtonGroup,
   ActionIcon,
   Space,
+  Title,
 } from "@mantine/core";
 import Comind from "@/lib/comind";
 import { Spotlight, SpotlightActionData, spotlight } from "@mantine/spotlight";
@@ -123,8 +124,17 @@ const Shell = ({ children }: { children: React.ReactNode }) => {
         }}
         footer={{ height: 40 }}
       >
-        {/* <AppShell.Header>
-          <Container
+        <AppShell.Header>
+          <Group h="100%" px="md" w="100%">
+            <Burger
+              opened={opened}
+              onClick={toggle}
+              hiddenFrom="sm"
+              size="sm"
+            />
+            <LogoShort size={50} />
+          </Group>
+          {/* <Container
             size={comindContainerWidth}
             style={{ position: "relative" }}
           >
@@ -161,12 +171,15 @@ const Shell = ({ children }: { children: React.ReactNode }) => {
                 size="sm"
               />
             </div>
-          </Container>
-        </AppShell.Header> */}
+          </Container> */}
+        </AppShell.Header>
 
         {/* Navbar */}
         <AppShell.Navbar p="md">
-          <Stack justify="space-between" style={{ flex: 1 }} h="100%">
+          <Stack style={{ flex: 1 }} h="100%">
+            <Center>
+              <Text size="xl">comind</Text>
+            </Center>
             {isAuthenticated && (
               <ButtonGroup orientation="vertical">
                 <Button
@@ -220,16 +233,17 @@ const Shell = ({ children }: { children: React.ReactNode }) => {
         </AppShell.Navbar>
         <AppShell.Main>
           {/* {children} */}
+          <Space h="xl" />
           <Container size={comindContainerWidth} p="0">
             {children}
           </Container>
         </AppShell.Main>
 
         {/* Aside */}
-        <AppShell.Aside></AppShell.Aside>
+        <AppShell.Aside withBorder></AppShell.Aside>
 
         {/* Footer */}
-        <AppShell.Footer p="sm" withBorder={false}>
+        <AppShell.Footer p="sm">
           {/* Debug for current meld */}
           <Group justify="end">
             {/* Connected indicator */}
@@ -238,8 +252,8 @@ const Shell = ({ children }: { children: React.ReactNode }) => {
               color={connected ? "green" : "red"}
             > */}
             {/* </Indicator> */}
-            <Badge variant="subtle">{currentMeldSlug}</Badge>
-            <Badge variant="subtle">{username}</Badge>
+            {/* <Badge variant="subtle">{currentMeldSlug}</Badge> */}
+            {/* <Badge variant="subtle">{username}</Badge> */}
             <Badge
               variant="outline"
               color={connected ? "green" : retrying ? "yellow" : "red"}

@@ -9,7 +9,7 @@ const LogoShort: React.FC<LogoProps> = ({ size }) => {
 
   return (
     <svg
-      width={size * 4.5}
+      width={size}
       height={size}
       viewBox="0 0 100 100"
       style={{
@@ -26,7 +26,8 @@ const LogoShort: React.FC<LogoProps> = ({ size }) => {
         fill="var(--mantine-color-text)"
         fontSize="60"
       >
-        {"{"}co{"}"}
+        {/* {"{"}co{"}"} */}
+        co
       </text>
     </svg>
   );
