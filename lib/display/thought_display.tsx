@@ -469,7 +469,7 @@ const ThoughtDisplay: React.FC<ThoughtDisplayProps> = ({ thought }) => {
                           style={verbButtonStyle}
                         >
                           <Text size={verbButtonTextSize}>
-                            {suggestionsOpen ? "slose" : "suggest"}
+                            {suggestionsOpen ? "close" : "suggest"}
                           </Text>
                         </Button>
                       </>

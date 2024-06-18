@@ -23,7 +23,7 @@ const Logo: React.FC<LogoProps> = ({ size }) => {
         fill="var(--mantine-color-text)"
         fontSize="60"
       >
-        {"{comind}"}
+        {"comind"}
       </text>
     </svg>
   );

@@ -75,7 +75,7 @@ const actions: SpotlightActionData[] = [
 
 const Shell = ({ children }: { children: React.ReactNode }) => {
   const { isAuthenticated, username } = useContext(AuthContext);
-  const { connected, currentMeldSlug } = useContext(ThoughtContext);
+  const { connected, currentMeldSlug, retrying } = useContext(ThoughtContext);
 
   const [opened, { toggle }] = useDisclosure();
   const pinned = useHeadroom({ fixedAt: 500 });
@@ -238,11 +238,18 @@ const Shell = ({ children }: { children: React.ReactNode }) => {
               color={connected ? "green" : "red"}
             > */}
             {/* </Indicator> */}
-            <Pill variant="subtle">{currentMeldSlug}</Pill>
-            <Pill variant="subtle">{username}</Pill>
-            <Pill variant="contrast">
-              {connected ? "✅ connected" : "❌ disconnected"}
-            </Pill>
+            <Badge variant="subtle">{currentMeldSlug}</Badge>
+            <Badge variant="subtle">{username}</Badge>
+            <Badge
+              variant="outline"
+              color={connected ? "green" : retrying ? "yellow" : "red"}
+            >
+              {connected
+                ? "connected"
+                : retrying
+                ? "connecting"
+                : "disconnected"}
+            </Badge>
           </Group>
         </AppShell.Footer>
       </AppShell>

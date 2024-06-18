@@ -18,6 +18,7 @@ interface ThoughtProviderProps {
 
 interface ThoughtContextValue {
   connected: boolean;
+  retrying: boolean;
   melds: { [slug: string]: Meld };
   pings: Ping[];
   comindThoughts: Thought[];
@@ -47,6 +48,7 @@ const ThoughtContext = createContext<ThoughtContextValue>(
 const ThoughtProvider: React.FC<ThoughtProviderProps> = ({ children }) => {
   const { token, userId, username } = useContext(AuthContext);
   const [connected, setConnected] = useState(false);
+  const [retrying, setRetrying] = useState(false);
   const [pings, setPings] = useState<Ping[]>([]);
   const [delvingThoughtId, setDelvingThoughtId] = useState<string | null>(null);
   const [melds, setMelds] = useState<{ [slug: string]: Meld }>({});
@@ -147,187 +149,207 @@ const ThoughtProvider: React.FC<ThoughtProviderProps> = ({ children }) => {
   };
 
   useEffect(() => {
-    if (token && !websocketRef.current) {
-      // websocketRef.current = new WebSocket("ws://localhost:2333/");
-      websocketRef.current = new WebSocket("wss://nimbus.pfiffer.org/ws");
+    let retryTimer: NodeJS.Timeout | null = null;
 
-      //
-      // open connection
-      //
-      websocketRef.current.onopen = () => {
-        console.log("WebSocket connection established");
-        if (token) {
-          console.log("Sending token to server");
-          websocketRef.current?.send(JSON.stringify({ token }));
-        }
+    const connectWebSocket = () => {
+      if (token && !websocketRef.current) {
+        websocketRef.current = new WebSocket("wss://nimbus.pfiffer.org/ws");
 
-        // Set connected to true
-        setConnected(true);
+        websocketRef.current.onopen = () => {
+          console.log("WebSocket connection established");
+          if (token) {
+            console.log("Sending token to server");
+            websocketRef.current?.send(JSON.stringify({ token }));
+          }
 
-        // Add the root meld
-        const rootMeld = Meld.createRootMeld(userId);
-        addMeldIfNotExists(rootMeld);
+          setConnected(true);
+          setRetrying(false);
 
-        // Set the current meld slug to the root meld
-        setCurrentMeldSlug(rootMeld.slug);
-        setCurrentMeldTitle(rootMeld.title);
-        setCurrentMeldDescription(rootMeld.description);
-      };
+          // Add the root meld
+          const rootMeld = Meld.createRootMeld(userId);
+          addMeldIfNotExists(rootMeld);
 
-      websocketRef.current.onclose = (event) => {
-        console.log(
-          "WebSocket connection closed. Code:",
-          event.code,
-          "Reason:",
-          event.reason
-        );
-        setConnected(false);
-      };
+          // Set the current meld slug to the root meld
+          setCurrentMeldSlug(rootMeld.slug);
+          setCurrentMeldTitle(rootMeld.title);
+          setCurrentMeldDescription(rootMeld.description);
+        };
 
-      websocketRef.current.onerror = (error) => {
-        console.error("WebSocket error:", error);
-      };
+        websocketRef.current.onclose = (event) => {
+          console.log(
+            "WebSocket connection closed. Code:",
+            event.code,
+            "Reason:",
+            event.reason
+          );
+          setConnected(false);
 
-      //
-      // handle messages
-      //
-      websocketRef.current.onmessage = (event) => {
-        const message = JSON.parse(event.data);
-        console.log("Received message:", message);
-        if (message.auth) {
-          console.log("Received auth message:", message.message);
-        }
+          // Retry connection after 5 seconds
+          if (!retrying) {
+            setRetrying(true);
+            retryTimer = setTimeout(connectWebSocket, 5000);
+          }
+        };
 
-        // Get the meld slug associated with this message, if available.
-        const meld_slug = message.meld_slug ?? `/root/${userId}`;
+        websocketRef.current.onerror = (error) => {
+          console.error("WebSocket error:", error);
+        };
 
-        // Check if we got a server message
-        if (message.message) {
-          console.log("Received server message:", message.message);
+        //
+        // handle messages
+        //
+        websocketRef.current.onmessage = (event) => {
+          const message = JSON.parse(event.data);
+          console.log("Received message:", message);
+          if (message.auth) {
+            console.log("Received auth message:", message.message);
+          }
 
-          // If we got "here is the meld you requested" then set the meld to the meld we requested
-          if (message.message === "here is the meld you requested") {
-            // We should have meld and meld_slug keys.
-            if (message.meld && message.meld_slug) {
-              const meld = new Meld(message.meld);
-              const meldSlug = message.meld_slug;
-              addMeldIfNotExists(meld);
-              setCurrentMeldSlug(meldSlug);
-              setCurrentMeldTitle(meld.title);
-              setCurrentMeldDescription(meld.description);
+          // Get the meld slug associated with this message, if available.
+          const meld_slug = message.meld_slug ?? `/root/${userId}`;
+
+          // Check if we got a server message
+          if (message.message) {
+            console.log("Received server message:", message.message);
+
+            // If we got "here is the meld you requested" then set the meld to the meld we requested
+            if (message.message === "here is the meld you requested") {
+              // We should have meld and meld_slug keys.
+              if (message.meld && message.meld_slug) {
+                const meld = new Meld(message.meld);
+                const meldSlug = message.meld_slug;
+                addMeldIfNotExists(meld);
+                setCurrentMeldSlug(meldSlug);
+                setCurrentMeldTitle(meld.title);
+                setCurrentMeldDescription(meld.description);
+              }
             }
           }
-        }
 
-        // Check if we got a single thought. add it if we don't
-        // already have a thought with its id.
-        if (message.thought) {
-          console.log("Received thought:", message.thought);
-          setMelds((prevMelds) => {
-            const meld = getMeldBySlug(meld_slug);
-            if (meld) {
-              const newThought = new Thought(message.thought);
-              const thoughtExists = meld.thoughts.some(
-                (thought) => thought.id === newThought.id
-              );
-              if (!thoughtExists) {
-                meld.addThought(newThought);
+          // Check if we got a single thought. add it if we don't
+          // already have a thought with its id.
+          if (message.thought) {
+            console.log("Received thought:", message.thought);
+            setMelds((prevMelds) => {
+              const meld = getMeldBySlug(meld_slug);
+              if (meld) {
+                const newThought = new Thought(message.thought);
+                const thoughtExists = meld.thoughts.some(
+                  (thought) => thought.id === newThought.id
+                );
+                if (!thoughtExists) {
+                  meld.addThought(newThought);
+                  return { ...prevMelds, [meld_slug]: meld };
+                }
+              }
+              return prevMelds;
+            });
+          }
+
+          // When we receive new thoughts.
+          if (message.thoughts) {
+            console.log(
+              "Received thoughts:",
+              message.thoughts,
+              message.meld_slug,
+              meld_slug
+            );
+            setMelds((prevMelds) => {
+              const meld = getMeldBySlug(meld_slug);
+              if (meld) {
+                const newThoughts = message.thoughts.map((thought: Thought) => {
+                  return new Thought(thought);
+                });
+                meld.addThoughts(newThoughts);
                 return { ...prevMelds, [meld_slug]: meld };
               }
-            }
-            return prevMelds;
-          });
-        }
+              return prevMelds;
+            });
+          }
 
-        // When we receive new thoughts.
-        if (message.thoughts) {
-          console.log(
-            "Received thoughts:",
-            message.thoughts,
-            message.meld_slug,
-            meld_slug
-          );
-          setMelds((prevMelds) => {
-            const meld = getMeldBySlug(meld_slug);
-            if (meld) {
-              const newThoughts = message.thoughts.map((thought: Thought) => {
-                return new Thought(thought);
-              });
-              meld.addThoughts(newThoughts);
-              return { ...prevMelds, [meld_slug]: meld };
-            }
-            return prevMelds;
-          });
-        }
-
-        // When we receive suggestions
-        if (message.suggestions) {
-          console.log("Received suggestions:", {
-            suggestions: message.suggestions,
-            meld_slug: message.meld_slug,
-            meld_slug_local: meld_slug,
-            melds: melds,
-          });
-          setMelds((prevMelds) => {
-            const meld = getMeldBySlug(meld_slug);
-            console.log("Suggestions, found meld", {
-              meld,
-              meld_slug,
+          // When we receive suggestions
+          if (message.suggestions) {
+            console.log("Received suggestions:", {
               suggestions: message.suggestions,
+              meld_slug: message.meld_slug,
+              meld_slug_local: meld_slug,
+              melds: melds,
             });
-            if (meld) {
-              // Add the suggestions to the meld
-              message.suggestions.forEach((suggestion: any) => {
-                const thoughtId = suggestion.thought_id;
-                const suggestedThought = new Thought(suggestion);
-
-                // Check if the suggestion already exists in the meld
-                const suggestionExists = meld.suggestions[thoughtId]?.some(
-                  (existingSuggestion) =>
-                    existingSuggestion.id === suggestedThought.id
-                );
-
-                if (!suggestionExists) {
-                  meld.addSuggestion(suggestedThought);
-                }
+            setMelds((prevMelds) => {
+              const meld = getMeldBySlug(meld_slug);
+              console.log("Suggestions, found meld", {
+                meld,
+                meld_slug,
+                suggestions: message.suggestions,
               });
-            }
-            return prevMelds;
-          });
-        }
+              if (meld) {
+                // Add the suggestions to the meld
+                message.suggestions.forEach((suggestion: any) => {
+                  const thoughtId = suggestion.thought_id;
+                  const suggestedThought = new Thought(suggestion);
 
-        // Handles notifications.
-        if (message.pings) {
-          setPings((prevPings) => {
-            const newPings = message.pings.filter((ping: Ping) => {
-              return !prevPings.some((prevPing) => prevPing.id === ping.id);
-            });
-            return [...prevPings, ...newPings];
-          });
-        }
+                  // Check if the suggestion already exists in the meld
+                  const suggestionExists = meld.suggestions[thoughtId]?.some(
+                    (existingSuggestion) =>
+                      existingSuggestion.id === suggestedThought.id
+                  );
 
-        // May or may not be in use. I think I wanted to reserve comind-thoughts for
-        // system messages.
-        if (message["comind-thoughts"]) {
-          setComindThoughts((prevComindThoughts) => {
-            const newComindThoughts = message["comind-thoughts"].filter(
-              (thought: Thought) => {
-                return !prevComindThoughts.some(
-                  (prevThought) => prevThought.id === thought.id
-                );
+                  if (!suggestionExists) {
+                    meld.addSuggestion(suggestedThought);
+                  }
+                });
               }
-            );
-            return [...prevComindThoughts, ...newComindThoughts];
-          });
-        }
-      };
+              return prevMelds;
+            });
+          }
 
-      return () => {
-        if (websocketRef.current) {
-          websocketRef.current.close(1000, "Closing connection normally");
-        }
-      };
-    }
+          // Handles notifications.
+          if (message.pings) {
+            setPings((prevPings) => {
+              const newPings = message.pings.filter((ping: Ping) => {
+                return !prevPings.some((prevPing) => prevPing.id === ping.id);
+              });
+              return [...prevPings, ...newPings];
+            });
+          }
+
+          // May or may not be in use. I think I wanted to reserve comind-thoughts for
+          // system messages.
+          if (message["comind-thoughts"]) {
+            setComindThoughts((prevComindThoughts) => {
+              const newComindThoughts = message["comind-thoughts"].filter(
+                (thought: Thought) => {
+                  return !prevComindThoughts.some(
+                    (prevThought) => prevThought.id === thought.id
+                  );
+                }
+              );
+              return [...prevComindThoughts, ...newComindThoughts];
+            });
+          }
+        };
+
+        return () => {
+          if (retryTimer) {
+            clearTimeout(retryTimer);
+          }
+          if (websocketRef.current) {
+            websocketRef.current.close(1000, "Closing connection normally");
+          }
+        };
+      }
+    };
+
+    connectWebSocket();
+
+    return () => {
+      if (retryTimer) {
+        clearTimeout(retryTimer);
+      }
+      if (websocketRef.current) {
+        websocketRef.current.close(1000, "Closing connection normally");
+      }
+    };
   }, [token]);
 
   // Add a thought to the ThoughtProvider. This function
@@ -365,6 +387,7 @@ const ThoughtProvider: React.FC<ThoughtProviderProps> = ({ children }) => {
 
   const value: ThoughtContextValue = {
     connected,
+    retrying,
     melds,
     pings,
     comindThoughts,
