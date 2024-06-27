@@ -49,7 +49,14 @@ export default function RootLayout({
       ],
     },
     primaryColor: "comind",
-    defaultRadius: "lg",
+    defaultRadius: "md",
+    spacing: {
+      xs: "4px",
+      sm: "8px",
+      md: "12px",
+      lg: "16px",
+      xl: "20px",
+    },
   });
 
   return (

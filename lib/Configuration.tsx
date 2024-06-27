@@ -1,3 +1,3 @@
-const comindContainerWidth = "sm";
+const comindContainerWidth = "xs";
 
 export { comindContainerWidth };

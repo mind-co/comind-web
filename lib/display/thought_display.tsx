@@ -78,9 +78,13 @@ const bulletSize = 18;
 type ThoughtDisplayProps = {
   thought: Thought;
   suggestions: Thought[];
+  showName?: boolean;
 };
 
-const ThoughtDisplay: React.FC<ThoughtDisplayProps> = ({ thought }) => {
+const ThoughtDisplay: React.FC<ThoughtDisplayProps> = ({
+  thought,
+  showName = true,
+}) => {
   // Modal stuff
   // const auth = useContext(AuthContext);
 
@@ -246,6 +250,20 @@ const ThoughtDisplay: React.FC<ThoughtDisplayProps> = ({ thought }) => {
   if (deleted) {
     return <></>;
   }
+
+  return (
+    <Box>
+      <TypographyStylesProvider styles={{ root: { margin: "0px" } }}>
+        {showName ? (
+          <Markdown
+            remarkPlugins={[remarkGfm]}
+          >{`__${thought.username}__\n\n${thought.body}`}</Markdown>
+        ) : (
+          <Markdown remarkPlugins={[remarkGfm]}>{thought.body}</Markdown>
+        )}
+      </TypographyStylesProvider>
+    </Box>
+  );
 
   return (
     <>
@@ -692,6 +710,9 @@ const ThoughtList: React.FC<ThoughtListProps> = ({ thoughts, suggestions }) => {
           <ThoughtDisplay
             thought={thought}
             suggestions={suggestions ? suggestions[thought.id] : []}
+            showName={
+              index === 0 || thought.username !== thoughts[index - 1].username
+            }
           />
           <Space my="md" />
         </React.Fragment>

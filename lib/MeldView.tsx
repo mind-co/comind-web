@@ -68,6 +68,7 @@ const MeldView = () => {
     activeMeldSlug,
     currentMeldTitle,
     currentMeldDescription,
+    fetchSuggestionsForCurrentMeld,
   } = useContext(ThoughtContext);
   const editor = ThoughtBoxEditor();
   const [opened, { toggle }] = useDisclosure();
@@ -98,7 +99,7 @@ const MeldView = () => {
       // console.log("Thought sent to the database");
 
       // Clear the editor value
-      editor.commands.clearContent();
+      // editor.commands.clearContent();
     } catch (error) {
       console.error("Error sending thought to the database:", error);
     }
@@ -113,6 +114,7 @@ const MeldView = () => {
   }, []);
 
   const numberOfThoughts = getCurrentThoughts().length;
+  const numberOfSuggestions = getCurrentSuggestions().length;
 
   return (
     <>
@@ -139,22 +141,17 @@ const MeldView = () => {
       )}
 
       {/* THE THOUGHT BOX */}
-      {numberOfThoughts === 1 ? (
-        <div>
-          <div style={{ width: "100%" }}>
-            <ThoughtBox onSubmit={onThink} />
-          </div>
-        </div>
-      ) : (
-        <>
-          <Space my="md" />
+      <div>
+        <div style={{ width: "100%" }}>
           <ThoughtBox onSubmit={onThink} />
-        </>
-      )}
+        </div>
+      </div>
 
-      {/* <Container size="sm">
-        <SuggestionList thoughts={getCurrentSuggestions()} />
-      </Container> */}
+      {activeMeldSlug}
+      {numberOfSuggestions}
+      {/* {getCurrentSuggestions().map((suggestion) => (
+        <div key={suggestion.id}>{suggestion.body}</div>
+      ))} */}
     </>
   );
 };

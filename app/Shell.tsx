@@ -124,7 +124,7 @@ const Shell = ({ children }: { children: React.ReactNode }) => {
         }}
         footer={{ height: 40 }}
       >
-        <AppShell.Header>
+        {/* <AppShell.Header>
           <Group h="100%" px="md" w="100%">
             <Burger
               opened={opened}
@@ -134,52 +134,12 @@ const Shell = ({ children }: { children: React.ReactNode }) => {
             />
             <LogoShort size={50} />
           </Group>
-          {/* <Container
-            size={comindContainerWidth}
-            style={{ position: "relative" }}
-          >
-            <Container
-              style={{
-                position: "absolute",
-                left: 0,
-                top: 0,
-                right: 0,
-                zIndex: 0,
-              }}
-            >
-              <Center visibleFrom="xs">
-                <Logo size={80} />
-              </Center>
-
-              <Center hiddenFrom="xs">
-                <LogoShort size={80} />
-              </Center>
-            </Container>
-            <div
-              style={{
-                height: 80,
-                width: 20,
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              <Burger
-                opened={opened}
-                onClick={toggle}
-                hiddenFrom="sm"
-                size="sm"
-              />
-            </div>
-          </Container> */}
-        </AppShell.Header>
+        </AppShell.Header> */}
 
         {/* Navbar */}
-        <AppShell.Navbar p="md">
-          <Stack style={{ flex: 1 }} h="100%">
-            <Center>
-              <Text size="xl">comind</Text>
-            </Center>
+        <AppShell.Navbar p="md" withBorder={false}>
+          <Stack h="100%">
+            <Text size="xl">comind</Text>
             {isAuthenticated && (
               <ButtonGroup orientation="vertical">
                 <Button
@@ -240,7 +200,7 @@ const Shell = ({ children }: { children: React.ReactNode }) => {
         </AppShell.Main>
 
         {/* Aside */}
-        <AppShell.Aside withBorder></AppShell.Aside>
+        <AppShell.Aside withBorder={false}></AppShell.Aside>
 
         {/* Footer */}
         <AppShell.Footer p="sm">

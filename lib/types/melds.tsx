@@ -1,3 +1,6 @@
+import { useContext } from "react";
+import { fetchSuggestions } from "../api";
+import { AuthContext } from "../authprovider";
 import { Thought } from "./thoughts";
 
 class Meld {
@@ -67,6 +70,32 @@ class Meld {
       }
     });
     this.thought_count = this.thoughts.length;
+  }
+
+  fetchSuggestions(auth: {
+    token: string | null;
+    username: string;
+    password: string;
+    userId: string;
+    color: string;
+    isLoading: boolean;
+    isAuthenticated: boolean;
+    thoughtMode: "public" | "private" | "collective";
+    login: (username: string, password: string) => Promise<void>;
+    clearAuth: () => void;
+    toPublicMode: () => void;
+    toPrivateMode: () => void;
+    toCollectiveMode: () => void;
+  }): void {
+    this.thoughts.forEach((thought) => {
+      // Check if the suggestions for the thought are already fetched
+      console.log("Fetching suggestions for thought", thought.id);
+      if (!this.suggestions[thought.id]) {
+        fetchSuggestions(auth, thought.id).then((suggestions) => {
+          this.suggestions[thought.id] = suggestions;
+        });
+      }
+    });
   }
 
   addSuggestion(newSuggestion: Thought): void {

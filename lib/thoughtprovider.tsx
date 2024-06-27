@@ -38,6 +38,7 @@ interface ThoughtContextValue {
   currentMeldTitle: string;
   currentMeldDescription: string;
   delvingThoughtId: string | null;
+  fetchSuggestionsForCurrentMeld: () => void;
   setDelvingThoughtId: (thoughtId: string | null) => void;
 }
 
@@ -46,7 +47,8 @@ const ThoughtContext = createContext<ThoughtContextValue>(
 );
 
 const ThoughtProvider: React.FC<ThoughtProviderProps> = ({ children }) => {
-  const { token, userId, username } = useContext(AuthContext);
+  const auth = useContext(AuthContext);
+  const { token, userId, username } = auth;
   const [connected, setConnected] = useState(false);
   const [retrying, setRetrying] = useState(false);
   const [pings, setPings] = useState<Ping[]>([]);
@@ -122,6 +124,29 @@ const ThoughtProvider: React.FC<ThoughtProviderProps> = ({ children }) => {
     return meld ? meld.suggestions : {};
   };
 
+  const fetchSuggestionsForCurrentMeld = async () => {
+    const currentMeld = getCurrentMeld();
+    console.log("Current meld slug:", currentMeldSlug);
+    console.log("Melds state:", melds);
+    if (currentMeld) {
+      console.log("Fetching suggestions for meld", currentMeld.slug);
+      try {
+        await currentMeld.fetchSuggestions(auth);
+        setMelds((prevMelds) => ({
+          ...prevMelds,
+          [currentMeld.slug]: currentMeld,
+        }));
+      } catch (error) {
+        console.error(
+          "Failed to fetch suggestions for the current meld:",
+          error
+        );
+      }
+    } else {
+      console.warn("No current meld found to fetch suggestions for.");
+    }
+  };
+
   // Function to add a single suggestion to a meld
   const addSuggestionToMeld = (suggestion: Thought, meldSlug: string) => {
     setMelds((prevMelds) => {
@@ -173,6 +198,10 @@ const ThoughtProvider: React.FC<ThoughtProviderProps> = ({ children }) => {
           setCurrentMeldSlug(rootMeld.slug);
           setCurrentMeldTitle(rootMeld.title);
           setCurrentMeldDescription(rootMeld.description);
+
+          // Log the state
+          console.log("Root meld added:", rootMeld);
+          console.log("Current meld slug set to:", rootMeld.slug);
         };
 
         websocketRef.current.onclose = (event) => {
@@ -222,6 +251,10 @@ const ThoughtProvider: React.FC<ThoughtProviderProps> = ({ children }) => {
                 setCurrentMeldSlug(meldSlug);
                 setCurrentMeldTitle(meld.title);
                 setCurrentMeldDescription(meld.description);
+
+                // Log the state
+                console.log("Meld added:", meld);
+                console.log("Current meld slug set to:", meldSlug);
               }
             }
           }
@@ -350,7 +383,13 @@ const ThoughtProvider: React.FC<ThoughtProviderProps> = ({ children }) => {
         websocketRef.current.close(1000, "Closing connection normally");
       }
     };
-  }, [token]);
+  }, [token, userId, retrying]);
+
+  // Log the current meld slug and melds state whenever they change
+  useEffect(() => {
+    console.log("Current meld slug:", currentMeldSlug);
+    console.log("Melds state:", melds);
+  }, [currentMeldSlug, melds]);
 
   // Add a thought to the ThoughtProvider. This function
   //
@@ -407,6 +446,7 @@ const ThoughtProvider: React.FC<ThoughtProviderProps> = ({ children }) => {
     currentMeldDescription,
     currentMeldSlug,
     delvingThoughtId,
+    fetchSuggestionsForCurrentMeld,
     setDelvingThoughtId,
   };
 

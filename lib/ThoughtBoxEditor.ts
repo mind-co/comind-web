@@ -33,18 +33,19 @@ const ThoughtBoxEditor = (
       addKeyboardShortcuts() {
         return {
           "Cmd-Enter"({ editor }) {
-            document.dispatchEvent(new CustomEvent("submit"));
             const event = new CustomEvent("submit", {
               detail: { html: editor?.getHTML() },
             });
+            document.dispatchEvent(event);
+            editor.commands.clearContent();
             return true;
           },
           "Ctrl-Enter"({ editor }) {
-            console.log("Ctrl-Enter");
-            document.dispatchEvent(new CustomEvent("submit"));
             const event = new CustomEvent("submit", {
               detail: { html: editor?.getHTML() },
             });
+            document.dispatchEvent(event);
+            editor.commands.clearContent();
             return true;
           },
         };

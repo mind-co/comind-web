@@ -7,18 +7,22 @@ import {
   Card,
   Center,
   Container,
+  Divider,
   Group,
   Paper,
   Space,
   Text,
 } from "@mantine/core";
-import { IconBulb } from "@tabler/icons-react";
+import { IconBulb, IconSend } from "@tabler/icons-react";
+import { ThoughtContext, ThoughtProvider } from "./thoughtprovider";
+import { useContext } from "react";
 
 interface ThoughtBoxProps {
   onSubmit: (html: string) => void;
 }
 
 const ThoughtBox = ({ onSubmit }: ThoughtBoxProps) => {
+  const { fetchSuggestionsForCurrentMeld } = useContext(ThoughtContext);
   const editor = ThoughtBoxEditor();
 
   const getHTML = () => {
@@ -29,8 +33,13 @@ const ThoughtBox = ({ onSubmit }: ThoughtBoxProps) => {
     editor?.commands.clearContent();
   };
 
+  const handleFetchSuggestions = () => {
+    fetchSuggestionsForCurrentMeld();
+  };
+
   const handleSubmit = () => {
     const html = getHTML();
+    console.log(html);
     const event = new CustomEvent("submit", { detail: { html } });
     document.dispatchEvent(event);
     clear();
@@ -38,30 +47,51 @@ const ThoughtBox = ({ onSubmit }: ThoughtBoxProps) => {
 
   return (
     <div style={{ position: "relative" }}>
-      <Card>
+      {/* <Divider my="md" label="+" /> */}
+      <Card p={0}>
         <RichTextEditor
           editor={editor}
           styles={{
-            root: { borderWidth: 2 },
+            root: {
+              borderWidth: 0,
+              borderRadius: "0px",
+              border: "0px",
+              backgroundColor: "transparent",
+            },
+            content: {
+              borderRadius: "0px",
+              border: "0px",
+              // backgroundColor: "",
+              padding: "0.4rem",
+              backgroundColor: "transparent",
+            },
           }}
         >
           {/* TODO: #6 Make thought box toolbar useful */}
           <RichTextEditor.Content />
         </RichTextEditor>
-
-        <Space my={4}></Space>
-
-        <Group justify="flex-end">
-          {ComindButton(
-            "now",
-            () => {
-              console.error("now not implemented");
-            },
-            true
-          )}
-          {ComindButton("think", handleSubmit)}
-        </Group>
       </Card>
+
+      <Space my={4}></Space>
+
+      <Group justify="flex-end">
+        {/* {ComindButton(
+          "now",
+          () => {
+            console.error("now not implemented");
+          },
+          true
+        )} */}
+        {/* {/ {ComindButton("think", handleSubmit)} */}
+
+        <ActionIcon variant="subtle" onClick={handleFetchSuggestions}>
+          <IconBulb />
+        </ActionIcon>
+
+        <ActionIcon variant="subtle" onClick={handleSubmit}>
+          <IconSend />
+        </ActionIcon>
+      </Group>
       {/* <div style={{ position: "absolute", bottom: "0", right: "0" }}>
         <ActionIcon
           size="xl"
