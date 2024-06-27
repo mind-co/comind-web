@@ -112,6 +112,9 @@ const ThoughtDisplay: React.FC<ThoughtDisplayProps> = ({
   const [editThoughtContent, setEditThoughtContent] = useState(thought.body);
   const [editMode, setEditMode] = useState(false);
   const [suggestions, setSuggestions] = useState<Thought[]>([]);
+  const [compressed, setCompressed] = useState(
+    thought.body && thought.body.length > 100
+  );
 
   // Date created converted to a pretty date time
   const prettyTimestamp = convertToRelativeTimestamp(thought.date_created);
@@ -249,6 +252,20 @@ const ThoughtDisplay: React.FC<ThoughtDisplayProps> = ({
 
   if (deleted) {
     return <></>;
+  }
+
+  if (compressed) {
+    return (
+      <Paper withBorder>
+        <TypographyStylesProvider
+          styles={{
+            root: { margin: "0px", padding: "4px", fontFamily: "monospace" },
+          }}
+        >
+          {thought.title}
+        </TypographyStylesProvider>
+      </Paper>
+    );
   }
 
   return (

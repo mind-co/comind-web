@@ -5,7 +5,7 @@ import { AuthContext } from "@/lib/authprovider";
 import { Thought } from "@/lib/types/thoughts";
 import { ThoughtContext } from "@/lib/thoughtprovider";
 import Nav from "../app/nav";
-import ThoughtList from "@/lib/display/thought_display";
+import ThoughtList, { ThoughtDisplay } from "@/lib/display/thought_display";
 
 import TurndownService from "turndown";
 
@@ -16,10 +16,12 @@ import {
   AppShellFooter,
   Burger,
   Button,
+  Card,
   Center,
   Container,
   Divider,
   Grid,
+  Paper,
   Space,
   Stack,
   Text,
@@ -114,7 +116,8 @@ const MeldView = () => {
   }, []);
 
   const numberOfThoughts = getCurrentThoughts().length;
-  const numberOfSuggestions = getCurrentSuggestions().length;
+
+  console.log(getCurrentSuggestions());
 
   return (
     <>
@@ -147,11 +150,21 @@ const MeldView = () => {
         </div>
       </div>
 
-      {activeMeldSlug}
-      {numberOfSuggestions}
-      {/* {getCurrentSuggestions().map((suggestion) => (
-        <div key={suggestion.id}>{suggestion.body}</div>
-      ))} */}
+      {getCurrentSuggestions() &&
+        Object.values(getCurrentSuggestions())
+          .slice(0, 3)
+          .flat()
+          .map((suggestion) => (
+            <div
+              key={suggestion.id}
+              style={{
+                opacity: suggestion.cosine_similarity ?? 0.5,
+              }}
+            >
+              <ThoughtDisplay thought={suggestion} suggestions={[]} />
+              <Space my="xs" />
+            </div>
+          ))}
     </>
   );
 };
