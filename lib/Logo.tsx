@@ -8,29 +8,29 @@ const Logo: React.FC<LogoProps> = ({ size }) => {
   const letterSpacing = "-5";
 
   // Plain SVG
-  return (
-    <svg
-      width={size * 4.5}
-      height={size}
-      viewBox="0 0 100 100"
-      style={{ zIndex: -1, pointerEvents: "none" }}
-    >
-      <text
-        x="50%"
-        y="50%"
-        textAnchor="middle"
-        dominantBaseline="middle"
-        fill="var(--mantine-color-text)"
-        fontSize="60"
-      >
-        {"comind"}
-      </text>
-    </svg>
-  );
+  // return (
+  //   <svg
+  //     width={size * 4.5}
+  //     height={size}
+  //     viewBox="0 0 100 100"
+  //     style={{ zIndex: -1, pointerEvents: "none" }}
+  //   >
+  //     <text
+  //       x="50%"
+  //       y="50%"
+  //       textAnchor="middle"
+  //       dominantBaseline="middle"
+  //       fill="var(--mantine-color-text)"
+  //       fontSize="60"
+  //     >
+  //       {"comind"}
+  //     </text>
+  //   </svg>
+  // );
 
   return (
     <svg
-      width={size * 4.5}
+      width={size * 4}
       height={size}
       viewBox="0 0 100 100"
       style={{ zIndex: -1, pointerEvents: "none" }}
@@ -113,13 +113,13 @@ const Logo: React.FC<LogoProps> = ({ size }) => {
       </text> */}
 
       <text
-        x="50%"
-        y="50%"
+        x="49%"
+        y="51%"
         textAnchor="middle"
         dominantBaseline="middle"
         fontSize="60"
         letterSpacing={letterSpacing}
-        // fontWeight={600}
+        fontWeight={800}
         fontFamily="Frontage Pro Line"
       >
         <tspan fill="white">{"{"}</tspan>

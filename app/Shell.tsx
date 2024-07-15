@@ -1,4 +1,4 @@
-"use client";
+// "use client";
 import React, { useContext } from "react";
 import {
   AppShell,
@@ -21,12 +21,13 @@ import {
   ActionIcon,
   Space,
   Title,
+  Divider,
 } from "@mantine/core";
 import Comind from "@/lib/comind";
 import { Spotlight, SpotlightActionData, spotlight } from "@mantine/spotlight";
 import Link from "next/link";
 import ComindShort from "@/lib/ComindShort";
-import { comindContainerWidth } from "@/lib/Configuration";
+import { asideAndNavbarWidth, comindContainerWidth } from "@/lib/Configuration";
 import { ThoughtContext, ThoughtProvider } from "@/lib/thoughtprovider";
 import { useDisclosure, useHeadroom } from "@mantine/hooks";
 import { AuthContext } from "@/lib/authprovider";
@@ -36,13 +37,17 @@ import {
   IconAffiliate,
   IconBubble,
   IconBurger,
+  IconCircles,
   IconDashboard,
   IconFileText,
   IconHome,
   IconLogout,
   IconSearch,
+  IconSettings,
+  IconSphere,
   IconX,
 } from "@tabler/icons-react";
+import { usePathname, useRouter } from "next/navigation";
 
 const actions: SpotlightActionData[] = [
   {
@@ -85,10 +90,22 @@ const Shell = ({ children }: { children: React.ReactNode }) => {
   const navButtonJustify = "start";
   const iconSize = 16;
 
-  const asideAndNavbarWidth = {
-    sm: 150,
-    base: 200,
-    lg: 250,
+  const router = useRouter();
+  const pathname = usePathname();
+
+  const isActive = (path: string) => {
+    if (path === "/") {
+      return pathname === "/";
+    }
+    return pathname.startsWith(path);
+  };
+
+  const getNavButtonVariant = (path: string) => {
+    return isActive(path) ? "filled" : navButtonVariant;
+  };
+
+  const getNavButtonColor = (path: string) => {
+    return isActive(path) ? "gray" : navButtonColor;
   };
 
   return (
@@ -111,7 +128,9 @@ const Shell = ({ children }: { children: React.ReactNode }) => {
 
       <AppShell
         padding="md"
-        // header={{ height: 80 }}
+        header={{
+          height: 65,
+        }}
         navbar={{
           width: asideAndNavbarWidth,
           breakpoint: "sm",
@@ -124,69 +143,65 @@ const Shell = ({ children }: { children: React.ReactNode }) => {
         }}
         footer={{ height: 40 }}
       >
-        <AppShell.Header>
-          <Group h="100%" px="md" w="100%">
+        <AppShell.Header pos="relative" withBorder={false}>
+          <div
+            style={{
+              position: "absolute",
+              left: 0,
+              top: 0,
+              bottom: 0,
+              padding: 0,
+              margin: 10,
+              display: "flex",
+              alignItems: "center",
+            }}
+          >
             <Burger
               opened={opened}
               onClick={toggle}
               hiddenFrom="sm"
               size="sm"
             />
-            <LogoShort size={50} />
-          </Group>
-          {/* <Container
-            size={comindContainerWidth}
-            style={{ position: "relative" }}
-          >
-            <Container
-              style={{
-                position: "absolute",
-                left: 0,
-                top: 0,
-                right: 0,
-                zIndex: 0,
-              }}
-            >
-              <Center visibleFrom="xs">
-                <Logo size={80} />
-              </Center>
+          </div>
 
-              <Center hiddenFrom="xs">
-                <LogoShort size={80} />
-              </Center>
-            </Container>
-            <div
-              style={{
-                height: 80,
-                width: 20,
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              <Burger
-                opened={opened}
-                onClick={toggle}
-                hiddenFrom="sm"
-                size="sm"
-              />
-            </div>
-          </Container> */}
+          <Container size="xl">
+            <Center hiddenFrom="xs">
+              <LogoShort size={80} />
+            </Center>
+
+            <Center visibleFrom="xs">
+              <Logo size={80} />
+            </Center>
+          </Container>
+          {/* Empty space for right side
+                This doesn't center very well.
+                Need something better.
+              */}
         </AppShell.Header>
 
         {/* Navbar */}
-        <AppShell.Navbar p="md">
-          <Stack style={{ flex: 1 }} h="100%">
-            <Center>
-              <Text size="xl">comind</Text>
+        <AppShell.Navbar p="md" withBorder={false}>
+          {/* <Container size="xl" h="100%" w={asideAndNavbarWidth}> */}
+          <Stack h="100%" w="100%" align="end">
+            {/* Logo stack */}
+            {/* <Center visibleFrom="lg">
+              <LogoShort size={80} />
             </Center>
+            <Center visibleFrom="sm" hiddenFrom="lg">
+              <LogoShort size={60} />
+            </Center>
+            <Center visibleFrom="xs" hiddenFrom="sm" w="100%">
+              <Logo size={40} />
+            </Center> */}
+
             {isAuthenticated && (
-              <ButtonGroup orientation="vertical">
+              <ButtonGroup orientation="vertical" w="100%">
                 <Button
+                  w="100%"
                   component="a"
                   href="/"
-                  variant={navButtonVariant}
-                  color={navButtonColor}
+                  variant={getNavButtonVariant("/")}
+                  color={getNavButtonColor("/")}
                   justify={navButtonJustify}
                   classNames={{ label: "navButton" }}
                   leftSection={<IconHome size={iconSize} />}
@@ -194,10 +209,11 @@ const Shell = ({ children }: { children: React.ReactNode }) => {
                   home
                 </Button>
                 <Button
+                  w="100%"
                   component="a"
                   href="/thoughts"
-                  variant={navButtonVariant}
-                  color={navButtonColor}
+                  variant={getNavButtonVariant("/thoughts")}
+                  color={getNavButtonColor("/thoughts")}
                   justify={navButtonJustify}
                   classNames={{ label: "navButton" }}
                   leftSection={<IconBubble size={iconSize} />}
@@ -207,8 +223,8 @@ const Shell = ({ children }: { children: React.ReactNode }) => {
                 <Button
                   component="a"
                   href="/melds"
-                  variant={navButtonVariant}
-                  color={navButtonColor}
+                  variant={getNavButtonVariant("/melds")}
+                  color={getNavButtonColor("/melds")}
                   justify={navButtonJustify}
                   classNames={{ label: "navButton" }}
                   leftSection={<IconAffiliate size={iconSize} />}
@@ -218,9 +234,34 @@ const Shell = ({ children }: { children: React.ReactNode }) => {
 
                 <Button
                   component="a"
+                  href="/spheres"
+                  variant={getNavButtonVariant("/spheres")}
+                  color={getNavButtonColor("/spheres")}
+                  justify={navButtonJustify}
+                  classNames={{ label: "navButton" }}
+                  leftSection={<IconSphere size={iconSize} />}
+                >
+                  spheres
+                </Button>
+
+                <Divider my="md" />
+                <Button
+                  component="a"
+                  href="/settings"
+                  variant={getNavButtonVariant("/settings")}
+                  color={getNavButtonColor("/settings")}
+                  justify={navButtonJustify}
+                  classNames={{ label: "navButton" }}
+                  leftSection={<IconSettings size={iconSize} />}
+                  disabled={true}
+                >
+                  settings
+                </Button>
+                <Button
+                  component="a"
                   href="/logout"
-                  variant={navButtonVariant}
-                  color={navButtonColor}
+                  variant={getNavButtonVariant("/logout")}
+                  color={getNavButtonColor("/logout")}
                   justify={navButtonJustify}
                   classNames={{ label: "navButton" }}
                   leftSection={<IconLogout size={iconSize} />}
@@ -230,17 +271,17 @@ const Shell = ({ children }: { children: React.ReactNode }) => {
               </ButtonGroup>
             )}
           </Stack>
+          {/* </Container> */}
         </AppShell.Navbar>
-        <AppShell.Main>
+        <AppShell.Main pt={0}>
           {/* {children} */}
-          <Space h="xl" />
-          <Container size={comindContainerWidth} p="0">
-            {children}
-          </Container>
+          <Container size={comindContainerWidth}>{children}</Container>
         </AppShell.Main>
 
         {/* Aside */}
-        <AppShell.Aside withBorder></AppShell.Aside>
+        <AppShell.Aside withBorder={false}>
+          <Stack h="100%" w="100%" align="end"></Stack>
+        </AppShell.Aside>
 
         {/* Footer */}
         <AppShell.Footer p="sm">

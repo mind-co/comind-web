@@ -167,10 +167,9 @@ class AuthProvider extends React.Component<{ children: React.ReactNode }> {
         body: JSON.stringify({ username, password }),
       });
 
-      console.log("Response:", response);
-
       if (response.ok) {
         const data = await response.json();
+        console.log("Login response:", data);
         const jwtToken = data.token;
         this.setToken(jwtToken);
       } else {

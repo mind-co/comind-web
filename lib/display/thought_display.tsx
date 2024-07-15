@@ -16,6 +16,10 @@ import {
   IconCheck,
   IconLink,
   IconCircle,
+  IconArrowLeft,
+  IconArrowDown,
+  IconChevronDown,
+  IconChevronUp,
 } from "@tabler/icons-react";
 import TurndownService from "turndown";
 // import { convertToRelativeTimestamp } from "@/lib/utils";
@@ -39,7 +43,6 @@ import {
   TypographyStylesProvider,
   Divider,
   ScrollArea,
-  Box,
   Modal,
   Progress,
   ThemeIcon,
@@ -70,6 +73,7 @@ import ThoughtBoxEditor from "../ThoughtBoxEditor";
 import { RichTextEditor } from "@mantine/tiptap";
 import Link from "next/link";
 import { ThoughtContext } from "../thoughtprovider";
+import Box from "@/lib/Box";
 
 // Visual stuff
 const lineWidth = 2;
@@ -95,7 +99,7 @@ const ThoughtDisplay: React.FC<ThoughtDisplayProps> = ({ thought }) => {
   const [opened, { open, close }] = useDisclosure(false);
 
   // State variables
-  const [verbsVisible, setVerbsVisible] = useState(false);
+  const [verbsVisible, setVerbsVisible] = useState(true);
   const [moreMenuVisible, setMoreMenuVisible] = useState(false);
   const [suggestionsOpen, setSuggestionsOpen] = useState(false);
   const [delveViewOpen, setDelveViewOpen] = useState(false);
@@ -237,10 +241,10 @@ const ThoughtDisplay: React.FC<ThoughtDisplayProps> = ({ thought }) => {
   // Verb button configs
   const verbButtonSize = "xs";
   const verbButtonTextSize = "xs";
-  const verbButtonColor = "gray";
-  const verbButtonVariant = "outline";
+  const verbButtonColor = "text";
+  const verbButtonVariant = "subtle";
   const verbButtonStyle = {
-    borderColor: theme.colors.gray[7],
+    // borderColor: theme.colors.gray[7],
   };
 
   if (deleted) {
@@ -255,27 +259,19 @@ const ThoughtDisplay: React.FC<ThoughtDisplayProps> = ({ thought }) => {
       </Modal>
 
       {/* Title and username */}
-      <Group justify="space-between" align="center">
-        {/* <Group>
-          <Text c={thoughtBodyHidden ? "" : "dimmed"} fw={200}>
-            {thought.title}
-          </Text>
-        </Group> */}
+      {/* <Group justify="space-between" align="center">
         <Text c="dimmed" fw={200}>
           {thought.username}
         </Text>
-      </Group>
+      </Group> */}
 
       {/* The thought body, including verb bar */}
       {!thoughtBodyHidden && (
         <>
           {/* Content */}
-          <Paper
-            withBorder
-            radius="lg"
-            p="xs"
-            style={{ position: "relative" }}
-            w="100%"
+          <Box
+            title={thought.username + "> " + thought.title}
+            // inactive={true}
           >
             {editMode && (
               <>
@@ -288,9 +284,8 @@ const ThoughtDisplay: React.FC<ThoughtDisplayProps> = ({ thought }) => {
                 />
               </>
             )}
-
             {!editMode && (
-              <>
+              <Container pt="xs" px="md">
                 <TypographyStylesProvider>
                   {
                     <Markdown remarkPlugins={[remarkGfm]}>
@@ -298,9 +293,8 @@ const ThoughtDisplay: React.FC<ThoughtDisplayProps> = ({ thought }) => {
                     </Markdown>
                   }
                 </TypographyStylesProvider>
-              </>
+              </Container>
             )}
-
             {/* 
             =========================================
             ██╗   ██╗███████╗██████╗ ██████╗ ███████╗
@@ -311,24 +305,21 @@ const ThoughtDisplay: React.FC<ThoughtDisplayProps> = ({ thought }) => {
               ╚═══╝  ╚══════╝╚═╝  ╚═╝╚═════╝ ╚══════╝
             =========================================
             */}
-
             {/* New thought box */}
             {newThoughtBoxIsOpen && (
-              <>
-                <NewThoughtBox
-                  parentThoughtId={thought.id}
-                  content={newThoughtContent}
-                  setContent={setNewThoughtContent}
-                />
-
-                <Space h="sm" />
-              </>
+              <Container>
+                <Box title="attach a thought">
+                  <NewThoughtBox
+                    parentThoughtId={thought.id}
+                    content={newThoughtContent}
+                    setContent={setNewThoughtContent}
+                  />
+                </Box>
+              </Container>
             )}
-
             {verbsVisible && (
-              <>
-                <Divider my="xs" label="verbs" />
-                <Group justify="end" p="0" m="0" gap="4px">
+              <div style={{}}>
+                <Group my="xs" px="xs" align="center" h="100%" justify="end">
                   {!newThoughtBoxIsOpen && (
                     <>
                       {moreMenuVisible && (
@@ -336,7 +327,7 @@ const ThoughtDisplay: React.FC<ThoughtDisplayProps> = ({ thought }) => {
                           {/* Delete */}
                           <Tooltip label="delete this thought">
                             <Button
-                              variant={"default"}
+                              variant={verbButtonVariant}
                               size={verbButtonSize}
                               color={
                                 deletePressCount == 0
@@ -533,35 +524,19 @@ const ThoughtDisplay: React.FC<ThoughtDisplayProps> = ({ thought }) => {
                     </>
                   )}
                 </Group>
-
-                <Space h="xs" />
-              </>
+              </div>
             )}
-
-            {/* Verb bar toggle */}
-            <div
-              style={{
-                position: "absolute",
-                bottom: "-16px",
-                right: "0px",
-                left: "0px",
-                textAlign: "center",
-              }}
-            >
-              <ActionIcon
-                // variant="filled"
-                variant="outline"
-                style={{
-                  backgroundColor: "var(--mantine-color-dark-filled-hover)",
-                  borderColor: "var(--mantine-color-dark-outline)",
-                }}
-                size="sm"
-                onClick={() => setVerbsVisible(!verbsVisible)}
-              >
-                {/* {verbsVisible ? <IconX size={18} /> : <IconCircle size={18} />} */}
-              </ActionIcon>
-            </div>
-          </Paper>
+            {/* <Divider
+              my="md"
+              label={
+                <ActionIcon variant="subtle">
+                  {verbsVisible ? <IconChevronUp /> : <IconChevronDown />}
+                </ActionIcon>
+              }
+              labelPosition="center"
+              onClick={() => setVerbsVisible(!verbsVisible)}
+            /> */}
+          </Box>
         </>
       )}
     </>
@@ -693,7 +668,6 @@ const ThoughtList: React.FC<ThoughtListProps> = ({ thoughts, suggestions }) => {
             thought={thought}
             suggestions={suggestions ? suggestions[thought.id] : []}
           />
-          <Space my="md" />
         </React.Fragment>
       ))}
     </>
@@ -794,7 +768,7 @@ const NewThoughtBox: React.FC<NewThoughtBoxProps> = ({
   }, [editor]);
 
   return (
-    <Paper w="100%">
+    <>
       <RichTextEditor editor={editor} autoFocus={true}>
         <RichTextEditor.Content />
       </RichTextEditor>
@@ -813,7 +787,7 @@ const NewThoughtBox: React.FC<NewThoughtBoxProps> = ({
           <IconBulb size={64} />
         </ActionIcon> */}
       {/* </div> */}
-    </Paper>
+    </>
   );
 };
 

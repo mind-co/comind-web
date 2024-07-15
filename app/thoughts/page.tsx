@@ -11,7 +11,7 @@ import ThoughtBox from "@/lib/thought_box";
 import TurndownService from "turndown";
 import ThoughtBoxEditor from "@/lib/ThoughtBoxEditor";
 import { ThoughtContext } from "@/lib/thoughtprovider";
-import { comindContainerWidth } from "@/lib/Configuration";
+import { asideAndNavbarWidth, comindContainerWidth } from "@/lib/Configuration";
 import DelveView from "@/lib/DelveView";
 
 interface ThoughtsPageProps {
@@ -117,19 +117,6 @@ const ThoughtPage: React.FC<ThoughtsPageProps> = () => {
     <Shell>
       <Text>{delvingThoughtId}</Text>
       <ThoughtList thoughts={thoughts} suggestions={{}} />
-
-      <div
-        style={{
-          position: "fixed",
-          bottom: 40,
-          left: 10,
-          right: 10,
-        }}
-      >
-        <Container size={comindContainerWidth}>
-          <ThoughtBox onSubmit={onThink} />
-        </Container>
-      </div>
     </Shell>
   );
 };

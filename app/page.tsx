@@ -2,11 +2,8 @@
 import { useContext, useEffect } from "react";
 import { AuthContext } from "@/lib/authprovider";
 import MeldView from "../lib/MeldView";
-import { redirect } from "next/navigation";
-import Comind from "@/lib/comind";
-import { Center, Container, Space, Text, Title } from "@mantine/core";
-import { ThoughtContext, ThoughtProvider } from "@/lib/thoughtprovider";
-import ComindShort from "@/lib/ComindShort";
+import { Center, Text } from "@mantine/core";
+import { ThoughtContext } from "@/lib/thoughtprovider";
 import Link from "next/link";
 import Shell from "./Shell";
 import Logo from "@/lib/Logo";

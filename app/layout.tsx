@@ -49,7 +49,24 @@ export default function RootLayout({
       ],
     },
     primaryColor: "comind",
-    defaultRadius: "lg",
+    defaultRadius: "md",
+    components: {
+      Button: {
+        styles: {
+          root: {
+            fontFamily: "monospace",
+            fontWeight: "normal",
+          },
+        },
+      },
+      RichTextEditor: {
+        styles: {
+          // Turn off border for rich text editor
+          root: { borderWidth: 0, padding: 0 },
+          content: { padding: 0, borderRadius: 100 },
+        },
+      },
+    },
   });
 
   return (

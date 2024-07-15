@@ -10,9 +10,11 @@ import {
   Group,
   Paper,
   Space,
+  Stack,
   Text,
 } from "@mantine/core";
 import { IconBulb } from "@tabler/icons-react";
+import Box from "./Box";
 
 interface ThoughtBoxProps {
   onSubmit: (html: string) => void;
@@ -38,30 +40,27 @@ const ThoughtBox = ({ onSubmit }: ThoughtBoxProps) => {
 
   return (
     <div style={{ position: "relative" }}>
-      <Card>
-        <RichTextEditor
-          editor={editor}
-          styles={{
-            root: { borderWidth: 2 },
-          }}
-        >
-          {/* TODO: #6 Make thought box toolbar useful */}
-          <RichTextEditor.Content />
-        </RichTextEditor>
+      <Box title="think">
+        <Stack style={{ width: "100%" }} gap={0}>
+          <RichTextEditor editor={editor}>
+            {/* TODO: #6 Make thought box toolbar useful */}
+            <RichTextEditor.Content />
+          </RichTextEditor>
 
-        <Space my={4}></Space>
+          <Space my={4}></Space>
 
-        <Group justify="flex-end">
-          {ComindButton(
-            "now",
-            () => {
-              console.error("now not implemented");
-            },
-            true
-          )}
-          {ComindButton("think", handleSubmit)}
-        </Group>
-      </Card>
+          <Group justify="flex-end">
+            {ComindButton(
+              "now",
+              () => {
+                console.error("now not implemented");
+              },
+              true
+            )}
+            {ComindButton("think", handleSubmit)}
+          </Group>
+        </Stack>
+      </Box>
       {/* <div style={{ position: "absolute", bottom: "0", right: "0" }}>
         <ActionIcon
           size="xl"
@@ -87,7 +86,7 @@ const ComindButton = (
     <Button
       size="xs"
       onClick={handleSubmit}
-      variant="outline"
+      variant="subtle"
       disabled={disabled}
     >
       <Text size="md" fw={400}>
