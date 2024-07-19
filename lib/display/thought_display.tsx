@@ -4,7 +4,6 @@ import { Thought } from "@/lib/types/thoughts";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import {
-  IconBulb,
   IconPlus,
   IconInfoCircle,
   IconLock,
@@ -20,6 +19,7 @@ import {
   IconArrowDown,
   IconChevronDown,
   IconChevronUp,
+  IconBulb,
 } from "@tabler/icons-react";
 import TurndownService from "turndown";
 // import { convertToRelativeTimestamp } from "@/lib/utils";
@@ -526,16 +526,16 @@ const ThoughtDisplay: React.FC<ThoughtDisplayProps> = ({ thought }) => {
                 </Group>
               </div>
             )}
-            {/* <Divider
-              my="md"
+
+            <Divider
               label={
                 <ActionIcon variant="subtle">
-                  {verbsVisible ? <IconChevronUp /> : <IconChevronDown />}
+                  {verbsVisible ? <IconChevronUp /> : <IconBulb />}
                 </ActionIcon>
               }
               labelPosition="center"
               onClick={() => setVerbsVisible(!verbsVisible)}
-            /> */}
+            />
           </Box>
         </>
       )}

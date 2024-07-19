@@ -97,7 +97,7 @@ h6 {
 }
 
 .box {
-  border: 2px solid;
+  border: 1px solid;
   border-color: var(--mantine-color-dimmed);
   margin-top: 1rem;
   position: relative;
@@ -119,6 +119,21 @@ h6 {
   position: absolute;
   top: -0.7rem;
   left: 0.5rem;
+  z-index: 1;
+  font-size: var(--mantine-font-size-sm);
+  background-color: var(--mantine-color-body);
+  border-radius: 0.25rem;
+  color: var(--mantine-color-dimmed);
+  /* background-color: rgb(var(--mantine-color-body)); */
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+  font-family: monospace;
+}
+
+.box-action {
+  position: absolute;
+  top: -0.7rem;
+  right: 0.5rem;
   z-index: 1;
   font-size: var(--mantine-font-size-sm);
   background-color: var(--mantine-color-body);

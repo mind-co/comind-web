@@ -13,7 +13,7 @@ import {
   Stack,
   Text,
 } from "@mantine/core";
-import { IconBulb } from "@tabler/icons-react";
+import { IconBulb, IconSend2 } from "@tabler/icons-react";
 import Box from "./Box";
 
 interface ThoughtBoxProps {
@@ -41,25 +41,18 @@ const ThoughtBox = ({ onSubmit }: ThoughtBoxProps) => {
   return (
     <div style={{ position: "relative" }}>
       <Box title="think">
-        <Stack style={{ width: "100%" }} gap={0}>
+        <Container p={0} pr="xl">
           <RichTextEditor editor={editor}>
             {/* TODO: #6 Make thought box toolbar useful */}
             <RichTextEditor.Content />
           </RichTextEditor>
+        </Container>
 
-          <Space my={4}></Space>
-
-          <Group justify="flex-end">
-            {ComindButton(
-              "now",
-              () => {
-                console.error("now not implemented");
-              },
-              true
-            )}
-            {ComindButton("think", handleSubmit)}
-          </Group>
-        </Stack>
+        <div style={{ position: "absolute", right: 0, bottom: 0 }}>
+          <ActionIcon onClick={handleSubmit} variant="subtle" size="xl">
+            <IconSend2 />
+          </ActionIcon>
+        </div>
       </Box>
       {/* <div style={{ position: "absolute", bottom: "0", right: "0" }}>
         <ActionIcon
